@@ -340,6 +340,54 @@ async function appTest() {
     await autoPlay('b-3-frets', 'bas');
     await autoPlay('d-3-beat', 'drum');
 
+    // Spel met vallende noten (blok 9): Ode an die Freude uitspelen in "Wacht op mij"
+    check(await tapScreen(page, 'liedjes'), 'liedjes: opent');
+    check((await page.$$('.lesson-card[data-song]')).length === 6, 'liedjes: 6 liedjes');
+    await page.click('.lesson-card[data-song="ode"]');
+    await waitFor(async () => (await screenOf(page)) === 'spel', 3000, 'spel');
+    await page.click('.lesson-intro button.big');
+    check((await page.$eval('.game-tempo', (e) => e.textContent)) === '70%', 'spel: start op 70% tempo');
+    await sleep(500); // het scherm verspringt nog net na Start (startkaart weg)
+    for (let i = 0; i < 3; i++) {
+      const before = await page.$eval('.game-tempo', (e) => e.textContent);
+      await page.click('.game-tempo-row .icon-btn:last-child');
+      await waitFor(async () => (await page.$eval('.game-tempo', (e) => e.textContent)) !== before, 1000, `tempo na klik ${i + 1}`);
+    }
+    const tempoNow = await page.$eval('.game-tempo', (e) => e.textContent);
+    check(tempoNow === '100%', `spel: tempo tot 100% (${tempoNow})`);
+    await sleep(1500);
+    await page.screenshot({ path: path.join(OUT, 'spel-staand.png') });
+    {
+      const end = Date.now() + 60000;
+      let shotWide = false;
+      while (Date.now() < end) {
+        if (await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false)) break;
+        const want = await page.$eval('.game', (g) => g.dataset.expected ?? '');
+        if (want) {
+          const m = Number(want);
+          const sel = (await page.$(`.lesson-kb .key[data-midi="${m}"]`)) ? `.lesson-kb .key[data-midi="${m}"]` : `.lesson-kb .key[data-midi="${(m % 12) + 60}"]`;
+          await page.click(sel).catch(() => undefined);
+          if (!shotWide) {
+            await page.setViewport({ width: 1280, height: 800 });
+            await sleep(300);
+            check(await noSideScroll(page), 'spel: liggend geen zijwaarts scrollen');
+            await page.screenshot({ path: path.join(OUT, 'spel-liggend.png') });
+            shotWide = true;
+          }
+        }
+        await sleep(80);
+      }
+      await page.setViewport({ width: 800, height: 1280 });
+    }
+    check(await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false), 'spel: Ode an die Freude uitgespeeld');
+    check((await page.$eval('.lesson-end', (e) => e.dataset.stars).catch(() => '?')) === '3', 'spel: 3 sterren zonder foutjes');
+    await page.screenshot({ path: path.join(OUT, 'spel-einde.png') });
+    await page.click('.lesson-end .lesson-back');
+    await waitFor(async () => (await screenOf(page)) === 'liedjes', 3000, 'liedjes');
+    check((await page.$$('.lesson-card[data-song="ode"] .star-row svg[fill]')).length === 3, 'liedjes: 3 sterren bij Ode an die Freude');
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+
     // Tweede profiel (blok 5): eigen instrument per profiel, wisselen, kiezen bij de start, verwijderen
     const onScreen = (id) => waitFor(async () => (await screenOf(page)) === id, 3000, id);
     const clickProfile = (name) =>

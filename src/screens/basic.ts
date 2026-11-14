@@ -6,6 +6,7 @@ import { INSTRUMENT_CHOICES, type Notation } from '../app/settings';
 import type { Persistence } from '../storage/db';
 import { avatarSvg } from '../ui/avatar';
 import { LESSONS, MAX_STARS } from '../lessons/content';
+import { SONGS } from '../songs/songs';
 import { el } from '../ui/dom';
 import { icon, type IconName } from '../ui/icons';
 
@@ -38,9 +39,9 @@ export function mountHome(app: HTMLElement): void {
   const hero = el('section', 'hero');
   const logo = el('h1', 'logo');
   logo.append(el('span', 'logo-debut', 'DEBUT'), el('span', 'logo-loading', 'LOADING…'));
-  // Voortgang = verzamelde sterren van dit profiel t.o.v. alle sterren die te verdienen zijn.
+  // Voortgang = verzamelde sterren van dit profiel (lessen + liedjes) t.o.v. alle sterren die te verdienen zijn.
   const stars = Object.values(activeProfile()?.stars ?? {}).reduce((a, b) => a + b, 0);
-  const progress = Math.min(1, stars / (LESSONS.length * MAX_STARS));
+  const progress = Math.min(1, stars / ((LESSONS.length + SONGS.length) * MAX_STARS));
   const meta = el('div', 'led-meta');
   meta.append(
     el('span', '', `${Math.round(progress * 100)}% geladen`),

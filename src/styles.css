@@ -797,7 +797,8 @@ button.danger {
   max-width: 320px;
 }
 
-.lesson-kb {
+/* Dubbele klasse: moet winnen van de algemene .keyboard-regel (vrij spelen) verderop in dit bestand. */
+.keyboard.lesson-kb {
   height: clamp(170px, 30vh, 260px);
   margin-top: 16px;
 }
@@ -967,6 +968,124 @@ button.danger {
   width: 0;
   background: var(--green);
   box-shadow: 0 0 12px rgba(93, 255, 155, 0.8);
+}
+
+/* ---------- Spel met vallende noten (blok 9) ---------- */
+.game {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.game-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* De algemene .pad.wide (flex-basis 180px) zou in een kolom de knoppen 180px hoog maken. */
+.game-side .pad.wide,
+.game-side .pad {
+  flex: 0 0 auto;
+  min-height: 56px;
+}
+
+.game-tempo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 2px solid var(--line);
+  background: var(--panel);
+}
+
+.game-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.game-tempo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-tempo-row .icon-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+}
+
+.game-tempo {
+  min-width: 3.2em;
+  text-align: center;
+  font: 600 1.4rem var(--display);
+}
+
+.game-toggle.on {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.game-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.game-title {
+  font: 600 1.3rem var(--display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.game-progress {
+  flex: 1;
+}
+
+.game-canvas {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 44vh, 420px);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: linear-gradient(180deg, rgba(36, 18, 63, 0), rgba(36, 18, 63, 0.7));
+}
+
+.game .lesson-kb {
+  margin-top: 0;
+}
+
+@media (orientation: portrait), (max-width: 860px) {
+  .game {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .game-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    order: 2;
+  }
+
+  .game-side .pad.wide,
+  .game-side .pad {
+    flex: 1 1 140px;
+    min-height: 52px;
+  }
+
+  .game-side p {
+    flex: 1 1 100%;
+  }
 }
 
 /* ---------- Vrij spelen (blok 6) ---------- */

@@ -114,6 +114,28 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 2. Voelt het meteen aan bij het tikken (geen merkbare vertraging)?
 3. Metronoom: blijft hij gelijkmatig tikken, ook bij het verschuiven van het tempo?
 4. Speel C4 in de Klanktest en kijk in Luisteroor (op een tweede toestel) of de tablet zuiver is (optioneel).
+## Blok 9 — Spel met vallende noten
+
+**Gebouwd (2026-11-14)**, zoals het goedgekeurde spelscherm van stijl A (Neon Stage), eerst voor **keyboard**:
+- **Liedjes** (`src/songs/songs.ts`), publiek domein, nu mét ritme (noot + start + lengte in tellen) en een akkoord per maat:
+  Altijd is Kortjakje ziek, Vader Jacob, Ode an die Freude, Mary had a little lamb, When the Saints, Jingle Bells.
+  Hetzelfde formaat krijgen later de MIDI-liedjes (blok 10), de naspeelstudio (blok 11) en eigen nummers (blok 12).
+- **Spel** (`src/screens/spel.ts`, logica in `src/songs/game.ts`): noten vallen (canvas) naar de juiste toets van het keyboard
+  eronder, in de vaste kleur van de letter, met de letter/do-re-mi erop. Aftellen (2 tikken). "Mooi!" bij een raak.
+  - **Wacht op mij** (standaard aan): de tijd stopt bij elke noot tot je ze speelt. Foute noot tijdens het wachten = foutje.
+    Een foute noot terwijl het lied loopt telt niet (zo telt de begeleiding nooit als fout via de microfoon).
+  - Zonder wachten: raak binnen ±300 ms. Gemist = geen straf, enkel minder sterren.
+  - **Tempo** 40–100 % (start op 70 %), **Stukje herhalen** (de 2 maten waar je bent), **Begeleiding** aan/uit
+    (drum + bas op de grondtoon; valt stil als het lied wacht), **Pauze**, **Luister eerst**.
+  - Sterren: met wachten volgens foutjes (zoals de lessen), zonder wachten volgens geraakte noten. Bewaard per profiel
+    (`song:<id>`), en ze tellen mee in de laadbalk op het startscherm.
+- Spelen op het echte keyboard (microfoon) of tikken op de toetsen.
+
+**Getest:** unit (liedjes op volgorde en binnen de Casio, wachten, ±300 ms, uitspelen, herhalen, tempo) + e2e
+(Ode an die Freude volledig uitgespeeld op 100 % met tikken → 3 sterren, liggend zonder zijwaarts scrollen).
+
+**Nog te testen op de tablet:** vloeiend? Is 70 % een goed starttempo? Hoort de app je keyboard ook als de begeleiding speelt?
+Later uit te breiden: gitaar/bas met snaarbanen, eigen nummers in K-popstijl (blok 12).
 ## Blok 8 — Eerste lessen (keyboard)
 
 **Keuze gebruiker (2026-11-14):** eerst keyboard, spelenderwijs, zo weinig mogelijk uitleg. Plan goedgekeurd.

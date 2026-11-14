@@ -20,6 +20,8 @@ import { mountStemmen } from './screens/stemmen';
 import { mountProfileChooser, mountProfileEditor } from './screens/profielen';
 import { mountLessen } from './screens/lessen';
 import { mountLes } from './screens/les';
+import { mountLiedjes } from './screens/liedjes';
+import { mountSpel } from './screens/spel';
 import { avatarSvg } from './ui/avatar';
 import { el } from './ui/dom';
 import { icon } from './ui/icons';
@@ -89,6 +91,12 @@ function show(id: ScreenId): void {
       mountHome(content);
       break;
     }
+    case 'liedjes':
+      mountLiedjes(content);
+      break;
+    case 'spel':
+      cleanup = mountSpel(content);
+      break;
     case 'lessen':
       mountLessen(content);
       break;
