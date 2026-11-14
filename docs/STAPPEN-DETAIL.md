@@ -27,8 +27,8 @@
 
 **Resultaten tablettest (2026-11-14, samplerate 48000 Hz, gevoeligheid 60):**
 - Keyboard (klein Casio-keyboard op batterijen, het meest gebruikte): C3, C4, E4, G4, C5 ✅ (−3 tot +1 cent).
-  C6 ❌: niet echt getest (gebruiker dacht eerst dat de toets ontbrak; het resultaat "C3" was een andere toets).
-  **C6 bestaat wel: Casio SA-76, 44 toetsen, bereik F2–C6.** C6 nog eens kort nachecken op de testpagina (Luisteroor).
+  C6: eerst niet getest (verkeerd geteld), daarna wel ✅ herkend.
+  **Casio SA-76, 44 toetsen, bereik F2–C6.**
   Akkoorden C en Am ✅, maar Am pas na 3 verschillende posities.
   Het grotere keyboard klinkt minder zuiver en werkt enkel met een stroomadapter → **het kleine Casio-keyboard is de referentie**.
 - Elektrische gitaar **zonder versterker**: alle 6 snaren ✅ + Em ✅. Alle snaren te hoog gestemd (+14 tot +44 cent):
@@ -45,6 +45,8 @@
   Geladen MIDI-liedjes (blok 10) worden zo nodig per octaaf verschoven tot ze in dit bereik passen.
 - **De gitaar staat vals** → het stemapparaat (blok 7) komt vóór de eerste lessen (blok 8); dat zit al juist in de volgorde.
   Lessen controleren de noot op letter, niet op cent, zodat een iets valse snaar geen fout geeft.
+  **Toon nooit "cent" aan het kind:** het woord werd verward met een octaaf. Het stemapparaat zegt "iets te hoog / iets te laag / juist"
+  met een naald, zonder getallen.
 - Bas: zoekbereik 35–400 Hz blijft zoals het is.
 - Zangbereik verschilt sterk per persoon (deze test was een volwassen stem) → bereik per profiel meten (blok 7).
 

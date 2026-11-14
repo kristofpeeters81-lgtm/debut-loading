@@ -23,4 +23,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** "go" voor blok 2. (Terzijde: C6 op de Casio SA-76 nog eens kort nachecken in Luisteroor.)
+**Volgende actie:** "go" voor blok 2.
