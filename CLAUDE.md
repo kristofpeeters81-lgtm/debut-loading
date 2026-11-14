@@ -39,7 +39,8 @@ gaan voor drillen.
 - Keyboard: het meest gebruikte keyboard heeft **geen USB**, dus de app luistert via de microfoon. Web MIDI is optioneel voor het andere keyboard.
 - Elektrische gitaar: geen versterker, wel een inplugversterker voor de hoofdtelefoon. Bas: akoestisch, met jack-uitgang.
   **Getest in blok 1: de microfoon volstaat voor alle instrumenten**, ook de gitaar zonder versterker. Geen adapter nodig.
-- Referentiekeyboard = het kleine Casio-keyboard (op batterijen, heeft geen C6): keyboardinhoud moet daarop passen.
+- Referentiekeyboard = **Casio SA-76** (44 toetsen, **F2–C6**, op batterijen): alle keyboardinhoud moet daarop passen.
+- Schermen werken **liggend én staand**. Updates via een melding, nooit automatisch midden in een liedje.
 - Akkoorden mild controleren (één keer herkend = goed, altijd "verder"); losse noten op letter, niet op cent.
 - Drum: drumpads op het scherm. Invoer is abstract opgezet, zodat later een e-drum via USB-MIDI
   of een akoestische drum via de microfoon (inzetdetectie) kan worden aangesloten.

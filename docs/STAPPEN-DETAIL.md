@@ -27,9 +27,12 @@
 
 **Resultaten tablettest (2026-11-14, samplerate 48000 Hz, gevoeligheid 60):**
 - Keyboard (klein Casio-keyboard op batterijen, het meest gebruikte): C3, C4, E4, G4, C5 ✅ (−3 tot +1 cent).
-  C6 ❌: die toets bestaat niet op dit keyboard (de app hoorde C3). Akkoorden C en Am ✅, maar Am pas na 3 verschillende posities.
+  C6 ❌: niet echt getest (gebruiker dacht eerst dat de toets ontbrak; het resultaat "C3" was een andere toets).
+  **C6 bestaat wel: Casio SA-76, 44 toetsen, bereik F2–C6.** C6 nog eens kort nachecken op de testpagina (Luisteroor).
+  Akkoorden C en Am ✅, maar Am pas na 3 verschillende posities.
   Het grotere keyboard klinkt minder zuiver en werkt enkel met een stroomadapter → **het kleine Casio-keyboard is de referentie**.
-- Elektrische gitaar **zonder versterker**: alle 6 snaren ✅ + Em ✅. Alle snaren te hoog gestemd (+14 tot +44 cent).
+- Elektrische gitaar **zonder versterker**: alle 6 snaren ✅ + Em ✅. Alle snaren te hoog gestemd (+14 tot +44 cent):
+  de gitaar kwam ongestemd zo uit de koffer en werd toch herkend.
 - Akoestische bas: alle 4 snaren ✅, ook E1 (+1 tot +8 cent). Geen octaaffouten.
 - Zingen (volwassen stem): bereik G#2–A3, A#2 3 s vastgehouden ✅.
 - Klappen: 8 van 8 ✅.
@@ -38,11 +41,32 @@
 - **Microfoon volstaat voor alle instrumenten.** Geen USB-C-adapter nodig; plan B vervalt.
 - **Akkoorden mild controleren:** een akkoord telt als goed zodra het één keer herkend wordt binnen een paar seconden,
   er is altijd een knop "verder", en een gemist akkoord kost niets. Losse noten mogen streng (die werken zeer betrouwbaar).
-- **Keyboardinhoud moet passen op het kleine Casio-keyboard** (geen C6). Exact bereik nog op te vragen (laagste en hoogste toets).
+- **Keyboardinhoud moet passen op het kleine Casio-keyboard: Casio SA-76, 44 toetsen, F2–C6** (MIDI 41–84).
+  Geladen MIDI-liedjes (blok 10) worden zo nodig per octaaf verschoven tot ze in dit bereik passen.
 - **De gitaar staat vals** → het stemapparaat (blok 7) komt vóór de eerste lessen (blok 8); dat zit al juist in de volgorde.
   Lessen controleren de noot op letter, niet op cent, zodat een iets valse snaar geen fout geeft.
 - Bas: zoekbereik 35–400 Hz blijft zoals het is.
 - Zangbereik verschilt sterk per persoon (deze test was een volwassen stem) → bereik per profiel meten (blok 7).
+
+## Blok 2 — Projectbasis
+
+**Doel:** de testpagina wordt het skelet van de echte app. Nog geen stijl (dat is blok 3).
+
+**Keuzes van de gebruiker (2026-11-14):**
+- Luisteroor **blijft**, als hulpje in een instellingenmenu (bereik van een keyboard nachecken, nieuw instrument testen).
+- Updates: **melding** "Nieuwe versie klaar, tik om bij te werken" (niets verandert vanzelf midden in een liedje).
+- Scherm: **liggend én staand**; elk scherm moet in beide richtingen werken.
+
+**Plan (nog niet gebouwd, wacht op go):**
+- Installeerbare PWA: `manifest.webmanifest` (naam DEBUT LOADING…, `orientation: any`, tijdelijke iconen; definitieve iconen in blok 3).
+- Service worker (gebaseerd op die van SingApp, gegenereerd bij de build), maar **zonder automatische skipWaiting**:
+  een nieuwe versie wacht, de app toont de melding, tik = bijwerken en herladen.
+- Skelet met schermen en terugknop: start → Vrij spelen, Lessen, Liedjes, Downloadhoek, Instellingen (→ Luisteroor).
+  Lege schermen tonen "komt in blok X".
+- Eenvoudige router via `#` in de adresbalk, zodat de terugknop van Android werkt.
+- Opslag op de tablet (IndexedDB, gekopieerd en aangepast uit SingApp) + vraag om blijvende opslag
+  (`navigator.storage.persist()`), zodat Android de gegevens niet zomaar wist.
+- Tests: unit-tests voor router en opslag; e2e: app opent, navigatie werkt, Luisteroor werkt nog, offline herladen werkt.
 
 ## Blok 10 — MIDI laden via de downloadhoek
 
