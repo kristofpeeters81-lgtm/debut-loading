@@ -58,7 +58,7 @@ gaan voor drillen.
   schermen met microfoon of animatie geven een opruimfunctie terug.
 - `src/app/`: `router.ts` (schermen via `#/…`, terugknop), `settings.ts`/`state.ts` (instellingen), `update.ts` (service worker).
 - `src/storage/db.ts`: IndexedDB `debut-loading`, tabel `kv`. Nieuwe tabellen = `DB_VERSION` verhogen.
-- `src/screens/`: `basic.ts` (start, lege schermen, instellingen), `luisteroor.ts` + `checklist.ts` (blok 1), `klanktest.ts` (blok 4); beide onder Instellingen → Hulpjes.
+- `src/screens/`: `basic.ts` (start, lege schermen, instellingen), `luisteroor.ts` + `checklist.ts` (blok 1), `klanktest.ts` (blok 4), `vrijspelen.ts` (blok 6), `stemmen.ts` + `zingen.ts` (blok 7). Microfoonlus: `src/audio/tracker.ts`, rekenregels stemmen/bereik: `src/audio/tuning.ts`.
 - Offline: service worker gegenereerd in `vite.config.ts`. Nieuwe versie wacht op een tik op de melding (`SKIP_WAITING`), nooit automatisch.
 - Onderdelen uit SingApp worden **gekopieerd**, niet gedeeld, zodat de twee apps elkaar niet kunnen stukmaken.
 

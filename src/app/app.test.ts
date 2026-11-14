@@ -63,7 +63,10 @@ describe('instellingen', () => {
       notation: 'doremi',
       micSensitivity: 80,
       instrument: 'bas',
+      voiceRange: null,
     });
+    expect(sanitizeSettings({ voiceRange: { low: 57, high: 76 } }).voiceRange).toEqual({ low: 57, high: 76 });
+    expect(sanitizeSettings({ voiceRange: { low: 80, high: 60 } }).voiceRange).toBeNull();
     expect(sanitizeSettings({ instrument: 'triangel' }).instrument).toBe('keyboard');
     expect(sanitizeSettings({ micSensitivity: 250 }).micSensitivity).toBe(100);
     expect(sanitizeSettings({ micSensitivity: -5 }).micSensitivity).toBe(0);

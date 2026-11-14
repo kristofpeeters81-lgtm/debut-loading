@@ -20,9 +20,11 @@ export interface Settings {
   micSensitivity: number;
   /** Gekozen instrument (de avatar bespeelt dit instrument). */
   instrument: InstrumentId;
+  /** Gemeten zangbereik (MIDI-nummers), of null als het nog niet gemeten is. */
+  voiceRange: { low: number; high: number } | null;
 }
 
-export const DEFAULT_SETTINGS: Settings = { notation: 'letters', micSensitivity: 60, instrument: 'keyboard' };
+export const DEFAULT_SETTINGS: Settings = { notation: 'letters', micSensitivity: 60, instrument: 'keyboard', voiceRange: null };
 
 /** Maakt van wat er in de opslag stond altijd geldige instellingen (oude of kapotte waarden → standaard). */
 export function sanitizeSettings(raw: unknown): Settings {
@@ -35,5 +37,9 @@ export function sanitizeSettings(raw: unknown): Settings {
   }
   const inst = INSTRUMENT_CHOICES.find((c) => c.id === r.instrument);
   if (inst) out.instrument = inst.id;
+  const vr = r.voiceRange as Record<string, unknown> | null | undefined;
+  if (vr && typeof vr.low === 'number' && typeof vr.high === 'number' && vr.low >= 24 && vr.high <= 108 && vr.low <= vr.high) {
+    out.voiceRange = { low: Math.round(vr.low), high: Math.round(vr.high) };
+  }
   return out;
 }

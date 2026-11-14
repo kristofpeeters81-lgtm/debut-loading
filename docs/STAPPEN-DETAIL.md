@@ -132,6 +132,24 @@ bas E-snaar fret 5 = A, snare-pad, liggend zonder zijwaarts scrollen).
 
 **Nog te testen op de tablet:** speelt het meteen (geen vertraging)? Akkoorden met 3 vingers? Glijden over de toetsen?
 Zijn de vakjes van de gitaarhals groot genoeg voor vingers?
+## Blok 7 — Stemapparaat en zangbereik
+
+**Gebouwd (2026-11-14):**
+- **Stemapparaat** (`src/screens/stemmen.ts`, scherm "Stemapparaat"): Gitaar of Bas. Herkent zelf welke snaar je speelt,
+  toont de letter, een naald en **woorden** ("veel te laag", "iets te laag", "juist", "iets te hoog", "veel te hoog") + advies
+  ("een klein beetje strakker"). Geen getallen (beslissing blok 1). Juist = binnen 5 cent. Tik op een snaarknop = referentietoon.
+  Te openen via Vrij spelen → Gitaar/Bas ("Gitaar stemmen") en via Instellingen → Hulpjes.
+- **Zingen** in Vrij spelen (`src/screens/zingen.ts`): live de noot die je zingt + een lijn met de toonhoogte van de laatste 6 s
+  (met C3–C6 als hulplijnen, en je bereik als roze band). **Zangbereik meten:** zing laag en hoog, een noot telt pas als je ze
+  0,5 s vasthoudt; daarna een vriendelijke uitleg ("een middenstem: liedjes rond de middelste do passen je goed").
+  Bewaard op de tablet; **vanaf blok 5 per profiel**.
+- Rekenregels apart en getest (`src/audio/tuning.ts`), microfoonlus herbruikbaar (`src/audio/tracker.ts`).
+
+**Getest:** unit (snaar herkennen, woorden, uitschieters, bereik enkel met vastgehouden noten) + e2e met nep-microfoon:
+A-snaar 15 cent te hoog → "iets te hoog", zuivere E → "juist"; stem A3 en E5 → bereik "A3 – E5".
+
+**Nog te testen op de tablet:** de gitaar écht stemmen met de app (ze stond +14 tot +44 cent te hoog); werkt de bas;
+zangbereik van je dochter meten (en dat van jou: wordt het anders?).
 ## Blok 3 — Stijl en figuren
 
 **Keuze gebruiker (2026-11-14): A · Neon Stage**, en 8 of meer figuren.

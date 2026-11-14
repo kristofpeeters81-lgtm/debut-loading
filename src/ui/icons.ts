@@ -1,6 +1,6 @@
 // Lijn-iconen (stijl A · Neon Stage). Eigen tekeningen, geen icoonbibliotheek nodig.
 
-export type IconName = 'keys' | 'star' | 'music' | 'download' | 'gear' | 'back' | 'ear' | 'speaker';
+export type IconName = 'keys' | 'star' | 'music' | 'download' | 'gear' | 'back' | 'ear' | 'speaker' | 'tuner';
 
 const PATHS: Record<IconName, string> = {
   keys: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M7 6v8M12 6v8M17 6v8"/>',
@@ -10,6 +10,7 @@ const PATHS: Record<IconName, string> = {
   gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
   back: '<path d="M15 5l-7 7 7 7"/>',
   ear: '<path d="M7 10a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-5 1"/><path d="M10 10a2 2 0 0 1 4 0"/>',
+  tuner: '<path d="M4 18a9 9 0 0 1 16 0"/><path d="M12 18l4-7"/><circle cx="12" cy="18" r="1.5"/>',
   speaker: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
 };
 

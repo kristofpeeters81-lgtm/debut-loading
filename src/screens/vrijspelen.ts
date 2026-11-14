@@ -8,6 +8,8 @@ import { noteName, octaveOf, pitchClass } from '../dsp/notes';
 import { settings, updateSettings } from '../app/state';
 import { INSTRUMENT_CHOICES, type InstrumentId, type Notation } from '../app/settings';
 import { el } from '../ui/dom';
+import { hashFor } from '../app/router';
+import { mountSinging } from './zingen';
 import { icon } from '../ui/icons';
 
 /** Bereik van het referentiekeyboard (Casio SA-76): F2–C6. */
@@ -220,7 +222,11 @@ export function mountVrijSpelen(app: HTMLElement): () => void {
     neck.append(el('span', 'string-name', ''));
     for (let f = 0; f <= FRETS; f++) neck.append(el('span', FRET_DOTS.has(f) ? (f === 12 ? 'fret-dot double' : 'fret-dot') : 'fret-dot none', ''));
     wrap.append(neck);
-    surface.append(wrap, el('p', 'small play-hint', 'Bovenste lijn = dunste snaar, zoals in gitaartabs op internet. "los" = de snaar zonder vinger.'));
+    const tune = el('a', 'tool-link tune-link');
+    tune.href = hashFor('stemmen');
+    tune.dataset.screen = 'stemmen';
+    tune.append(icon('tuner', 'var(--cyan)', 26), el('span', '', voice === 'gitaar' ? 'Gitaar stemmen' : 'Bas stemmen'));
+    surface.append(tune, wrap, el('p', 'small play-hint', 'Bovenste lijn = dunste snaar, zoals in gitaartabs op internet. "los" = de snaar zonder vinger.'));
     bindPlayable(neck, playNote(voice, voice === 'gitaar' ? 'gitaar' : 'bas'));
     const common: number[] = [];
     for (const b of open) common.push(b, b + 2, b + 3, b + 5, b + 7);
@@ -253,13 +259,7 @@ export function mountVrijSpelen(app: HTMLElement): () => void {
   }
 
   function buildVoice(): () => void {
-    const card = el('section', 'card placeholder');
-    card.append(
-      el('p', 'placeholder-title', 'Zingen komt in blok 7'),
-      el('p', 'muted', 'Dan zie je live welke noot je zingt, en meet de app je zangbereik.'),
-    );
-    surface.append(card);
-    return () => undefined;
+    return mountSinging(surface, (m) => show(m, 'zang'));
   }
 
   const select = (id: InstrumentId): void => {

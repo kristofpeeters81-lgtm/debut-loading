@@ -67,7 +67,7 @@ function check(cond, label) {
 }
 
 /** Eén browserrun met een eigen nep-microfoongeluid. */
-async function run(url, name, parts, steps) {
+async function run(url, name, parts, steps, opts = { hash: '#/luisteroor', ready: '.tabs', start: 'button.big' }) {
   const wav = path.join(OUT, `${name}.wav`);
   writeWav(wav, parts);
   const browser = await puppeteer.launch({
@@ -81,10 +81,12 @@ async function run(url, name, parts, steps) {
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
     await page.setViewport({ width: 800, height: 1280 });
-    await page.goto(`${url}#/luisteroor`, { waitUntil: 'networkidle0' });
-    await page.waitForSelector('button.big', { timeout: 5000 });
-    await page.click('button.big');
-    await page.waitForSelector('.tabs', { timeout: 5000 });
+    await page.goto(`${url}${opts.hash}`, { waitUntil: 'networkidle0' });
+    if (opts.start) {
+      await page.waitForSelector(opts.start, { timeout: 5000 });
+      await page.click(opts.start);
+    }
+    await page.waitForSelector(opts.ready, { timeout: 5000 });
     await steps(page);
     await page.screenshot({ path: path.join(OUT, `${name}.png`), fullPage: true });
   } finally {
@@ -323,6 +325,60 @@ async function main() {
       await page.evaluate(() => [...document.querySelectorAll('.list .item')][6].click());
       check((await waitOk(page, 2, 15000)) === 2, 'keyboard: akkoorden C en Am herkend');
     });
+    // Stemapparaat (blok 7): A-snaar 15 cent te hoog, hoge E-snaar zuiver.
+    const detune = (m, c) => midiToHz(m) * Math.pow(2, c / 1200);
+    await run(
+      url,
+      'stemmen',
+      [pluck([detune(45, 15)], 2.5), pluck([detune(64, 0)], 2.5)],
+      async (page) => {
+        const seen = new Set();
+        const end = Date.now() + 12000;
+        while (Date.now() < end && !(seen.has('A:iets te hoog') && seen.has('E:juist'))) {
+          seen.add(await page.$eval('.tuner', (c) => `${c.querySelector('.tuner-note').textContent}:${c.dataset.state ?? ''}`));
+          await sleep(100);
+        }
+        check(seen.has('A:iets te hoog'), `stemapparaat: A-snaar "iets te hoog" (gezien: ${[...seen].join(', ')})`);
+        check(seen.has('E:juist'), 'stemapparaat: hoge E-snaar "juist"');
+      },
+      { hash: '#/stemmen', ready: '.tuner-strings', start: 'button.big' },
+    );
+    // Zangbereik (blok 7): een stem die A3 en daarna E5 vasthoudt.
+    const voice = (m, sec) => {
+      const n = Math.round(sec * SR);
+      const out = new Float32Array(n);
+      const f = midiToHz(m);
+      for (let i = 0; i < n; i++) {
+        const env = Math.min(1, i / 2000, (n - i) / 2000);
+        out[i] =
+          0.3 * env * (Math.sin((2 * Math.PI * f * i) / SR) + 0.4 * Math.sin((4 * Math.PI * f * i) / SR) + 0.2 * Math.sin((6 * Math.PI * f * i) / SR));
+      }
+      return out;
+    };
+    await run(
+      url,
+      'zangbereik',
+      [voice(57, 1.6), new Float32Array(SR * 0.3), voice(76, 1.6), new Float32Array(SR * 0.3)],
+      async (page) => {
+        await page.click('.play-tabs .chip[data-instrument="zang"]');
+        await page.waitForSelector('.range-card button.pad', { timeout: 3000 });
+        await page.click('.range-card button.pad');
+        let ok = false;
+        const end = Date.now() + 15000;
+        while (Date.now() < end && !ok) {
+          const r = await page.$eval('.range-card', (c) => [c.dataset.low, c.dataset.high]);
+          ok = r[0] === '57' && r[1] === '76';
+          if (!ok) await sleep(250);
+        }
+        check(ok, 'zangbereik: A3 en E5 gemeten');
+        const btns = await page.$$('.range-card button.pad');
+        await btns[1].click();
+        await sleep(200);
+        check((await page.$eval('.range-value', (e) => e.textContent)) === 'A3 – E5', 'zangbereik: toont "A3 – E5" na Klaar');
+        check(await page.$eval('.sing-trail', (c) => !c.hidden), 'zangbereik: toonhoogtelijn zichtbaar');
+      },
+      { hash: '#/vrij-spelen', ready: '.play-tabs', start: null },
+    );
     // Klappen.
     await run(url, 'klappen', Array.from({ length: 8 }, clap), async (page) => {
       await tab(page, 'Klappen');

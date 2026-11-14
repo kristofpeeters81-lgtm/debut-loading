@@ -733,6 +733,140 @@ button:disabled {
   }
 }
 
+.tune-link {
+  margin: 0 0 12px;
+  max-width: 320px;
+}
+
+/* ---------- Stemapparaat (blok 7) ---------- */
+.tuner-tabs {
+  justify-content: flex-start;
+  margin-bottom: 14px;
+}
+
+.tuner {
+  text-align: center;
+}
+
+.tuner-note {
+  font: 900 5rem/1 var(--display);
+  color: var(--text);
+}
+
+.tuner-word {
+  margin-top: 6px;
+  font: 600 1.6rem var(--display);
+  color: var(--muted);
+}
+
+.tuner-word.ok {
+  color: var(--green);
+  text-shadow: 0 0 14px rgba(93, 255, 155, 0.7);
+}
+
+.tuner-word.near {
+  color: var(--yellow);
+}
+
+.tuner-word.far {
+  color: var(--pink);
+}
+
+.tuner-meter {
+  position: relative;
+  height: 56px;
+  max-width: 640px;
+  margin: 22px auto 8px;
+  border-radius: 28px;
+  background: linear-gradient(90deg, rgba(255, 79, 216, 0.35), rgba(255, 228, 92, 0.25) 35%, rgba(93, 255, 155, 0.35) 50%, rgba(255, 228, 92, 0.25) 65%, rgba(255, 79, 216, 0.35));
+}
+
+.tuner-zone {
+  position: absolute;
+  left: 45%;
+  width: 10%;
+  top: 0;
+  bottom: 0;
+  border-left: 2px solid var(--green);
+  border-right: 2px solid var(--green);
+}
+
+.tuner-needle {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: 50%;
+  width: 8px;
+  margin-left: -4px;
+  border-radius: 4px;
+  background: var(--text);
+  transition: left 0.08s linear;
+}
+
+.tuner-needle.ok {
+  background: var(--green);
+  box-shadow: 0 0 18px rgba(93, 255, 155, 0.9);
+}
+
+.tuner-end {
+  position: absolute;
+  top: 100%;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.tuner-end.low {
+  left: 0;
+}
+
+.tuner-end.high {
+  right: 0;
+}
+
+.tuner-advice {
+  margin: 36px 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  min-height: 1.4em;
+}
+
+.tuner-strings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.string-btn {
+  min-width: 64px;
+  min-height: 64px;
+  font: 600 1.3rem var(--display);
+}
+
+.string-btn.on {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ---------- Zingen (blok 7) ---------- */
+.sing-trail {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 40vh, 380px);
+  border-radius: var(--radius);
+  border: 2px solid var(--line);
+  background: var(--panel-2);
+}
+
+.range-value {
+  font: 600 2rem var(--display);
+  color: var(--pink);
+  margin-bottom: 4px;
+}
+
 /* ---------- Klanktest ---------- */
 .pad-row {
   display: flex;

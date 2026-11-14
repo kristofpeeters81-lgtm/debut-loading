@@ -12,7 +12,8 @@ export type ScreenId =
   | 'downloadhoek'
   | 'instellingen'
   | 'luisteroor'
-  | 'klanktest';
+  | 'klanktest'
+  | 'stemmen';
 
 export interface ScreenInfo {
   id: ScreenId;
@@ -33,6 +34,7 @@ export const SCREENS: Record<ScreenId, ScreenInfo> = {
   instellingen: { id: 'instellingen', title: 'Instellingen', icon: 'gear', parent: 'start' },
   luisteroor: { id: 'luisteroor', title: 'Luisteroor', icon: 'ear', parent: 'instellingen' },
   klanktest: { id: 'klanktest', title: 'Klanktest', icon: 'speaker', parent: 'instellingen' },
+  stemmen: { id: 'stemmen', title: 'Stemapparaat', icon: 'tuner', parent: 'vrij-spelen' },
 };
 
 /** Grote knoppen op het startscherm, in deze volgorde. Instellingen zit als tandwiel rechtsboven. */

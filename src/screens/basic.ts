@@ -130,6 +130,7 @@ export function mountSettings(app: HTMLElement, persistence: Persistence): void 
   const toolLinks: [ScreenId, IconName, string][] = [
     ['luisteroor', 'ear', 'Luisteroor: wat hoort de tablet?'],
     ['klanktest', 'speaker', 'Klanktest: alle klanken van de app uitproberen'],
+    ['stemmen', 'tuner', 'Stemapparaat voor gitaar en bas'],
   ];
   for (const [id, ic, text] of toolLinks) {
     const a = el('a', 'tool-link');

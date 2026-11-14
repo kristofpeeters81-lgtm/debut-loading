@@ -16,6 +16,7 @@ import { mountHome, mountPlaceholder, mountSettings } from './screens/basic';
 import { mountLuisteroor } from './screens/luisteroor';
 import { mountKlanktest } from './screens/klanktest';
 import { mountVrijSpelen } from './screens/vrijspelen';
+import { mountStemmen } from './screens/stemmen';
 import { el } from './ui/dom';
 import { icon } from './ui/icons';
 
@@ -75,6 +76,9 @@ function show(id: ScreenId): void {
       break;
     case 'vrij-spelen':
       cleanup = mountVrijSpelen(content);
+      break;
+    case 'stemmen':
+      cleanup = mountStemmen(content);
       break;
     case 'klanktest':
       cleanup = mountKlanktest(content, settings().notation);
