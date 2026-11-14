@@ -4,7 +4,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 | # | Blok | Status | Datum | Notitie |
 |---|---|---|---|---|
-| 1 | [Testpagina "Luisteroor"](STAPPEN-DETAIL.md#blok-1--testpagina-luisteroor) | 🧪 | 2026-11-14 | Werkt op de pc met nep-microfoon; wacht op hosting + tablettest |
+| 1 | [Testpagina "Luisteroor"](STAPPEN-DETAIL.md#blok-1--testpagina-luisteroor) | 🧪 | 2026-11-14 | Live op https://kristofpeeters81-lgtm.github.io/debut-loading/ ; wacht op tablettest |
 | 2 | Projectbasis (PWA, offline, Pages, docs) | ⬜ | | |
 | 3 | Stijl en figuren (wereldtournee, avatars): eerst voorbeelden tonen | ⬜ | | |
 | 4 | Klankmotor (piano, gitaar, bas, drum, metronoom) | ⬜ | | |
@@ -23,4 +23,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** repo `debut-loading` aanmaken + testpagina publiceren (wacht op akkoord) → testen op de tablet → resultaten (schermafbeelding) doorgeven.
+**Volgende actie:** testen op de tablet → resultaten (schermafbeelding) doorgeven.
