@@ -1,10 +1,10 @@
 // Opslag op de tablet zelf (IndexedDB). Niets gaat naar het internet.
 // Vertrokken van de opslag in SingApp (gekopieerd, niet gedeeld).
-// Blok 2: enkel de tabel `kv` (kleine waarden zoals instellingen).
-// Latere blokken voegen tabellen toe (profielen, liedjes, opnames) door DB_VERSION te verhogen.
+// Tabellen: `kv` (kleine waarden zoals instellingen, blok 2), `profiles` (blok 5).
+// Latere blokken voegen tabellen toe (liedjes, opnames) door DB_VERSION te verhogen. Nooit een tabel wissen.
 
 const DB_NAME = 'debut-loading';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -15,6 +15,7 @@ function openDb(): Promise<IDBDatabase> {
       req.onupgradeneeded = () => {
         const db = req.result;
         if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+        if (!db.objectStoreNames.contains('profiles')) db.createObjectStore('profiles', { keyPath: 'id' });
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => {
@@ -50,6 +51,25 @@ export async function kvSet(key: string, value: unknown): Promise<void> {
   const db = await openDb();
   const tx = db.transaction('kv', 'readwrite');
   tx.objectStore('kv').put(value, key);
+  await done(tx);
+}
+
+export async function profilesAll(): Promise<unknown[]> {
+  const db = await openDb();
+  return result(db.transaction('profiles').objectStore('profiles').getAll() as IDBRequest<unknown[]>);
+}
+
+export async function profilePut(profile: { id: string }): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('profiles', 'readwrite');
+  tx.objectStore('profiles').put(profile);
+  await done(tx);
+}
+
+export async function profileDelete(id: string): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('profiles', 'readwrite');
+  tx.objectStore('profiles').delete(id);
   await done(tx);
 }
 

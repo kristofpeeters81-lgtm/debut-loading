@@ -143,6 +143,19 @@ async function appTest() {
     // Staand
     await page.setViewport({ width: 800, height: 1280 });
     await page.goto(url, { waitUntil: 'networkidle0' });
+
+    // Profiel maken (blok 5): bij de eerste start meteen "Jouw profiel"
+    check(await waitFor(async () => (await screenOf(page)) === 'profiel', 3000, 'profiel'), 'profiel: eerste start vraagt een profiel');
+    check(!(await visible(page, '.back')), 'profiel: geen terugknop bij het eerste profiel');
+    check((await page.$$('.avatar-pick')).length === 10, 'profiel: 10 figuren om uit te kiezen');
+    check(await page.$eval('button.big', (b) => b.disabled), 'profiel: Klaar kan pas met een naam');
+    await page.type('#profile-name', 'Sam');
+    await page.click('.avatar-pick[data-character="kat"]');
+    await page.screenshot({ path: path.join(OUT, 'profiel-nieuw.png'), fullPage: true });
+    await page.click('button.big');
+    check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start'), 'profiel: na Klaar naar het startscherm');
+    check((await page.$eval('.who-name', (e) => e.textContent)) === 'Sam', 'profiel: naam rechtsboven op het startscherm');
+
     check((await page.$$('.tile')).length === 4, 'app: startscherm met 4 grote knoppen');
     check((await page.$eval('.logo', (e) => e.textContent)) === 'DEBUTLOADING…', 'app: logo DEBUT LOADING…');
     check((await page.$$('.led-bar .seg')).length === 20, 'app: laadbalk met 20 LED-blokjes');
@@ -241,6 +254,42 @@ async function appTest() {
     await page.click('.back');
     check(await waitFor(async () => (await screenOf(page)) === 'instellingen', 3000, 'terug'), 'klanktest: terug naar instellingen');
     await page.goto(url, { waitUntil: 'networkidle0' });
+
+    // Tweede profiel (blok 5): eigen instrument per profiel, wisselen, kiezen bij de start, verwijderen
+    const onScreen = (id) => waitFor(async () => (await screenOf(page)) === id, 3000, id);
+    const clickProfile = (name) =>
+      page.evaluate((n) => [...document.querySelectorAll('.profile-card')].find((c) => c.textContent.includes(n)).click(), name);
+    await page.click('.who-chip');
+    check(await onScreen('profielen'), 'profiel: figuur rechtsboven opent "Wie speelt er?"');
+    await page.click('.profile-card.add');
+    await onScreen('profiel');
+    await page.type('#profile-name', 'Mila');
+    await page.click('.avatar-pick[data-character="zib"]');
+    await page.click('button.big');
+    await onScreen('start');
+    check((await page.$eval('.who-name', (e) => e.textContent)) === 'Mila', 'profiel: tweede profiel actief');
+    await page.click('.chip[data-instrument="drum"]');
+    await sleep(200);
+    await page.click('.who-chip');
+    await onScreen('profielen');
+    check((await page.$$('.profile-card')).length === 3, 'profiel: 2 profielen + "Nieuw profiel"');
+    await page.screenshot({ path: path.join(OUT, 'profielen.png'), fullPage: true });
+    await clickProfile('Sam');
+    await onScreen('start');
+    check((await page.$eval('.stage .avatar', (e) => e.dataset.instrument)) === 'keyboard', 'profiel: Sam houdt zijn eigen instrument');
+    check((await page.$eval('.stage .avatar', (e) => e.dataset.character)) === 'kat', 'profiel: podium toont Sams figuur (Kat)');
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.reload({ waitUntil: 'networkidle0' });
+    check(await onScreen('profielen'), 'profiel: met 2 profielen vraagt de app bij de start wie er speelt');
+    await page.click('.profile-tools button');
+    await clickProfile('Mila');
+    await onScreen('profiel');
+    await page.click('button.danger');
+    await page.click('button.danger');
+    check(await onScreen('profielen'), 'profiel: verwijderen (twee keer tikken)');
+    check((await page.$$('.profile-card')).length === 2, 'profiel: Mila is weg');
+    await clickProfile('Sam');
+    await onScreen('start');
 
     // Instelling bewaren en na herladen terug
     await tapScreen(page, 'instellingen');

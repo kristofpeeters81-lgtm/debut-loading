@@ -114,6 +114,22 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 2. Voelt het meteen aan bij het tikken (geen merkbare vertraging)?
 3. Metronoom: blijft hij gelijkmatig tikken, ook bij het verschuiven van het tempo?
 4. Speel C4 in de Klanktest en kijk in Luisteroor (op een tweede toestel) of de tablet zuiver is (optioneel).
+## Blok 5 — Profielen
+
+**Gebouwd (2026-11-14):** de 10 avatars zijn goedgekeurd door de gebruiker.
+- Eerste start: meteen **"Jouw profiel"**: naam (max. 14 tekens) + figuur kiezen uit 10, zonder terugknop (eerst een profiel).
+- Meerdere profielen: bij elke start van de app **"Wie speelt er?"**. Met één profiel gaat de app meteen naar het startscherm.
+- Op het startscherm linksboven: figuur + naam van wie speelt. Tik = van speler wisselen. Het podium toont de eigen figuur.
+- Per profiel bewaard: figuur, naam, **instrument**, **zangbereik** (later ook voortgang en sterren). Voor de hele tablet: notennamen,
+  gevoeligheid van de microfoon. Het eerste profiel neemt het instrument/zangbereik over dat al gekozen was.
+- "Profielen aanpassen": naam/figuur wijzigen of verwijderen (twee keer tikken, met de naam erbij: geen per-ongeluk-verwijderen).
+- Opslag: IndexedDB versie 2, tabel `profiles` (`src/storage/db.ts`); model en controles in `src/app/profile.ts`;
+  `settings()` in `src/app/state.ts` geeft instrument en zangbereik van het actieve profiel, zodat de schermen niets merken.
+
+**Getest:** unit (namen opkuisen, kapotte opslag, volgorde) + e2e (eerste profiel, tweede profiel met eigen instrument,
+wisselen, "Wie speelt er?" bij herstart, verwijderen).
+
+**Nog te testen op de tablet:** profiel maken voor elk gezinslid; wisselen; app sluiten en openen ("Wie speelt er?").
 ## Blok 6 — Vrij spelen
 
 **Gebouwd (2026-11-14)** in `src/screens/vrijspelen.ts`, met de klankmotor van blok 4:

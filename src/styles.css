@@ -461,6 +461,133 @@ button:disabled {
   border-color: var(--cyan);
 }
 
+/* ---------- Profielen (blok 5) ---------- */
+.who-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 4px 18px 4px 4px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.who-chip[hidden] {
+  display: none;
+}
+
+.who-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--panel-2);
+  border: 2px solid var(--pink);
+}
+
+.who-avatar .avatar {
+  width: 120%;
+  height: auto;
+  margin: -4px 0 0 -10%;
+}
+
+.profile-grid,
+.avatar-picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.profile-card,
+.avatar-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 10px 14px;
+  border-radius: var(--radius);
+  border: 2px solid var(--line);
+  background: var(--panel);
+}
+
+.profile-card .avatar,
+.avatar-pick .avatar {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+}
+
+.profile-card.current {
+  border-color: var(--pink);
+}
+
+.avatar-pick.on {
+  border-color: var(--cyan);
+  background: var(--panel-2);
+  box-shadow: var(--glow-cyan);
+}
+
+.profile-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.profile-card.add {
+  justify-content: center;
+  border-style: dashed;
+  min-height: 200px;
+}
+
+.profile-plus {
+  font: 900 3.5rem/1 var(--display);
+  color: var(--cyan);
+}
+
+.profile-edit {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.profile-tools,
+.profile-delete {
+  margin-top: 18px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 10px;
+  font: 600 1.1rem var(--display);
+}
+
+.name-input {
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font: 800 1.4rem var(--body);
+}
+
+.name-input:focus {
+  border-color: var(--cyan);
+  outline: none;
+}
+
+button.danger {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
 /* ---------- Vrij spelen (blok 6) ---------- */
 .play-head {
   display: flex;

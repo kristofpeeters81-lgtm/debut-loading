@@ -1,7 +1,7 @@
 // Startscherm, lege schermen ("komt in blok X") en instellingen. Stijl A · Neon Stage (blok 3).
 
 import { SCREENS, hashFor, type ScreenId, type ScreenInfo } from '../app/router';
-import { settings, updateSettings } from '../app/state';
+import { activeProfile, settings, updateSettings } from '../app/state';
 import { INSTRUMENT_CHOICES, type Notation } from '../app/settings';
 import type { Persistence } from '../storage/db';
 import { avatarSvg } from '../ui/avatar';
@@ -62,7 +62,7 @@ export function mountHome(app: HTMLElement): void {
   chips.setAttribute('role', 'radiogroup');
   chips.setAttribute('aria-label', 'Kies je instrument');
   const renderStage = (): void => {
-    figure.replaceChildren(avatarSvg(settings().instrument, { stage: true }));
+    figure.replaceChildren(avatarSvg(settings().instrument, { stage: true, character: activeProfile()?.character }));
     for (const c of chips.querySelectorAll<HTMLButtonElement>('.chip')) {
       const on = c.dataset.instrument === settings().instrument;
       c.classList.toggle('on', on);

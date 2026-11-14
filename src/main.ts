@@ -9,7 +9,7 @@ import '@fontsource/inter/latin-600.css';
 import '@fontsource/inter/latin-800.css';
 import './styles.css';
 import { NavStack, SCREENS, hashFor, parseHash, type ScreenId } from './app/router';
-import { loadSettings, settings, updateSettings } from './app/state';
+import { activeProfile, loadSettings, needsProfileChoice, settings, updateSettings } from './app/state';
 import { setupOfflineAndUpdates } from './app/update';
 import { requestPersistence, type Persistence } from './storage/db';
 import { mountHome, mountPlaceholder, mountSettings } from './screens/basic';
@@ -17,6 +17,8 @@ import { mountLuisteroor } from './screens/luisteroor';
 import { mountKlanktest } from './screens/klanktest';
 import { mountVrijSpelen } from './screens/vrijspelen';
 import { mountStemmen } from './screens/stemmen';
+import { mountProfileChooser, mountProfileEditor } from './screens/profielen';
+import { avatarSvg } from './ui/avatar';
 import { el } from './ui/dom';
 import { icon } from './ui/icons';
 
@@ -35,7 +37,11 @@ gear.href = hashFor('instellingen');
 gear.dataset.screen = 'instellingen';
 gear.setAttribute('aria-label', 'Instellingen');
 gear.append(icon('gear', 'var(--muted)', 26));
-bar.append(backBtn, title, gear);
+// Op het startscherm: wie speelt er (figuur + naam). Tik = van speler wisselen.
+const who = el('a', 'who-chip');
+who.href = hashFor('profielen');
+who.dataset.screen = 'profielen';
+bar.append(backBtn, title, who, gear);
 
 const banner = el('div', 'update-banner');
 banner.hidden = true;
@@ -47,22 +53,45 @@ let cleanup: (() => void) | null = null;
 let persistence: Persistence = 'onbekend';
 
 function show(id: ScreenId): void {
+  // Eerst weten wie er speelt: geen profiel → profiel maken; meerdere → kiezen.
+  const choice = needsProfileChoice();
+  if (id === 'start' && choice) {
+    location.replace(hashFor(choice === 'nieuw' ? 'profiel' : 'profielen'));
+    return;
+  }
+
   cleanup?.();
   cleanup = null;
   content.replaceChildren();
   window.scrollTo(0, 0);
 
   const info = SCREENS[id];
-  // Op het startscherm staat het grote logo; daar enkel het tandwiel rechtsboven.
+  // Op het startscherm staat het grote logo; daar enkel wie er speelt + het tandwiel rechtsboven.
   title.textContent = id === 'start' ? '' : info.title;
   title.hidden = id === 'start';
-  backBtn.hidden = info.parent === null;
+  backBtn.hidden = info.parent === null || ((id === 'profiel' || id === 'profielen') && choice !== null);
   gear.hidden = id !== 'start';
+  who.hidden = id !== 'start';
   document.body.dataset.screen = id;
 
   switch (id) {
-    case 'start':
+    case 'start': {
+      const p = activeProfile();
+      who.replaceChildren();
+      if (p) {
+        const face = el('span', 'who-avatar');
+        face.append(avatarSvg(p.instrument, { character: p.character, glow: false }));
+        who.append(face, el('span', 'who-name', p.name));
+        who.setAttribute('aria-label', `${p.name} speelt. Tik om van speler te wisselen.`);
+      }
       mountHome(content);
+      break;
+    }
+    case 'profielen':
+      mountProfileChooser(content);
+      break;
+    case 'profiel':
+      mountProfileEditor(content);
       break;
     case 'instellingen':
       mountSettings(content, persistence);
