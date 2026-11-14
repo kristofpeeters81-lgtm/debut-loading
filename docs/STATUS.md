@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) akkoord om blok 9 te pushen; (2) testen op de tablet (extra lessen + spel met vallende noten); (3) daarna blok 10 (MIDI via de downloadhoek): eerst de downloadsite uitzoeken en voorleggen.
+**Volgende actie:** (1) blok 9 staat live; (2) testen op de tablet (extra lessen + spel met vallende noten); (3) daarna blok 10 (MIDI via de downloadhoek): eerst de downloadsite uitzoeken en voorleggen.
