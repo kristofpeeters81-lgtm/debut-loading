@@ -16,7 +16,9 @@ describe('profielen', () => {
       instrument: 'bas',
       voiceRange: null,
       createdAt: 5,
+      stars: {},
     });
+    expect(sanitizeProfile({ id: 'p9', name: 'X', stars: { a: 2, b: 7, c: 0, d: 'veel' } })?.stars).toEqual({ a: 2, b: 3 });
   });
 
   it('vult onbekende waarden aan met veilige standaardwaarden', () => {
@@ -34,8 +36,8 @@ describe('profielen', () => {
 
   it('houdt de volgorde waarin profielen gemaakt zijn', () => {
     const list = [
-      { id: 'b', name: 'B', character: 'kai' as const, instrument: 'drum' as const, voiceRange: null, createdAt: 20 },
-      { id: 'a', name: 'A', character: 'nova' as const, instrument: 'keyboard' as const, voiceRange: null, createdAt: 10 },
+      { id: 'b', name: 'B', character: 'kai' as const, instrument: 'drum' as const, voiceRange: null, createdAt: 20, stars: {} },
+      { id: 'a', name: 'A', character: 'nova' as const, instrument: 'keyboard' as const, voiceRange: null, createdAt: 10, stars: {} },
     ];
     expect(sortProfiles(list).map((p) => p.id)).toEqual(['a', 'b']);
   });

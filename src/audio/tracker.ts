@@ -8,6 +8,8 @@ export interface PitchFrame {
   /** Gemeten toonhoogte in Hz, of null bij stilte/geen duidelijke toon. */
   hz: number | null;
   level: number;
+  /** Luidheid van het nieuwste stukje (±10 ms), om een nieuwe aanslag te zien. */
+  recentLevel: number;
   timeMs: number;
 }
 
@@ -34,7 +36,7 @@ export async function startTracker(
     mic.pitch.getFloatTimeDomainData(buf);
     const level = rms(buf);
     const p = level >= gate ? detectPitch(buf, mic.ctx.sampleRate, range.minHz, range.maxHz) : null;
-    onFrame({ hz: p ? p.hz : null, level, timeMs: now });
+    onFrame({ hz: p ? p.hz : null, level, recentLevel: rms(buf, 512), timeMs: now });
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);

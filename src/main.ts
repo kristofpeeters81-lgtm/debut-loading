@@ -18,6 +18,8 @@ import { mountKlanktest } from './screens/klanktest';
 import { mountVrijSpelen } from './screens/vrijspelen';
 import { mountStemmen } from './screens/stemmen';
 import { mountProfileChooser, mountProfileEditor } from './screens/profielen';
+import { mountLessen } from './screens/lessen';
+import { mountLes } from './screens/les';
 import { avatarSvg } from './ui/avatar';
 import { el } from './ui/dom';
 import { icon } from './ui/icons';
@@ -87,6 +89,12 @@ function show(id: ScreenId): void {
       mountHome(content);
       break;
     }
+    case 'lessen':
+      mountLessen(content);
+      break;
+    case 'les':
+      cleanup = mountLes(content);
+      break;
     case 'profielen':
       mountProfileChooser(content);
       break;

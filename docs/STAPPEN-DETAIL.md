@@ -114,6 +114,30 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 2. Voelt het meteen aan bij het tikken (geen merkbare vertraging)?
 3. Metronoom: blijft hij gelijkmatig tikken, ook bij het verschuiven van het tempo?
 4. Speel C4 in de Klanktest en kijk in Luisteroor (op een tweede toestel) of de tablet zuiver is (optioneel).
+## Blok 8 — Eerste lessen (keyboard)
+
+**Keuze gebruiker (2026-11-14):** eerst keyboard, spelenderwijs, zo weinig mogelijk uitleg. Plan goedgekeurd.
+
+**Gebouwd (2026-11-14):**
+- Inhoud in `src/lessons/content.ts` (6 lessen, liedjes uit het publiek domein):
+  1 Waar is de C? · 2 C D E (echo) · 3 F en G erbij (echo) · 4 Vader Jacob · 5 Altijd is Kortjakje ziek (+ A) · 6 Ode an die Freude.
+- Drie soorten opdrachten: **toets oplichten** (speel die letter), **echo** (de app speelt voor, jij speelt na; "Nog eens horen"),
+  **liedje** (noot per noot, de app wacht op jou; lettergrepen erbij).
+- Speel op de **echte Casio** (de app luistert via de microfoon) of **tik op het keyboard op het scherm**.
+  Enkel de letter telt, niet de octaaf. Terwijl de app zelf speelt (en kort erna) luistert ze niet, zodat ze zichzelf niet hoort.
+- Dezelfde noot twee keer na elkaar (C C G G) telt dankzij een nieuwe aanslag of een korte stilte (`src/lessons/noteEvents.ts`).
+- **Nooit verliezen:** foute noot = "Bijna! Probeer nog eens." Na 2 foutjes licht de juiste toets geel op (hint).
+  Sterren: 0–2 foutjes = 3, 3–6 = 2, meer = 1. Beste resultaat per les wordt bewaard **per profiel**.
+- Lessenlijst als pad met sterren; de eerste les zonder sterren is "Volgende". Alles blijft vrij te kiezen.
+- **De laadbalk op het startscherm** = verzamelde sterren / alle te verdienen sterren.
+- Na een liedje speelt de app het hele liedje als beloning.
+- Lesmotor (pure logica): `src/lessons/run.ts`. Schermen: `src/screens/lessen.ts`, `src/screens/les.ts`.
+
+**Getest:** unit (lesinhoud past op de Casio, lesmotor, sterren, notenherkenning met 60 metingen/s, C C G G)
++ e2e (les 1 met tikken en een foutje → 3 sterren, laadbalk vult, "Vader Jacob" volledig via de nep-microfoon).
+
+**Nog te testen op de tablet (met de Casio):** hoort de app elke noot? Ook twee keer dezelfde noot? Te gevoelig/te traag?
+Is het leuk en duidelijk zonder uitleg?
 ## Blok 5 — Profielen
 
 **Gebouwd (2026-11-14):** de 10 avatars zijn goedgekeurd door de gebruiker.

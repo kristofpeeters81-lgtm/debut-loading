@@ -12,6 +12,8 @@ export interface Profile {
   instrument: InstrumentId;
   voiceRange: { low: number; high: number } | null;
   createdAt: number;
+  /** Beste aantal sterren per les (1–3). */
+  stars: Record<string, number>;
 }
 
 export const MAX_NAME = 14;
@@ -40,7 +42,13 @@ export function sanitizeProfile(raw: unknown): Profile | null {
       ? { low: Math.round(vr.low), high: Math.round(vr.high) }
       : null;
   const createdAt = typeof r.createdAt === 'number' ? r.createdAt : 0;
-  return { id: r.id, name, character, instrument, voiceRange, createdAt };
+  const stars: Record<string, number> = {};
+  if (typeof r.stars === 'object' && r.stars !== null) {
+    for (const [k, v] of Object.entries(r.stars as Record<string, unknown>)) {
+      if (typeof v === 'number' && v >= 1) stars[k] = Math.min(3, Math.round(v));
+    }
+  }
+  return { id: r.id, name, character, instrument, voiceRange, createdAt, stars };
 }
 
 /** Profielen in vaste volgorde: wie eerst gemaakt werd, staat eerst. */

@@ -15,7 +15,8 @@ export type ScreenId =
   | 'klanktest'
   | 'stemmen'
   | 'profielen'
-  | 'profiel';
+  | 'profiel'
+  | 'les';
 
 export interface ScreenInfo {
   id: ScreenId;
@@ -30,7 +31,7 @@ export interface ScreenInfo {
 export const SCREENS: Record<ScreenId, ScreenInfo> = {
   start: { id: 'start', title: 'DEBUT LOADING…', icon: 'music', parent: null },
   'vrij-spelen': { id: 'vrij-spelen', title: 'Vrij spelen', icon: 'keys', parent: 'start' },
-  lessen: { id: 'lessen', title: 'Lessen', icon: 'star', parent: 'start', comesIn: 'blok 8' },
+  lessen: { id: 'lessen', title: 'Lessen', icon: 'star', parent: 'start' },
   liedjes: { id: 'liedjes', title: 'Liedjes', icon: 'music', parent: 'start', comesIn: 'blok 9' },
   downloadhoek: { id: 'downloadhoek', title: 'Downloadhoek', icon: 'download', parent: 'start', comesIn: 'blok 10' },
   instellingen: { id: 'instellingen', title: 'Instellingen', icon: 'gear', parent: 'start' },
@@ -39,6 +40,7 @@ export const SCREENS: Record<ScreenId, ScreenInfo> = {
   stemmen: { id: 'stemmen', title: 'Stemapparaat', icon: 'tuner', parent: 'vrij-spelen' },
   profielen: { id: 'profielen', title: 'Wie speelt er?', icon: 'star', parent: 'start' },
   profiel: { id: 'profiel', title: 'Jouw profiel', icon: 'star', parent: 'profielen' },
+  les: { id: 'les', title: 'Les', icon: 'star', parent: 'lessen' },
 };
 
 /** Grote knoppen op het startscherm, in deze volgorde. Instellingen zit als tandwiel rechtsboven. */

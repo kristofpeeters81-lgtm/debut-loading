@@ -25,6 +25,11 @@
   box-sizing: border-box;
 }
 
+/* Verborgen is verborgen, ook als een klasse `display` zet. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   background: var(--bg);
@@ -586,6 +591,265 @@ button:disabled {
 button.danger {
   border-color: var(--pink);
   color: var(--pink);
+}
+
+/* ---------- Lessen (blok 8) ---------- */
+.lessons-intro {
+  margin: 0 0 14px;
+}
+
+.lesson-path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lesson-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  text-align: left;
+  border-radius: var(--radius);
+}
+
+.lesson-card.next {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.lesson-num {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--pink);
+  font: 600 1.2rem var(--display);
+  color: var(--pink);
+}
+
+.lesson-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lesson-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.lesson-goal {
+  color: var(--muted);
+}
+
+.lesson-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.lesson-badge {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--cyan);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.star-row {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.lesson-intro,
+.lesson-end {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 20px;
+}
+
+.lesson-intro-title,
+.lesson-end-title {
+  font: 900 clamp(1.8rem, 4vw, 2.6rem) var(--display);
+  color: #fff;
+  text-shadow: 0 0 16px rgba(63, 240, 255, 0.7);
+}
+
+.lesson-intro-goal {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--pink);
+  font-weight: 800;
+}
+
+.lesson-intro .big,
+.lesson-end .pad-row {
+  max-width: 520px;
+  width: 100%;
+}
+
+.lesson-end .tool-link {
+  justify-content: center;
+  margin: 0;
+}
+
+.lesson-progress {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--line-soft);
+  overflow: hidden;
+}
+
+.lesson-progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--pink);
+  box-shadow: 0 0 10px rgba(255, 79, 216, 0.8);
+  transition: width 0.3s ease;
+}
+
+.lesson-stage {
+  text-align: center;
+  min-height: 210px;
+}
+
+.lesson-prompt {
+  font: 600 1.5rem var(--display);
+  color: var(--muted);
+  min-height: 1.6em;
+}
+
+.lesson-big {
+  font: 900 clamp(3.5rem, 9vw, 5.5rem) / 1.05 var(--display);
+  min-height: 1.05em;
+  text-shadow: 0 0 18px currentColor;
+}
+
+.lesson-seq {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.seq-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+}
+
+.seq-dot.done {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.seq-note {
+  min-width: 40px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.seq-note.done {
+  opacity: 0.4;
+}
+
+.seq-note.now {
+  color: var(--text);
+  transform: scale(1.15);
+}
+
+.lesson-feedback {
+  min-height: 1.6em;
+  margin-top: 8px;
+  font: 600 1.3rem var(--display);
+}
+
+.lesson-feedback.ok {
+  color: var(--green);
+}
+
+.lesson-feedback.wrong {
+  color: var(--yellow);
+}
+
+.lesson-again {
+  margin-top: 10px;
+  max-width: 320px;
+}
+
+.lesson-kb {
+  height: clamp(170px, 30vh, 260px);
+  margin-top: 16px;
+}
+
+.key.target {
+  background: var(--cyan) !important;
+  box-shadow: 0 0 26px rgba(63, 240, 255, 0.95);
+  animation: target-pulse 1s ease-in-out infinite;
+}
+
+.key.hint {
+  background: var(--yellow) !important;
+}
+
+@keyframes target-pulse {
+  50% {
+    box-shadow: 0 0 8px rgba(63, 240, 255, 0.5);
+  }
+}
+
+.key.flash-ok {
+  animation: flash-ok 0.4s ease-out;
+}
+
+.key.flash-wrong {
+  animation: flash-wrong 0.4s ease-out;
+}
+
+.key.flash-demo {
+  animation: flash-demo 0.5s ease-out;
+}
+
+@keyframes flash-ok {
+  from {
+    background: var(--green);
+  }
+}
+
+@keyframes flash-wrong {
+  from {
+    background: var(--yellow);
+  }
+}
+
+@keyframes flash-demo {
+  from {
+    background: var(--pink);
+  }
+}
+
+.lesson-mic {
+  text-align: center;
 }
 
 /* ---------- Vrij spelen (blok 6) ---------- */

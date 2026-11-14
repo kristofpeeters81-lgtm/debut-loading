@@ -95,6 +95,20 @@ export async function saveProfile(input: { id?: string; name: string; character:
   return p;
 }
 
+/** Sterren van een les bewaren bij het actieve profiel (het beste resultaat blijft). */
+export async function saveStars(lessonId: string, stars: number): Promise<void> {
+  const p = activeProfile();
+  if (!p) return;
+  const best = Math.max(p.stars[lessonId] ?? 0, stars);
+  const next: Profile = { ...p, stars: { ...p.stars, [lessonId]: best } };
+  profiles = profiles.map((x) => (x.id === p.id ? next : x));
+  try {
+    await profilePut(next);
+  } catch {
+    // niet bewaard op de tablet: blijft enkel in deze sessie
+  }
+}
+
 export async function removeProfile(id: string): Promise<void> {
   await profileDelete(id);
   profiles = profiles.filter((p) => p.id !== id);

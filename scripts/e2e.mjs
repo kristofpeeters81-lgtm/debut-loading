@@ -255,6 +255,33 @@ async function appTest() {
     check(await waitFor(async () => (await screenOf(page)) === 'instellingen', 3000, 'terug'), 'klanktest: terug naar instellingen');
     await page.goto(url, { waitUntil: 'networkidle0' });
 
+    // Lessen (blok 8): les 1 met tikken op het scherm (deze browser heeft geen microfoon)
+    check(await tapScreen(page, 'lessen'), 'lessen: opent');
+    check((await page.$$('.lesson-card')).length === 6, 'lessen: 6 lessen');
+    check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-1-c', 'lessen: les 1 is "Volgende"');
+    await page.screenshot({ path: path.join(OUT, 'lessen.png'), fullPage: true });
+    await page.click('.lesson-card[data-lesson="kb-1-c"]');
+    await waitFor(async () => (await screenOf(page)) === 'les', 3000, 'les');
+    await page.click('.lesson-intro button.big');
+    await sleep(300);
+    const tapKey = async (m) => {
+      await page.click(`.lesson-kb .key[data-midi="${m}"]`);
+      await sleep(250);
+    };
+    await tapKey(62); // fout: D in plaats van C
+    check((await page.$eval('.lesson-feedback', (e) => e.textContent)).includes('Bijna'), 'les: foute noot → "Bijna! Probeer nog eens."');
+    await page.screenshot({ path: path.join(OUT, 'les-bezig.png') });
+    for (const m of [60, 72, 60, 62, 64]) await tapKey(m);
+    check(await waitFor(() => visible(page, '.lesson-end'), 3000, 'einde les'), 'les: les 1 uitgespeeld');
+    check((await page.$eval('.lesson-end', (e) => e.dataset.stars)) === '3', 'les: 1 foutje = nog altijd 3 sterren');
+    await page.screenshot({ path: path.join(OUT, 'les-einde.png') });
+    await page.click('.lesson-end .lesson-back');
+    await waitFor(async () => (await screenOf(page)) === 'lessen', 3000, 'lessen');
+    check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-2-cde', 'lessen: les 2 is nu "Volgende"');
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+    check((await page.$$('.led-bar .seg.on')).length === 3, 'lessen: 3 sterren vullen de laadbalk (3 van 20 blokjes)');
+
     // Tweede profiel (blok 5): eigen instrument per profiel, wisselen, kiezen bij de start, verwijderen
     const onScreen = (id) => waitFor(async () => (await screenOf(page)) === id, 3000, id);
     const clickProfile = (name) =>
@@ -427,6 +454,31 @@ async function main() {
         check(await page.$eval('.sing-trail', (c) => !c.hidden), 'zangbereik: toonhoogtelijn zichtbaar');
       },
       { hash: '#/vrij-spelen', ready: '.play-tabs', start: null },
+    );
+    // Les "Vader Jacob" (blok 8) helemaal gespeeld via de microfoon (keyboardachtige tonen, met stiltes ertussen).
+    const jacob = [60, 62, 64, 60, 60, 62, 64, 60, 64, 65, 67, 64, 65, 67];
+    const song = [];
+    for (const m of jacob) song.push(pluck([midiToHz(m)], 0.45), new Float32Array(Math.round(SR * 0.12)));
+    song.push(new Float32Array(SR));
+    await run(
+      url,
+      'les-jacob',
+      song,
+      async (page) => {
+        await page.click('.lesson-card[data-lesson="kb-4-jacob"]');
+        await page.waitForSelector('.lesson-intro button.big', { timeout: 3000 });
+        await page.click('.lesson-intro button.big');
+        let done = false;
+        const end = Date.now() + 30000;
+        while (Date.now() < end && !done) {
+          done = await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false);
+          if (!done) await sleep(300);
+        }
+        check(done, 'les via microfoon: "Vader Jacob" helemaal herkend');
+        const stars = await page.$eval('.lesson-end', (e) => e.dataset.stars).catch(() => '?');
+        console.log(`  (sterren via microfoon: ${stars})`);
+      },
+      { hash: '#/lessen', ready: '.lesson-path', start: null },
     );
     // Klappen.
     await run(url, 'klappen', Array.from({ length: 8 }, clap), async (page) => {

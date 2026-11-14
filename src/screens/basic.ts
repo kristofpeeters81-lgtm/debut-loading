@@ -5,6 +5,7 @@ import { activeProfile, settings, updateSettings } from '../app/state';
 import { INSTRUMENT_CHOICES, type Notation } from '../app/settings';
 import type { Persistence } from '../storage/db';
 import { avatarSvg } from '../ui/avatar';
+import { LESSONS, MAX_STARS } from '../lessons/content';
 import { el } from '../ui/dom';
 import { icon, type IconName } from '../ui/icons';
 
@@ -36,9 +37,14 @@ export function mountHome(app: HTMLElement): void {
   const hero = el('section', 'hero');
   const logo = el('h1', 'logo');
   logo.append(el('span', 'logo-debut', 'DEBUT'), el('span', 'logo-loading', 'LOADING…'));
-  const progress = 0; // echte voortgang per profiel komt in blok 5
+  // Voortgang = verzamelde sterren van dit profiel t.o.v. alle sterren die te verdienen zijn.
+  const stars = Object.values(activeProfile()?.stars ?? {}).reduce((a, b) => a + b, 0);
+  const progress = Math.min(1, stars / (LESSONS.length * MAX_STARS));
   const meta = el('div', 'led-meta');
-  meta.append(el('span', '', `${Math.round(progress * 100)}% geladen`), el('span', '', 'Je tour begint in je slaapkamer'));
+  meta.append(
+    el('span', '', `${Math.round(progress * 100)}% geladen`),
+    el('span', '', stars ? `${stars} ${stars === 1 ? 'ster' : 'sterren'} verzameld` : 'Je tour begint in je slaapkamer'),
+  );
   hero.append(el('p', 'eyebrow', 'Van slaapkamer tot wereldtournee'), logo, loadingBar(progress), meta);
 
   // Hoofdknoppen
