@@ -25,10 +25,24 @@
 4. Zingen: bereik + 3 s een toon vasthouden.
 5. Klappen: 8 keer.
 
-**Beslissingen die van het resultaat afhangen:**
-- Gitaar niet goed hoorbaar → plan B: inplugversterker → USB-C-adapter → tablet.
-- Akkoorden onbetrouwbaar → in de lessen akkoorden niet streng controleren (enkel noten één voor één).
-- Octaaffouten bij bas → zoekbereik of boventoonaanpak bijstellen.
+**Resultaten tablettest (2026-11-14, samplerate 48000 Hz, gevoeligheid 60):**
+- Keyboard (klein Casio-keyboard op batterijen, het meest gebruikte): C3, C4, E4, G4, C5 ✅ (−3 tot +1 cent).
+  C6 ❌: die toets bestaat niet op dit keyboard (de app hoorde C3). Akkoorden C en Am ✅, maar Am pas na 3 verschillende posities.
+  Het grotere keyboard klinkt minder zuiver en werkt enkel met een stroomadapter → **het kleine Casio-keyboard is de referentie**.
+- Elektrische gitaar **zonder versterker**: alle 6 snaren ✅ + Em ✅. Alle snaren te hoog gestemd (+14 tot +44 cent).
+- Akoestische bas: alle 4 snaren ✅, ook E1 (+1 tot +8 cent). Geen octaaffouten.
+- Zingen (volwassen stem): bereik G#2–A3, A#2 3 s vastgehouden ✅.
+- Klappen: 8 van 8 ✅.
+
+**Beslissingen:**
+- **Microfoon volstaat voor alle instrumenten.** Geen USB-C-adapter nodig; plan B vervalt.
+- **Akkoorden mild controleren:** een akkoord telt als goed zodra het één keer herkend wordt binnen een paar seconden,
+  er is altijd een knop "verder", en een gemist akkoord kost niets. Losse noten mogen streng (die werken zeer betrouwbaar).
+- **Keyboardinhoud moet passen op het kleine Casio-keyboard** (geen C6). Exact bereik nog op te vragen (laagste en hoogste toets).
+- **De gitaar staat vals** → het stemapparaat (blok 7) komt vóór de eerste lessen (blok 8); dat zit al juist in de volgorde.
+  Lessen controleren de noot op letter, niet op cent, zodat een iets valse snaar geen fout geeft.
+- Bas: zoekbereik 35–400 Hz blijft zoals het is.
+- Zangbereik verschilt sterk per persoon (deze test was een volwassen stem) → bereik per profiel meten (blok 7).
 
 ## Blok 10 — MIDI laden via de downloadhoek
 

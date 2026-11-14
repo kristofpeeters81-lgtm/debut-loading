@@ -4,7 +4,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 | # | Blok | Status | Datum | Notitie |
 |---|---|---|---|---|
-| 1 | [Testpagina "Luisteroor"](STAPPEN-DETAIL.md#blok-1--testpagina-luisteroor) | 🧪 | 2026-11-14 | Live op https://kristofpeeters81-lgtm.github.io/debut-loading/ ; wacht op tablettest |
+| 1 | [Testpagina "Luisteroor"](STAPPEN-DETAIL.md#blok-1--testpagina-luisteroor) | ✅ | 2026-11-14 | Getest op de tablet: microfoon volstaat voor alle instrumenten, geen adapter nodig. Zie resultaten. |
 | 2 | Projectbasis (PWA, offline, Pages, docs) | ⬜ | | |
 | 3 | Stijl en figuren (wereldtournee, avatars): eerst voorbeelden tonen | ⬜ | | |
 | 4 | Klankmotor (piano, gitaar, bas, drum, metronoom) | ⬜ | | |
@@ -23,4 +23,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** testen op de tablet → resultaten (schermafbeelding) doorgeven.
+**Volgende actie:** bereik van het kleine Casio-keyboard doorgeven (laagste en hoogste toets) + vragen over blok 2 beantwoorden → daarna "go" voor blok 2.
