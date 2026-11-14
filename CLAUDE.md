@@ -25,6 +25,7 @@ gaan voor drillen.
   de app zelf zoekt niets online. De downloadhoek moet zo duidelijk zijn (stappenplan met prentjes) dat de dochter het zelf kan:
   uitleg in **heel simpele taal (verstaanbaar voor een 10-jarige)** + een **vaste link naar één betrouwbare downloadsite**
   (opent in Chrome), zodat ze geen rommel binnenhaalt. Welke site dat wordt: uitzoeken en voorleggen bij blok 10.
+- **Naspeelstudio (blok 11):** mp3 lokaal laden, trager afspelen, melodie meespelen → liedje. mp3's blijven op de tablet.
 - **MIDI-bestanden van de gebruiker staan in `midi-lokaal/`** (genegeerd door git, ook `*.mid`/`*.midi` overal).
   Enkel om de MIDI-functie lokaal te bouwen en te testen. **Nooit committen, nooit in `public/` of `dist/`**:
   de repo en de website zijn openbaar en het zijn beschermde liedjes. Op de tablet laadt ze ze zelf via de downloadhoek.

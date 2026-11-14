@@ -92,6 +92,16 @@ updatemelding → tik → nieuwe versie) + de 8 Luisteroor-controles met nep-mic
   (`navigator.storage.persist()`), zodat Android de gegevens niet zomaar wist.
 - Tests: unit-tests voor router en opslag; e2e: app opent, navigatie werkt, Luisteroor werkt nog, offline herladen werkt.
 
+## Blok 3 — Stijl en figuren (wensen, nog niet gebouwd)
+
+- Eerst 2 à 3 visuele richtingen tonen als voorbeeldschermen (startscherm, spelscherm, logo met laadbalk). Pas inbouwen na akkoord.
+- Spelscherm in de richting van een ritmespel (noten komen naar een lijn toe), maar op het **echte instrument**:
+  keyboard = noten vallen op de juiste toets; gitaar/bas = banen per snaar met fretnummer; drum = banen per pad;
+  zingen = toonhoogtelijn. Geen "game over": gemiste noten kosten niets. Eigen stijl, geen kopie van een bestaand spel.
+- **Avatars met hun instrument (wens 2026-11-14):** de avatar bespeelt het instrument dat gekozen is
+  (keyboard, gitaar, bas, drum, microfoon). In de bandmodus (blok 12) staan de avatars samen op het podium.
+  Tekenaanpak: instrument als aparte laag over dezelfde pose, zodat niet elke avatar × elk instrument apart getekend moet worden.
+
 ## Blok 10 — MIDI laden via de downloadhoek
 
 *(Naar voren gehaald op 2026-11-14, was blok 15 en optioneel. Bouwt verder op het spel met vallende noten van blok 9.)*
@@ -130,3 +140,23 @@ updatemelding → tik → nieuwe versie) + de 8 Luisteroor-controles met nep-mic
 - **Gebruik een bewezen bibliotheek: `@tonejs/midi`** (gratis, MIT, werkt offline in de browser). Een zelfgeschreven parser
   gaf bij 6 bestanden onzinnige lengtes (tot 88 min); @tonejs/midi las ze allemaal correct.
 - Tests met deze bestanden enkel lokaal en overslaan als `midi-lokaal/` ontbreekt (CI en de openbare repo hebben ze niet).
+
+## Blok 11 — Naspeelstudio
+
+*(Nieuw op 2026-11-14, idee goedgekeurd door de gebruiker. Nog niet gebouwd.)*
+
+**Doel:** nummers waarvoor geen MIDI te vinden is (bv. KATSEYE) toch spelen, **met het echte nummer als begeleiding**.
+Geen AI: een mens hoort de melodie, de app noteert ze (human-in-the-loop).
+
+**Idee:**
+1. Een mp3 laden in de app (Android-bestandskiezer, zoals in de downloadhoek). Blijft enkel op de tablet (IndexedDB), nooit online.
+2. Afspelen, ook **trager zonder dat de toonhoogte verandert** (`playbackRate` + `preservesPitch`), en een stukje herhalen (lus).
+3. De melodie meespelen op het keyboard, **met de mp3 in een hoofdtelefoon**, zodat de microfoon enkel het keyboard hoort.
+   De app noteert welke noot wanneer klinkt (zelfde toonhoogtemeting als Luisteroor), op de tijdlijn van de mp3.
+4. Nakijken en verbeteren (noot weg, verschuiven, opnieuw opnemen per stukje).
+5. Resultaat = een liedje voor het spel met vallende noten (blok 9), met de mp3 als begeleiding, vanzelf in de maat.
+
+**Aandachtspunten:** vertraging tussen spelen en horen (latency) meten en corrigeren; zelfde liedjesformaat als de MIDI-liedjes
+(blok 10); grootte van mp3's in de opslag; auteursrecht: mp3's blijven privé op de tablet, net zoals MIDI-bestanden.
+Alternatief buiten de app: melodie met de hand invoeren in **MuseScore Studio** (gratis desktopprogramma, geen account;
+niet te verwarren met de betalende website) en als MIDI exporteren.
