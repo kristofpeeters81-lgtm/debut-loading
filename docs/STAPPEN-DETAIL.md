@@ -92,6 +92,28 @@ updatemelding → tik → nieuwe versie) + de 8 Luisteroor-controles met nep-mic
   (`navigator.storage.persist()`), zodat Android de gegevens niet zomaar wist.
 - Tests: unit-tests voor router en opslag; e2e: app opent, navigatie werkt, Luisteroor werkt nog, offline herladen werkt.
 
+## Blok 4 — Klankmotor
+
+**Gebouwd (2026-11-14), zonder geluidsbestanden:** alle klanken worden op de tablet berekend (`src/audio/synth.ts`, pure functies)
+en door `src/audio/engine.ts` afgespeeld (één keer berekenen, daarna uit het geheugen → meteen hoorbaar).
+- **Piano:** boventonen die elk op hun eigen tempo uitsterven + twee licht ontstemde snaren per toets. Stopt bij loslaten.
+- **Gitaar en bas:** getokkelde snaar (Karplus-Strong) met fijnafstemming (allpass), zodat elke noot zuiver gestemd is.
+  Bas donkerder en langer. Snaren laten natrillen. Akkoorden worden "getokkeld" (snaren 25 ms na elkaar).
+- **Drum:** 8 pads (basdrum, snare, hi-hat, open hi-hat, tom hoog, tom laag, crash, klap).
+- **Metronoom:** tik met hogere eerste tel; plant telkens 0,12 s vooruit (stabiel, ook als het scherm even hapert).
+  Tempo 40–200 en aanpasbaar tijdens het tikken.
+- Begrenzer op de uitgang (veel noten tegelijk kraken niet), max. 32 klanken tegelijk.
+- **Testscherm "Klanktest"** onder Instellingen → Hulpjes (sober; de echte instrumenten op het scherm komen in blok 6).
+
+**Getest:** unit-tests meten de toonhoogte van de berekende klanken na met YIN: piano F2–C6, gitaar E2–E4, bas E1–G2
+binnen 8 cent zuiver (ook bij 44,1 kHz); drums en metronoom; metronoomplanning mist of verdubbelt geen tellen.
+e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
+
+**Nog te testen op de tablet (door de gebruiker):** Instellingen → Klanktest.
+1. Klinken piano, gitaar, bas en drum goed genoeg (luidspreker én hoofdtelefoon)? Wat klinkt het minst echt?
+2. Voelt het meteen aan bij het tikken (geen merkbare vertraging)?
+3. Metronoom: blijft hij gelijkmatig tikken, ook bij het verschuiven van het tempo?
+4. Speel C4 in de Klanktest en kijk in Luisteroor (op een tweede toestel) of de tablet zuiver is (optioneel).
 ## Blok 3 — Stijl en figuren (wensen, nog niet gebouwd)
 
 - Eerst 2 à 3 visuele richtingen tonen als voorbeeldschermen (startscherm, spelscherm, logo met laadbalk). Pas inbouwen na akkoord.

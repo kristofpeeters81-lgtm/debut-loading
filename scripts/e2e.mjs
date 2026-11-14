@@ -162,6 +162,33 @@ async function appTest() {
     await page.goBack();
     check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'android-terug'), 'app: terugknop van de browser/Android werkt');
 
+    // Klanktest (blok 4): noten, akkoorden, drum, metronoom
+    check(await tapScreen(page, 'instellingen'), 'klanktest: instellingen opent');
+    check(await tapScreen(page, 'klanktest'), 'klanktest: opent vanuit instellingen');
+    const pads = await page.$$('button.pad');
+    check(pads.length === 13 + 6 + 4 + 4 + 8 + 1, `klanktest: alle knoppen aanwezig (${pads.length})`);
+    const tapAll = async (sel) => {
+      for (const b of await page.$$(sel)) {
+        await b.click();
+        await sleep(30);
+      }
+    };
+    await tapAll('button.pad:not(.metro)');
+    const playsNow = () => page.$eval('.plays', (e) => Number(e.dataset.plays ?? 0));
+    const afterTaps = await playsNow();
+    // Akkoorden tellen per snaar: 13 + 6 + 4 + (6 + 5 + 3 + 3) + 8 = 48
+    check(afterTaps === 48, `klanktest: elke knop speelt een klank (${afterTaps} van 48)`);
+    await page.click('button.metro');
+    await sleep(1500);
+    await page.click('button.pad.drum');
+    const afterMetro = await playsNow();
+    check(afterMetro >= afterTaps + 1 + 2, `klanktest: metronoom tikt (${afterMetro - afterTaps - 1} tikken in 1,5 s)`);
+    check((await page.$eval('button.metro', (e) => e.textContent)).includes('Stop'), 'klanktest: metronoomknop toont "Stop"');
+    await page.screenshot({ path: path.join(OUT, 'klanktest.png'), fullPage: true });
+    await page.click('.back');
+    check(await waitFor(async () => (await screenOf(page)) === 'instellingen', 3000, 'terug'), 'klanktest: terug naar instellingen');
+    await page.goto(url, { waitUntil: 'networkidle0' });
+
     // Instelling bewaren en na herladen terug
     await tapScreen(page, 'instellingen');
     await page.click('button.choice[data-notation="doremi"]');

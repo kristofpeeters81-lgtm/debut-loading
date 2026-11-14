@@ -2,7 +2,15 @@
 // Zo werkt de terugknop van Android vanzelf, en kan een scherm na herladen terug opengaan.
 // Dit bestand bevat enkel rekenregels (geen DOM), zodat het makkelijk te testen is.
 
-export type ScreenId = 'start' | 'vrij-spelen' | 'lessen' | 'liedjes' | 'downloadhoek' | 'instellingen' | 'luisteroor';
+export type ScreenId =
+  | 'start'
+  | 'vrij-spelen'
+  | 'lessen'
+  | 'liedjes'
+  | 'downloadhoek'
+  | 'instellingen'
+  | 'luisteroor'
+  | 'klanktest';
 
 export interface ScreenInfo {
   id: ScreenId;
@@ -22,6 +30,7 @@ export const SCREENS: Record<ScreenId, ScreenInfo> = {
   downloadhoek: { id: 'downloadhoek', title: 'Downloadhoek', icon: '📥', parent: 'start', comesIn: 'blok 10' },
   instellingen: { id: 'instellingen', title: 'Instellingen', icon: '⚙️', parent: 'start' },
   luisteroor: { id: 'luisteroor', title: 'Luisteroor', icon: '🎧', parent: 'instellingen' },
+  klanktest: { id: 'klanktest', title: 'Klanktest', icon: '🔊', parent: 'instellingen' },
 };
 
 /** Knoppen op het startscherm, in deze volgorde. */

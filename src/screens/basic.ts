@@ -1,7 +1,7 @@
 // Eenvoudige schermen van blok 2: startscherm, lege schermen ("komt in blok X") en instellingen.
 // Sober opgemaakt; de echte stijl komt in blok 3.
 
-import { HOME_BUTTONS, SCREENS, hashFor, type ScreenInfo } from '../app/router';
+import { HOME_BUTTONS, SCREENS, hashFor, type ScreenId, type ScreenInfo } from '../app/router';
 import { settings, updateSettings } from '../app/state';
 import type { Notation } from '../app/settings';
 import type { Persistence } from '../storage/db';
@@ -58,11 +58,17 @@ export function mountSettings(app: HTMLElement, persistence: Persistence): void 
   // Hulpjes
   const tools = el('section', 'card');
   tools.append(el('h2', '', 'Hulpjes'));
-  const lo = el('a', 'tool-link');
-  lo.href = hashFor('luisteroor');
-  lo.dataset.screen = 'luisteroor';
-  lo.append(el('span', 'home-icon', SCREENS.luisteroor.icon), el('span', '', 'Luisteroor: wat hoort de tablet?'));
-  tools.append(lo);
+  const toolLinks: [ScreenId, string][] = [
+    ['luisteroor', 'Luisteroor: wat hoort de tablet?'],
+    ['klanktest', 'Klanktest: alle klanken van de app uitproberen'],
+  ];
+  for (const [id, text] of toolLinks) {
+    const a = el('a', 'tool-link');
+    a.href = hashFor(id);
+    a.dataset.screen = id;
+    a.append(el('span', 'home-icon', SCREENS[id].icon), el('span', '', text));
+    tools.append(a);
+  }
 
   // Over de app
   const about = el('section', 'card');

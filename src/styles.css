@@ -154,6 +154,51 @@ a {
   font-size: 1.1rem;
 }
 
+/* ---------- Klanktest ---------- */
+.pad-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pad {
+  min-width: 64px;
+  min-height: 64px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pad:active {
+  background: var(--neon);
+  color: var(--bg);
+}
+
+.pad.wide {
+  flex: 1 1 180px;
+}
+
+.pad.drum {
+  flex: 1 1 120px;
+  min-height: 80px;
+  background: #3a1d5c;
+}
+
+.pad.metro.on {
+  background: var(--pink);
+}
+
+.bpm {
+  display: block;
+  margin: 12px 0 4px;
+}
+
+input[type='range'] {
+  width: 100%;
+}
+
 /* ---------- Luisteroor: liggend naast elkaar ---------- */
 @media (orientation: landscape) and (min-width: 900px) {
   .lo-grid {

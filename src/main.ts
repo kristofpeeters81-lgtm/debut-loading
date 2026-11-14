@@ -8,6 +8,7 @@ import { setupOfflineAndUpdates } from './app/update';
 import { requestPersistence, type Persistence } from './storage/db';
 import { mountHome, mountPlaceholder, mountSettings } from './screens/basic';
 import { mountLuisteroor } from './screens/luisteroor';
+import { mountKlanktest } from './screens/klanktest';
 import { el } from './ui/dom';
 
 const root = document.getElementById('app');
@@ -54,6 +55,9 @@ function show(id: ScreenId): void {
         sensitivity: settings().micSensitivity,
         onSensitivity: (v) => void updateSettings({ micSensitivity: v }),
       });
+      break;
+    case 'klanktest':
+      cleanup = mountKlanktest(content, settings().notation);
       break;
     default:
       mountPlaceholder(content, info);

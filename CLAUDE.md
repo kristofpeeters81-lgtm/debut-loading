@@ -51,11 +51,13 @@ gaan voor drillen.
 - `src/dsp/`: `yin.ts` (live toonhoogte, 35–2100 Hz), `notes.ts` (letters/do-re-mi), `chroma.ts` (akkoorden),
   `onset.ts` (klappen/slagen), `biquad.ts` (gekopieerd uit SingApp). Tests: `dsp.test.ts`.
 - `src/audio/mic.ts`: microfoon + AnalyserNodes.
+- `src/audio/synth.ts`: klanken berekenen (piano, Karplus-Strong-snaren, drums, metronoomtik), pure functies.
+  `src/audio/engine.ts`: klankmotor (`engine.noteOn/strum/drum/startMetronome`). Geen geluidsbestanden van derden.
 - `src/main.ts`: schil (kopbalk + terugknop, schermen wisselen, updatemelding). Elk scherm is een `mount…(container)`-functie;
   schermen met microfoon of animatie geven een opruimfunctie terug.
 - `src/app/`: `router.ts` (schermen via `#/…`, terugknop), `settings.ts`/`state.ts` (instellingen), `update.ts` (service worker).
 - `src/storage/db.ts`: IndexedDB `debut-loading`, tabel `kv`. Nieuwe tabellen = `DB_VERSION` verhogen.
-- `src/screens/`: `basic.ts` (start, lege schermen, instellingen), `luisteroor.ts` + `checklist.ts` (blok 1, nu onder Instellingen).
+- `src/screens/`: `basic.ts` (start, lege schermen, instellingen), `luisteroor.ts` + `checklist.ts` (blok 1), `klanktest.ts` (blok 4); beide onder Instellingen → Hulpjes.
 - Offline: service worker gegenereerd in `vite.config.ts`. Nieuwe versie wacht op een tik op de melding (`SKIP_WAITING`), nooit automatisch.
 - Onderdelen uit SingApp worden **gekopieerd**, niet gedeeld, zodat de twee apps elkaar niet kunnen stukmaken.
 
