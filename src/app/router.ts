@@ -34,7 +34,7 @@ export const SCREENS: Record<ScreenId, ScreenInfo> = {
   'vrij-spelen': { id: 'vrij-spelen', title: 'Vrij spelen', icon: 'keys', parent: 'start' },
   lessen: { id: 'lessen', title: 'Lessen', icon: 'star', parent: 'start' },
   liedjes: { id: 'liedjes', title: 'Liedjes', icon: 'music', parent: 'start' },
-  downloadhoek: { id: 'downloadhoek', title: 'Downloadhoek', icon: 'download', parent: 'start', comesIn: 'blok 10' },
+  downloadhoek: { id: 'downloadhoek', title: 'Downloadhoek', icon: 'download', parent: 'start' },
   instellingen: { id: 'instellingen', title: 'Instellingen', icon: 'gear', parent: 'start' },
   luisteroor: { id: 'luisteroor', title: 'Luisteroor', icon: 'ear', parent: 'instellingen' },
   klanktest: { id: 'klanktest', title: 'Klanktest', icon: 'speaker', parent: 'instellingen' },

@@ -10,7 +10,8 @@ import { saveStars, settings } from '../app/state';
 import { CHORDS } from '../lessons/content';
 import { NoteEvents } from '../lessons/noteEvents';
 import { Game, MAX_TEMPO, MIN_TEMPO, type GameNote } from '../songs/game';
-import { songById, songStarId, type Song } from '../songs/songs';
+import { songStarId, type Song } from '../songs/songs';
+import { findSong } from '../songs/library';
 import { COLOR_OF_PC, keyboardSurface } from './lesSurfaces';
 import { starRow } from './lessen';
 import { el } from '../ui/dom';
@@ -48,7 +49,7 @@ function laneGeometry(from: number, to: number): Map<number, { x: number; w: num
 }
 
 export function mountSpel(app: HTMLElement): () => void {
-  const song = currentSongId ? songById(currentSongId) : undefined;
+  const song = currentSongId ? findSong(currentSongId) : undefined;
   if (!song) {
     location.replace(hashFor('liedjes'));
     return () => undefined;

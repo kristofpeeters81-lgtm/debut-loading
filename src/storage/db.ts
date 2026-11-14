@@ -1,10 +1,10 @@
 // Opslag op de tablet zelf (IndexedDB). Niets gaat naar het internet.
 // Vertrokken van de opslag in SingApp (gekopieerd, niet gedeeld).
-// Tabellen: `kv` (kleine waarden zoals instellingen, blok 2), `profiles` (blok 5).
-// Latere blokken voegen tabellen toe (liedjes, opnames) door DB_VERSION te verhogen. Nooit een tabel wissen.
+// Tabellen: `kv` (kleine waarden zoals instellingen, blok 2), `profiles` (blok 5), `songs` (eigen MIDI-liedjes, blok 10).
+// Latere blokken voegen tabellen toe (opnames) door DB_VERSION te verhogen. Nooit een tabel wissen.
 
 const DB_NAME = 'debut-loading';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -16,6 +16,7 @@ function openDb(): Promise<IDBDatabase> {
         const db = req.result;
         if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
         if (!db.objectStoreNames.contains('profiles')) db.createObjectStore('profiles', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id' });
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => {
@@ -70,6 +71,25 @@ export async function profileDelete(id: string): Promise<void> {
   const db = await openDb();
   const tx = db.transaction('profiles', 'readwrite');
   tx.objectStore('profiles').delete(id);
+  await done(tx);
+}
+
+export async function songsAll(): Promise<unknown[]> {
+  const db = await openDb();
+  return result(db.transaction('songs').objectStore('songs').getAll() as IDBRequest<unknown[]>);
+}
+
+export async function songPut(song: { id: string }): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('songs', 'readwrite');
+  tx.objectStore('songs').put(song);
+  await done(tx);
+}
+
+export async function songDelete(id: string): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('songs', 'readwrite');
+  tx.objectStore('songs').delete(id);
   await done(tx);
 }
 

@@ -280,6 +280,25 @@ Op alle spelschermen: noten in een vaste kleur per letter, letter op de toets, t
   en eerst voorleggen aan de gebruiker.
 - Een geladen liedje blijft in de app, voor alle profielen.
 
+**Gebouwd (2026-11-14, op vraag van de gebruiker: eerst het importeren, de downloadsite later):**
+- **Downloadhoek** (`src/screens/downloadhoek.ts`): stappenplan in kindertaal (1 zoek een .mid-bestand samen met mama of papa,
+  2 download het naar "Downloads", 3 "Liedje toevoegen"), knop **Liedje toevoegen** = Android-bestandskiezer, meerdere tegelijk.
+  Kapotte of lege bestanden krijgen een uitleg, geen crash. **De vaste link naar één downloadsite ontbreekt nog** (eerst kiezen en voorleggen).
+- **Importeren** (`src/songs/midiImport.ts`, met `@tonejs/midi` 2.0.28, MIT, offline): sporen bekijken → **melodiespoor raden**
+  (veel noten, meestal één tegelijk, in zangbereik, naam/instrument zoals voice/lead/fluit/sax; bas, drums, begeleiding tellen niet)
+  → **eenstemmig** (bij samen beginnende noten de hoogste; korte versierinkjes eerst weg) → **naar het bereik van de Casio** (octaaf).
+  Titel = bestandsnaam. Tempo = eerste tempo uit het bestand. Begeleiding: enkel drums (nog geen akkoorden uit MIDI).
+- **Mijn liedjes** (`src/songs/library.ts`, IndexedDB versie 3, tabel `songs`): voor alle profielen; het originele bestand wordt
+  mee bewaard, zodat je later **"Ander spoor"** kan kiezen (elk spoor beluisteren, ★ = gok van de app). Verwijderen = twee keer tikken.
+  Eigen liedjes staan ook onder **Liedjes → Mijn liedjes** en spelen in het spel met vallende noten (sterren per profiel).
+- Lokaal getest met de 43 bestanden van de gebruiker: alle 43 worden een speelbaar liedje; de gekozen sporen zijn meestal
+  zangstem/lead/blaasinstrument, bij enkele rocknummers een gitaarriff (dan "Ander spoor").
+  Die test staat in `tests/midi-lokaal.test.ts` (buiten `src/`, wordt overgeslagen als `midi-lokaal/` ontbreekt, zoals in CI).
+- e2e met een zelfgemaakt MIDI-bestand (Ode an die Freude + begeleidingsspoor, publiek domein) en een kapot bestand.
+
+**Nog te doen in dit blok:** de vaste downloadsite uitzoeken en voorleggen; eventueel later: akkoorden/begeleiding uit de MIDI,
+een stuk (bv. refrein) kiezen bij lange liedjes, gitaar/bas in het spel.
+
 **Eerste verkenning van downloadsites (2026-11-14):**
 - ❌ MIDI Show (midishow.com): VALT AF (getest door gebruiker): account + puntensysteem nodig, en een misleidende knop (Chinees: "kies opnameapparaat"). Gebruiker vertrouwt de site niet.
 - BitMidi: gratis, geen account, eerst beluisteren; maar geen Blackpink gevonden.

@@ -1088,6 +1088,126 @@ button.danger {
   }
 }
 
+/* ---------- Downloadhoek en mijn liedjes (blok 10) ---------- */
+.how-steps {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.how-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.how-num {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--bg);
+  font: 600 1.2rem var(--display);
+}
+
+.add-song {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 420px;
+}
+
+.import-messages p {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.import-ok {
+  color: var(--green);
+}
+
+.import-fail {
+  color: var(--yellow);
+}
+
+.my-songs {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.my-song {
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid var(--line-soft);
+  background: var(--panel-2);
+}
+
+.my-song-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.my-song-notes {
+  margin: 8px 0 10px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+}
+
+.my-song-actions .pad.wide {
+  flex: 1 1 120px;
+  min-height: 52px;
+}
+
+.track-chooser {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.track-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.track-line.on {
+  outline: 2px solid var(--cyan);
+}
+
+.track-label {
+  flex: 1 1 220px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.track-line .pad {
+  min-height: 48px;
+  min-width: 90px;
+}
+
+.songs-mine-title {
+  margin-top: 24px;
+}
+
 /* ---------- Vrij spelen (blok 6) ---------- */
 .play-head {
   display: flex;

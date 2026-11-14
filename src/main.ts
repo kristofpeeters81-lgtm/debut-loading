@@ -22,6 +22,8 @@ import { mountLessen } from './screens/lessen';
 import { mountLes } from './screens/les';
 import { mountLiedjes } from './screens/liedjes';
 import { mountSpel } from './screens/spel';
+import { mountDownloadhoek } from './screens/downloadhoek';
+import { loadLibrary } from './songs/library';
 import { avatarSvg } from './ui/avatar';
 import { el } from './ui/dom';
 import { icon } from './ui/icons';
@@ -91,6 +93,9 @@ function show(id: ScreenId): void {
       mountHome(content);
       break;
     }
+    case 'downloadhoek':
+      cleanup = mountDownloadhoek(content);
+      break;
     case 'liedjes':
       mountLiedjes(content);
       break;
@@ -165,6 +170,7 @@ setupOfflineAndUpdates((apply) => {
 // ---------- Start ----------
 async function start(): Promise<void> {
   await loadSettings();
+  await loadLibrary();
   persistence = await requestPersistence();
   show(nav.current);
 }

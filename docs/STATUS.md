@@ -13,7 +13,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | 7 | [Stemapparaat + zangbereik](STAPPEN-DETAIL.md#blok-7--stemapparaat-en-zangbereik) | 🧪 | 2026-11-14 | Live; zangbereik per profiel sinds blok 5 |
 | 8 | [Lessen (alle instrumenten)](STAPPEN-DETAIL.md#blok-8--eerste-lessen-keyboard) | 🧪 | 2026-11-14 | 6 keyboardlessen getest door gebruiker (in orde); uitgebreid tot 42 lessen: keyboard 17, gitaar 7, bas 6, drum 6, zang 6 |
 | 9 | [Spel met vallende noten (tempo, herhalen, sterren)](STAPPEN-DETAIL.md#blok-9--spel-met-vallende-noten) | 🧪 | 2026-11-14 | Keyboard, 6 liedjes (publiek domein) met begeleiding |
-| 10 | [MIDI laden via de downloadhoek](STAPPEN-DETAIL.md#blok-10--midi-laden-via-de-downloadhoek) (ook zelf te gebruiken door het kind) | ⬜ | | Naar voren gehaald op 2026-11-14 (was blok 15, optioneel) |
+| 10 | [MIDI laden via de downloadhoek](STAPPEN-DETAIL.md#blok-10--midi-laden-via-de-downloadhoek) (ook zelf te gebruiken door het kind) | 🟡 | 2026-11-14 | Importeren gebouwd (eigen MIDI → vallende noten); vaste downloadsite nog te kiezen en voor te leggen |
 | 11 | [Naspeelstudio: mp3 laden, trager afspelen, melodie meespelen → liedje](STAPPEN-DETAIL.md#blok-11--naspeelstudio) | ⬜ | | Nieuw 2026-11-14: voor nummers zonder MIDI, met het echte nummer als begeleiding |
 | 12 | Eerste eigen nummer + bandmodus (zonder punten, avatars samen op het podium) | ⬜ | | |
 | 13 | Wereldtournee-kaart (zonder streaks) | ⬜ | | |
@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) blok 9 staat live; (2) testen op de tablet (extra lessen + spel met vallende noten); (3) daarna blok 10 (MIDI via de downloadhoek): eerst de downloadsite uitzoeken en voorleggen.
+**Volgende actie:** (1) akkoord om blok 10 (importeren) te pushen; (2) testen op de tablet: MIDI-bestanden van de pc naar de tablet zetten en toevoegen; (3) downloadsite voor de vaste link uitzoeken en voorleggen.

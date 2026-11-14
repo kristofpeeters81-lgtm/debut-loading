@@ -6,6 +6,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { preview } from 'vite';
 import puppeteer from 'puppeteer-core';
+import tonejsMidi from '@tonejs/midi';
+
+const { Midi } = tonejsMidi;
 
 const OUT = path.resolve('e2e-output');
 const CHROME =
@@ -173,7 +176,7 @@ async function appTest() {
 
     // Lege schermen tonen in welk blok ze komen
     check(await tapScreen(page, 'downloadhoek'), 'app: downloadhoek opent');
-    check((await page.$eval('.placeholder', (e) => e.textContent)).includes('blok 10'), 'app: downloadhoek zegt "komt in blok 10"');
+    check(await visible(page, '.how-to'), 'app: downloadhoek toont het stappenplan');
     await page.click('.back');
     check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'terug naar start'), 'app: terugknop gaat naar start');
 
@@ -385,6 +388,72 @@ async function appTest() {
     await page.click('.lesson-end .lesson-back');
     await waitFor(async () => (await screenOf(page)) === 'liedjes', 3000, 'liedjes');
     check((await page.$$('.lesson-card[data-song="ode"] .star-row svg[fill]')).length === 3, 'liedjes: 3 sterren bij Ode an die Freude');
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+
+    // Downloadhoek (blok 10): eigen MIDI-bestand toevoegen (zelf gemaakt: Ode an die Freude + begeleiding) en een kapot bestand
+    {
+      const m = new Midi();
+      m.header.setTempo(120);
+      const acc = m.addTrack();
+      acc.name = 'Begeleiding';
+      for (let bar = 0; bar < 4; bar++) for (const n of [48, 52, 55]) acc.addNote({ midi: n, ticks: bar * 1920, durationTicks: 1900 });
+      const mel = m.addTrack();
+      mel.name = 'unbenannt1';
+      [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64].forEach((n, i) => mel.addNote({ midi: n, ticks: i * 480, durationTicks: 460 }));
+      fs.writeFileSync(path.join(OUT, 'Mijn_test_liedje.mid'), Buffer.from(m.toArray()));
+      fs.writeFileSync(path.join(OUT, 'kapot.mid'), 'dit is geen midi');
+    }
+    check(await tapScreen(page, 'downloadhoek'), 'downloadhoek: opent');
+    const [chooser] = await Promise.all([page.waitForFileChooser(), page.click('.add-song')]);
+    await chooser.accept([path.join(OUT, 'Mijn_test_liedje.mid'), path.join(OUT, 'kapot.mid')]);
+    check(await waitFor(async () => (await page.$$('.import-ok')).length === 1, 5000, 'import'), 'downloadhoek: liedje toegevoegd');
+    check((await page.$$('.import-fail')).length === 1, 'downloadhoek: kapot bestand krijgt een uitleg (geen crash)');
+    check((await page.$eval('.my-song .lesson-title', (e) => e.textContent)) === 'Mijn test liedje', 'downloadhoek: titel uit de bestandsnaam');
+    check((await page.$eval('.my-song .lesson-goal', (e) => e.textContent)).includes('unbenannt1'), 'downloadhoek: melodiespoor automatisch gekozen');
+    await page.click('.my-song .my-tracks');
+    check((await page.$$('.track-line')).length === 2, 'downloadhoek: 2 sporen om uit te kiezen');
+    await page.screenshot({ path: path.join(OUT, 'downloadhoek.png'), fullPage: true });
+    await page.click('.track-line[data-track="0"] .track-pick');
+    check(
+      await waitFor(async () => (await page.$eval('.my-song .lesson-goal', (e) => e.textContent)).includes('Begeleiding'), 3000, 'ander spoor'),
+      'downloadhoek: ander spoor kiezen werkt',
+    );
+    await page.click('.my-song .my-tracks');
+    await page.click('.track-line[data-track="1"] .track-pick');
+    await waitFor(async () => (await page.$eval('.my-song .lesson-goal', (e) => e.textContent)).includes('unbenannt1'), 3000, 'terug melodie');
+    await page.reload({ waitUntil: 'networkidle0' });
+    check((await page.$$('.my-song')).length === 1, 'downloadhoek: liedje blijft bewaard na herladen');
+    await page.click('.my-song .my-play');
+    await waitFor(async () => (await screenOf(page)) === 'spel', 3000, 'spel');
+    check((await page.$eval('.game-title', (e) => e.textContent)) === 'Mijn test liedje', 'spel: eigen liedje opent in het spel');
+    await page.click('.lesson-intro button.big');
+    await sleep(500);
+    {
+      const end = Date.now() + 40000;
+      while (Date.now() < end) {
+        if (await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false)) break;
+        const want = await page.$eval('.game', (g) => g.dataset.expected ?? '');
+        if (want) {
+          const mm = Number(want);
+          const sel = (await page.$(`.lesson-kb .key[data-midi="${mm}"]`)) ? `.lesson-kb .key[data-midi="${mm}"]` : `.lesson-kb .key[data-midi="${(mm % 12) + 60}"]`;
+          await page.click(sel).catch(() => undefined);
+        }
+        await sleep(80);
+      }
+    }
+    check(await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false), 'spel: eigen liedje uitgespeeld');
+    await page.click('.lesson-end .lesson-back');
+    await sleep(300);
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    check(await tapScreen(page, 'liedjes'), 'liedjes: opent opnieuw');
+    check((await page.$$('.songs-mine-title + .lesson-path .lesson-card')).length === 1, 'liedjes: eigen liedje staat bij "Mijn liedjes"');
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+    await tapScreen(page, 'downloadhoek');
+    await page.click('.my-song .my-delete');
+    await page.click('.my-song .my-delete');
+    check(await waitFor(async () => (await page.$$('.my-song')).length === 0, 3000, 'verwijderd'), 'downloadhoek: verwijderen (twee keer tikken)');
     await page.click('.back');
     await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
 
