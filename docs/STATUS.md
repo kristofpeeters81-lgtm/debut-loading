@@ -12,7 +12,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | 6 | [Vrij spelen (keyboard, gitaarhals, bas, drumpads; A–G / do-re-mi)](STAPPEN-DETAIL.md#blok-6--vrij-spelen) | 🧪 | 2026-11-14 | Live; wacht op tablettest |
 | 7 | [Stemapparaat + zangbereik](STAPPEN-DETAIL.md#blok-7--stemapparaat-en-zangbereik) | 🧪 | 2026-11-14 | Live; zangbereik per profiel sinds blok 5 |
 | 8 | [Lessen (alle instrumenten)](STAPPEN-DETAIL.md#blok-8--eerste-lessen-keyboard) | 🧪 | 2026-11-14 | 6 keyboardlessen getest door gebruiker (in orde); uitgebreid tot 42 lessen: keyboard 17, gitaar 7, bas 6, drum 6, zang 6 |
-| 9 | [Spel met vallende noten (tempo, herhalen, sterren)](STAPPEN-DETAIL.md#blok-9--spel-met-vallende-noten) | 🧪 | 2026-11-14 | Live voor keyboard; uitgebreid naar gitaar, bas, drum en zang (lokaal) |
+| 9 | [Spel met vallende noten (tempo, herhalen, sterren)](STAPPEN-DETAIL.md#blok-9--spel-met-vallende-noten) | 🧪 | 2026-11-14 | Live voor alle instrumenten (keyboard, gitaar, bas, drum, zang) |
 | 10 | [MIDI laden via de downloadhoek](STAPPEN-DETAIL.md#blok-10--midi-laden-via-de-downloadhoek) (ook zelf te gebruiken door het kind) | 🟡 | 2026-11-14 | Importeren gebouwd (eigen MIDI → vallende noten); vaste downloadsite nog te kiezen en voor te leggen |
 | 11 | [Naspeelstudio: mp3 laden, trager afspelen, melodie meespelen → liedje](STAPPEN-DETAIL.md#blok-11--naspeelstudio) | ⬜ | | Nieuw 2026-11-14: voor nummers zonder MIDI, met het echte nummer als begeleiding |
 | 12 | Eerste eigen nummer + bandmodus (zonder punten, avatars samen op het podium) | ⬜ | | |
@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) akkoord om de vallende noten voor alle instrumenten te pushen; (2) testen op de tablet; (3) downloadsite voor de vaste link uitzoeken en voorleggen.
+**Volgende actie:** (1) vallende noten voor alle instrumenten staan live; (2) testen op de tablet; (3) downloadsite voor de vaste link uitzoeken en voorleggen.
