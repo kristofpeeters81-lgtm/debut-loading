@@ -25,6 +25,9 @@ gaan voor drillen.
   de app zelf zoekt niets online. De downloadhoek moet zo duidelijk zijn (stappenplan met prentjes) dat de dochter het zelf kan:
   uitleg in **heel simpele taal (verstaanbaar voor een 10-jarige)** + een **vaste link naar één betrouwbare downloadsite**
   (opent in Chrome), zodat ze geen rommel binnenhaalt. Welke site dat wordt: uitzoeken en voorleggen bij blok 15.
+- **MIDI-bestanden van de gebruiker staan in `midi-lokaal/`** (genegeerd door git, ook `*.mid`/`*.midi` overal).
+  Enkel om de MIDI-functie lokaal te bouwen en te testen. **Nooit committen, nooit in `public/` of `dist/`**:
+  de repo en de website zijn openbaar en het zijn beschermde liedjes. Op de tablet laadt ze ze zelf via de downloadhoek.
 - **Geen streaks** (reeks dagen op rij): beloon wat ze doet en straf niets.
 - Nederlandse interface. Notennamen in **letters (A–G)** met een schakelaar voor **do-re-mi** (Belgisch: "si").
   De notenbalk komt eventueel geleidelijk, later.

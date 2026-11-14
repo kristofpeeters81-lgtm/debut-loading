@@ -2,3 +2,8 @@ node_modules/
 dist/
 .env
 e2e-output/
+
+# Eigen MIDI-bestanden (auteursrecht): nooit in de openbare repo
+midi-lokaal/
+*.mid
+*.midi
