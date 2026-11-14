@@ -26,7 +26,7 @@ export interface ScreenInfo {
 
 export const SCREENS: Record<ScreenId, ScreenInfo> = {
   start: { id: 'start', title: 'DEBUT LOADING…', icon: 'music', parent: null },
-  'vrij-spelen': { id: 'vrij-spelen', title: 'Vrij spelen', icon: 'keys', parent: 'start', comesIn: 'blok 6' },
+  'vrij-spelen': { id: 'vrij-spelen', title: 'Vrij spelen', icon: 'keys', parent: 'start' },
   lessen: { id: 'lessen', title: 'Lessen', icon: 'star', parent: 'start', comesIn: 'blok 8' },
   liedjes: { id: 'liedjes', title: 'Liedjes', icon: 'music', parent: 'start', comesIn: 'blok 9' },
   downloadhoek: { id: 'downloadhoek', title: 'Downloadhoek', icon: 'download', parent: 'start', comesIn: 'blok 10' },

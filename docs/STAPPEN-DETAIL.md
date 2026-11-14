@@ -114,6 +114,24 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 2. Voelt het meteen aan bij het tikken (geen merkbare vertraging)?
 3. Metronoom: blijft hij gelijkmatig tikken, ook bij het verschuiven van het tempo?
 4. Speel C4 in de Klanktest en kijk in Luisteroor (op een tweede toestel) of de tablet zuiver is (optioneel).
+## Blok 6 — Vrij spelen
+
+**Gebouwd (2026-11-14)** in `src/screens/vrijspelen.ts`, met de klankmotor van blok 4:
+- Keuze Keyboard / Gitaar / Bas / Drum / Zang bovenaan (zelfde instelling als op het startscherm). Grote noot rechtsboven,
+  in letters of do-re-mi, in de vaste kleur van die letter (dezelfde kleuren als later in het spel met vallende noten).
+- **Keyboard:** bereik van de Casio SA-76 (F2–C6), zoveel witte toetsen als passen (liggend ±21, staand ±13),
+  pijltjes om een octaaf te verschuiven. Letter + kleurstipje op elke witte toets, octaafnummer op elke C.
+- **Gitaar- en bashals:** losse snaar + 12 frets, **dunste snaar bovenaan zoals in tabs op internet**, notennaam in elk vakje,
+  stipjes onder fret 3, 5, 7, 9, 12. Dikkere snaren getekend als dikkere lijnen.
+- **Drum:** 8 pads (4 × 2 liggend, 2 × 4 staand).
+- Meerdere vingers tegelijk; over toetsen glijden speelt elke toets. Piano stopt bij loslaten, snaren trillen na.
+- **Zang:** verwijst naar blok 7.
+
+**Getest:** unit (bereik F2–C6, standaard C3–C5, snaarvolgorde, notennamen) + e2e (toetsen, fret 3 op de A-snaar = C,
+bas E-snaar fret 5 = A, snare-pad, liggend zonder zijwaarts scrollen).
+
+**Nog te testen op de tablet:** speelt het meteen (geen vertraging)? Akkoorden met 3 vingers? Glijden over de toetsen?
+Zijn de vakjes van de gitaarhals groot genoeg voor vingers?
 ## Blok 3 — Stijl en figuren
 
 **Keuze gebruiker (2026-11-14): A · Neon Stage**, en 8 of meer figuren.

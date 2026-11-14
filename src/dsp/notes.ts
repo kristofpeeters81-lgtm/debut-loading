@@ -30,6 +30,12 @@ export function solfegeName(midi: number): string {
   return SOLFEGE[pitchClass(midi)];
 }
 
+/** Naam volgens de instelling: "C4" of "do4" (zonder octaaf: "C" of "do"). */
+export function noteName(midi: number, notation: 'letters' | 'doremi', withOctave = true): string {
+  const base = notation === 'doremi' ? solfegeName(midi) : letterName(midi, false);
+  return withOctave ? `${base}${octaveOf(midi)}` : base;
+}
+
 export function pitchClassLetter(pc: number): string {
   return LETTERS[((pc % 12) + 12) % 12];
 }

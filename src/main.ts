@@ -15,6 +15,7 @@ import { requestPersistence, type Persistence } from './storage/db';
 import { mountHome, mountPlaceholder, mountSettings } from './screens/basic';
 import { mountLuisteroor } from './screens/luisteroor';
 import { mountKlanktest } from './screens/klanktest';
+import { mountVrijSpelen } from './screens/vrijspelen';
 import { el } from './ui/dom';
 import { icon } from './ui/icons';
 
@@ -71,6 +72,9 @@ function show(id: ScreenId): void {
         sensitivity: settings().micSensitivity,
         onSensitivity: (v) => void updateSettings({ micSensitivity: v }),
       });
+      break;
+    case 'vrij-spelen':
+      cleanup = mountVrijSpelen(content);
       break;
     case 'klanktest':
       cleanup = mountKlanktest(content, settings().notation);

@@ -171,6 +171,45 @@ async function appTest() {
     await page.goBack();
     check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'android-terug'), 'app: terugknop van de browser/Android werkt');
 
+    // Vrij spelen (blok 6): keyboard, gitaar, bas, drum
+    check(await tapScreen(page, 'vrij-spelen'), 'vrij spelen: opent');
+    const tab = async (id) => {
+      await page.click(`.play-tabs .chip[data-instrument="${id}"]`);
+      await sleep(250);
+    };
+    const shown = () => page.$eval('.note-display-big', (e) => e.textContent);
+    await tab('keyboard');
+    check((await page.$$('.keyboard .key.white')).length >= 8, 'vrij spelen: keyboard met witte toetsen');
+    check((await page.$$('.keyboard .key.black')).length >= 5, 'vrij spelen: keyboard met zwarte toetsen');
+    await page.click('.keyboard .key.white[data-midi="60"]');
+    check((await shown()) === 'C', 'vrij spelen: toets C4 toont C');
+    await page.click('.keyboard .key.black[data-midi="61"]');
+    check((await shown()) === 'C#', 'vrij spelen: zwarte toets toont C#');
+    await page.screenshot({ path: path.join(OUT, 'vrij-keyboard-staand.png') });
+    await tab('gitaar');
+    check((await page.$$('.neck.gitaar .fret')).length === 6 * 13, 'vrij spelen: gitaarhals 6 snaren × 13 vakjes');
+    await page.click('.neck.gitaar .fret[data-string="4"][data-fret="3"]');
+    check((await shown()) === 'C', 'vrij spelen: A-snaar fret 3 = C');
+    await tab('bas');
+    check((await page.$$('.neck.bas .fret')).length === 4 * 13, 'vrij spelen: bashals 4 snaren × 13 vakjes');
+    await page.click('.neck.bas .fret[data-string="3"][data-fret="5"]');
+    check((await shown()) === 'A', 'vrij spelen: E-snaar van de bas fret 5 = A');
+    await tab('drum');
+    check((await page.$$('.drum-pad')).length === 8, 'vrij spelen: 8 drumpads');
+    await page.click('.drum-pad[data-pad="snare"]');
+    check((await shown()) === 'Snare', 'vrij spelen: snare-pad speelt');
+    await page.setViewport({ width: 1280, height: 800 });
+    await tab('keyboard');
+    await sleep(300);
+    check(await noSideScroll(page), 'vrij spelen: liggend geen zijwaarts scrollen');
+    await page.screenshot({ path: path.join(OUT, 'vrij-keyboard-liggend.png') });
+    await tab('gitaar');
+    await page.screenshot({ path: path.join(OUT, 'vrij-gitaar-liggend.png') });
+    await tab('keyboard');
+    await page.setViewport({ width: 800, height: 1280 });
+    await page.click('.back');
+    check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'terug'), 'vrij spelen: terug naar start');
+
     // Klanktest (blok 4): noten, akkoorden, drum, metronoom
     check(await tapScreen(page, 'instellingen'), 'klanktest: instellingen opent');
     check(await tapScreen(page, 'klanktest'), 'klanktest: opent vanuit instellingen');
@@ -182,11 +221,14 @@ async function appTest() {
         await sleep(30);
       }
     };
-    await tapAll('button.pad:not(.metro)');
     const playsNow = () => page.$eval('.plays', (e) => Number(e.dataset.plays ?? 0));
+    // De teller telt alle klanken sinds de start van de app: meet het verschil.
+    await page.click('button.pad.drum');
+    const before = (await playsNow()) - 1;
+    await tapAll('button.pad:not(.metro)');
     const afterTaps = await playsNow();
-    // Akkoorden tellen per snaar: 13 + 6 + 4 + (6 + 5 + 3 + 3) + 8 = 48
-    check(afterTaps === 48, `klanktest: elke knop speelt een klank (${afterTaps} van 48)`);
+    // Akkoorden tellen per snaar: 1 + 13 + 6 + 4 + (6 + 5 + 3 + 3) + 8 = 49
+    check(afterTaps - before === 49, `klanktest: elke knop speelt een klank (${afterTaps - before} van 49)`);
     await page.click('button.metro');
     await sleep(1500);
     await page.click('button.pad.drum');

@@ -9,7 +9,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | 3 | [Stijl en figuren (Neon Stage, avatars met instrument)](STAPPEN-DETAIL.md#blok-3--stijl-en-figuren) | 🧪 | 2026-11-14 | Gekozen: A · Neon Stage. Ingebouwd; 10 avatars getoond ter goedkeuring (canvas: https://claude.ai/artifact/6HvaYBbLFdp7droUeaQnw4) |
 | 4 | [Klankmotor (piano, gitaar, bas, drum, metronoom)](STAPPEN-DETAIL.md#blok-4--klankmotor) | 🧪 | 2026-11-14 | Live; testscherm "Klanktest" onder Instellingen; wacht op tablettest |
 | 5 | Profielen (avatar + naam) | ⬜ | | |
-| 6 | Vrij spelen (keyboard, gitaarhals, bas, drumpads; A–G / do-re-mi) | ⬜ | | |
+| 6 | [Vrij spelen (keyboard, gitaarhals, bas, drumpads; A–G / do-re-mi)](STAPPEN-DETAIL.md#blok-6--vrij-spelen) | 🧪 | 2026-11-14 | Gebouwd, tests groen; zang verwijst naar blok 7 |
 | 7 | Stemapparaat + zangbereik | ⬜ | | |
 | 8 | Eerste lessen per instrument | ⬜ | | |
 | 9 | Spel met vallende noten (tempo, herhalen, sterren) | ⬜ | | |
