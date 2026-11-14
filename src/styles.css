@@ -1,0 +1,282 @@
+/* Eenvoudige opmaak voor de testpagina. De echte vormgeving komt in blok 3. */
+:root {
+  --bg: #170b2e;
+  --card: #241447;
+  --line: #3b2470;
+  --text: #f4ecff;
+  --muted: #b9a6dd;
+  --neon: #3ff0ff;
+  --pink: #ff4fd8;
+  --ok: #5dff9b;
+  --warn: #ffd45c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+#app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--neon);
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 10px;
+}
+
+h3 {
+  margin: 12px 0 4px;
+  font-size: 1rem;
+}
+
+.sub,
+.hint,
+.small,
+.tip {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--line);
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+button.big {
+  width: 100%;
+  font-size: 1.4rem;
+  padding: 18px;
+  background: linear-gradient(90deg, var(--pink), #8a4dff);
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.tab {
+  margin: 0 8px 8px 0;
+  font-size: 1.05rem;
+}
+
+.tab.on {
+  background: var(--neon);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.live {
+  text-align: center;
+}
+
+.note-big {
+  font-size: 6rem;
+  line-height: 1;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.note-big.steady {
+  color: var(--neon);
+  text-shadow: 0 0 18px rgba(63, 240, 255, 0.6);
+}
+
+.note-sub {
+  font-size: 1.2rem;
+  min-height: 1.5em;
+}
+
+.cents {
+  position: relative;
+  height: 14px;
+  margin: 10px auto;
+  max-width: 320px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--pink), var(--ok) 45%, var(--ok) 55%, var(--pink));
+  opacity: 0.8;
+}
+
+.cents .mid {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 2px;
+  height: 20px;
+  background: var(--text);
+}
+
+.cents .needle {
+  position: absolute;
+  top: -5px;
+  width: 6px;
+  height: 24px;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: #fff;
+  left: 50%;
+}
+
+.level {
+  position: relative;
+  height: 12px;
+  margin: 12px 0 6px;
+  border-radius: 6px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.level .fill {
+  height: 100%;
+  width: 0;
+  background: var(--muted);
+}
+
+.level .fill.loud {
+  background: var(--ok);
+}
+
+.level .gate {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--warn);
+}
+
+.chroma {
+  display: flex;
+  justify-content: space-between;
+  height: 90px;
+  margin-top: 12px;
+}
+
+.chroma .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.chroma .bar {
+  width: 60%;
+  background: var(--pink);
+  border-radius: 4px 4px 0 0;
+  height: 0;
+}
+
+.chord {
+  font-size: 1.3rem;
+  min-height: 1.6em;
+  margin-top: 6px;
+  color: var(--pink);
+  font-weight: 700;
+}
+
+.claps {
+  font-size: 1.6rem;
+  min-height: 1.4em;
+}
+
+.claps.pop {
+  animation: pop 0.25s ease-out;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(1.6);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+}
+
+.item.active {
+  outline: 2px solid var(--neon);
+  background: rgba(63, 240, 255, 0.08);
+  cursor: default;
+}
+
+.item .icon {
+  width: 2em;
+}
+
+.item .label {
+  flex: 1;
+}
+
+.item .heard {
+  width: 100%;
+  padding-left: 2em;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.item .heard.warn {
+  color: var(--warn);
+}
+
+.item .actions {
+  width: 100%;
+  padding-left: 2em;
+  margin-top: 6px;
+}
+
+.small-btn {
+  padding: 6px 12px;
+  margin-right: 8px;
+  font-size: 0.9rem;
+}
+
+.res-row {
+  padding: 2px 0;
+}
