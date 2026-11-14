@@ -894,6 +894,18 @@ button.danger {
   margin-top: 16px;
 }
 
+/* In het spel: 4 pads op één rij, onder hun baan. */
+.drum-grid.lesson-drums.compact {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.drum-grid.lesson-drums.compact .drum-pad {
+  min-height: clamp(80px, 14vh, 120px);
+  font-size: 1rem;
+}
+
 .drum-pad.target {
   background: var(--pad);
   color: var(--bg);

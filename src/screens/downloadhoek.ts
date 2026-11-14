@@ -83,7 +83,7 @@ export function mountDownloadhoek(app: HTMLElement): () => void {
     );
     const row = el('div', 'pad-row my-song-actions');
     const play = el('button', 'pad wide my-play', 'Speel');
-    play.addEventListener('click', () => openSong(s.id));
+    play.addEventListener('click', () => openSong(s.id, settings().instrument));
     const listen = el('button', 'pad wide', 'Luister');
     listen.addEventListener('click', () => preview(s.song));
     const other = el('button', 'pad wide my-tracks', 'Ander spoor');

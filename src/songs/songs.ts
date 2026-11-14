@@ -3,11 +3,14 @@
 // Later komen hier ook geladen MIDI-liedjes (blok 10), naspeelstudio (blok 11) en eigen nummers (blok 12) bij.
 
 import type { ChordName } from '../lessons/content';
+import type { DrumPad } from '../audio/synth';
 
 export interface SongNote {
   midi: number;
   beat: number;
   len: number;
+  /** Enkel voor drum: welke pad (dan is `midi` 0). */
+  pad?: DrumPad;
 }
 
 export interface Song {

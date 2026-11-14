@@ -391,6 +391,46 @@ async function appTest() {
     await page.click('.back');
     await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
 
+    // Vallende noten op gitaar, bas en drum: Mary had a little lamb uitspelen door te tikken wat verwacht wordt.
+    for (const inst of ['gitaar', 'bas', 'drum']) {
+      await tapScreen(page, 'liedjes');
+      await page.click(`.lesson-tabs .chip[data-instrument="${inst}"]`);
+      await page.click('.lesson-card[data-song="mary"]');
+      await waitFor(async () => (await screenOf(page)) === 'spel', 3000, 'spel');
+      await page.click('.lesson-intro button.big');
+      await sleep(500);
+      for (let i = 0; i < 3; i++) {
+        const before = await page.$eval('.game-tempo', (e) => e.textContent);
+        await page.click('.game-tempo-row .icon-btn:last-child');
+        await waitFor(async () => (await page.$eval('.game-tempo', (e) => e.textContent)) !== before, 1000, 'tempo');
+      }
+      let shot = false;
+      const end = Date.now() + 60000;
+      while (Date.now() < end) {
+        if (await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false)) break;
+        const want = await page.$eval('.game', (g) => g.dataset.expected ?? '');
+        if (want) {
+          const sel = /^\d+$/.test(want) ? `.lesson-neck .fret[data-midi="${want}"]` : `.drum-pad[data-pad="${want}"]`;
+          await page.click(sel).catch(() => undefined);
+          if (!shot) {
+            await page.screenshot({ path: path.join(OUT, `spel-${inst}.png`) });
+            shot = true;
+          }
+        }
+        await sleep(80);
+      }
+      const stars = await page.$eval('.lesson-end', (e) => (e.hidden ? '' : e.dataset.stars)).catch(() => '');
+      check(stars === '3', `spel ${inst}: Mary had a little lamb uitgespeeld met 3 sterren (${stars || 'niet klaar'})`);
+      await page.click('.lesson-end .lesson-back').catch(() => undefined);
+      await waitFor(async () => (await screenOf(page)) === 'liedjes', 3000, 'liedjes');
+      check(
+        (await page.$$('.lesson-card[data-song="mary"] .star-row svg[fill]')).length === 3,
+        `liedjes: sterren voor ${inst} apart bewaard`,
+      );
+      await page.click('.back');
+      await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+    }
+
     // Downloadhoek (blok 10): eigen MIDI-bestand toevoegen (zelf gemaakt: Ode an die Freude + begeleiding) en een kapot bestand
     {
       const m = new Midi();

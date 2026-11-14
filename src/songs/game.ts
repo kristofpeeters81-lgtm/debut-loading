@@ -16,7 +16,15 @@ export interface GameNote {
   midi: number;
   beat: number;
   len: number;
+  /** Drum: welke pad. */
+  pad?: string;
   state: 'open' | 'hit' | 'miss';
+}
+
+/** Noot: enkel de letter telt (octaaf vrij). Drum: exact dezelfde pad. */
+export function matches(n: GameNote, played: number | string): boolean {
+  if (n.pad) return played === n.pad;
+  return typeof played === 'number' && pitchClass(played) === pitchClass(n.midi);
 }
 
 export type GameInput = { result: 'hit'; note: GameNote } | { result: 'wrong' } | { result: 'ignored' };
@@ -84,14 +92,14 @@ export class Game {
     return missed;
   }
 
-  /** Een gespeelde noot verwerken. */
-  input(midi: number): GameInput {
+  /** Een gespeelde noot (MIDI-nummer) of drumpad verwerken. */
+  input(played: number | string): GameInput {
     if (this.wait) {
       const n = this.nextOpen;
       if (!n) return { result: 'ignored' };
       // Mag een beetje vroeg (een halve tel), anders wacht de noot nog.
       if (n.beat - this.beat > 0.5) return { result: 'ignored' };
-      if (pitchClass(midi) === pitchClass(n.midi)) {
+      if (matches(n, played)) {
         n.state = 'hit';
         this.waiting = false;
         return { result: 'hit', note: n };
@@ -101,7 +109,7 @@ export class Game {
       return { result: 'wrong' };
     }
     const limit = HIT_WINDOW_MS / this.msPerBeat;
-    const n = this.notes.find((x) => x.state === 'open' && Math.abs(x.beat - this.beat) <= limit && pitchClass(x.midi) === pitchClass(midi));
+    const n = this.notes.find((x) => x.state === 'open' && Math.abs(x.beat - this.beat) <= limit && matches(x, played));
     if (!n) return { result: 'ignored' };
     n.state = 'hit';
     return { result: 'hit', note: n };

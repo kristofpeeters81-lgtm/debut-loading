@@ -82,11 +82,12 @@ export function keyboardSurface(from: number, to: number, onTap: (midi: number) 
   };
 }
 
-/** Gitaar- of bashals met losse snaar + frets 1–5. Dunste snaar bovenaan, zoals in tabs. */
-export function neckSurface(voice: 'gitaar' | 'bas', onTap: (midi: number) => void): Surface {
+/** Gitaar- of bashals met losse snaar + frets (standaard 1–5). Dunste snaar bovenaan, zoals in tabs. */
+export function neckSurface(voice: 'gitaar' | 'bas', onTap: (midi: number) => void, frets = 5): Surface {
   const open = voice === 'gitaar' ? GUITAR_OPEN : BASS_OPEN; // hoog → laag
-  const FRETS = 5;
+  const FRETS = frets;
   const neck = el('div', `neck lesson-neck ${voice}`);
+  if (FRETS !== 5) neck.style.gridTemplateColumns = `40px 56px repeat(${FRETS}, minmax(44px, 1fr))`;
   neck.append(el('span', 'fret-num corner', ''));
   for (let f = 0; f <= FRETS; f++) neck.append(el('span', 'fret-num', f === 0 ? 'los' : String(f)));
   const cells = new Map<string, HTMLElement>();
@@ -157,10 +158,13 @@ export function neckSurface(voice: 'gitaar' | 'bas', onTap: (midi: number) => vo
 
 const PAD_COLORS = ['#ff4fd8', '#3ff0ff', '#ffe45c', '#5dff9b', '#b46bff', '#6f8bff', '#ff9f4f', '#ff4fd8'];
 
-export function drumSurface(onTap: (pad: DrumPad) => void): Surface {
-  const grid = el('div', 'drum-grid lesson-drums');
+/** Drumpads. `only` = enkel deze pads, in deze volgorde (bv. in het spel: dezelfde volgorde als de banen). */
+export function drumSurface(onTap: (pad: DrumPad) => void, only?: DrumPad[]): Surface {
+  const grid = el('div', only ? 'drum-grid lesson-drums compact' : 'drum-grid lesson-drums');
   const pads = new Map<string, HTMLElement>();
-  DRUM_PADS.forEach((p, i) => {
+  const list = only ? only.map((id) => DRUM_PADS.find((p) => p.id === id)!) : DRUM_PADS;
+  list.forEach((p) => {
+    const i = DRUM_PADS.indexOf(p);
     const pad = el('div', 'drum-pad');
     pad.dataset.pad = p.id;
     pad.style.setProperty('--pad', PAD_COLORS[i]);

@@ -134,6 +134,22 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 **Getest:** unit (liedjes op volgorde en binnen de Casio, wachten, ±300 ms, uitspelen, herhalen, tempo) + e2e
 (Ode an die Freude volledig uitgespeeld op 100 % met tikken → 3 sterren, liggend zonder zijwaarts scrollen).
 
+**Uitbreiding (2026-11-14, op vraag: vallende noten voor alle instrumenten):**
+- Liedjeslijst met **tabbladen per instrument** (start op het instrument van het profiel); sterren per liedje **én** per instrument
+  (`song:<id>` voor keyboard, `song:<id>:<instrument>` voor de rest).
+- `src/songs/arrange.ts` zet een liedje klaar per instrument:
+  - **Gitaar:** per octaaf in E2–E5 (rond E4); elke noot krijgt een **snaar + fret** (laagste fret, bij gelijk de dunnere snaar).
+    Banen = snaren (dik links → dun rechts), op de noot staat "fret · letter". Hals eronder met zoveel frets als nodig (max. 12).
+  - **Bas:** zelfde, twee octaven lager (E1–G3).
+  - **Drum:** de app maakt een beat bij het liedje (crash op het begin, dan basdrum – hi-hat – snare – hi-hat, zoals drumles 3).
+    Banen = crash, hi-hat, snare, basdrum, met in het spel enkel die 4 pads op één rij eronder. Tikken (exact de juiste pad).
+  - **Zang:** naar het **gemeten zangbereik van het profiel** (anders rond A3–E5); witte stip op de raaklijn = waar je stem zit.
+- Begeleiding past zich aan: geen drum als je zelf drumt, geen bas als je zelf bas speelt.
+- Microfoonbereik per instrument; drum enkel tikken.
+- Ook eigen MIDI-liedjes spelen op elk instrument.
+
+**Getest:** unit (gitaar/bas binnen de hals, plek op de hals, zang naar bereik met dezelfde letters, drumbeat, sterren-id)
++ e2e (Mary had a little lamb uitgespeeld op gitaar, bas en drum met 3 sterren, sterren apart per instrument).
 **Nog te testen op de tablet:** vloeiend? Is 70 % een goed starttempo? Hoort de app je keyboard ook als de begeleiding speelt?
 Later uit te breiden: gitaar/bas met snaarbanen, eigen nummers in K-popstijl (blok 12).
 ## Blok 8 — Eerste lessen (keyboard)
