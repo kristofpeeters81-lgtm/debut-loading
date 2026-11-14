@@ -25,7 +25,8 @@ export function loadingBar(progress: number): HTMLElement {
   bar.setAttribute('aria-valuemin', '0');
   bar.setAttribute('aria-valuemax', '100');
   bar.setAttribute('aria-valuenow', String(Math.round(progress * 100)));
-  const lit = Math.round(progress * SEGMENTS);
+  // Naar boven afronden: zodra je iets verdiend hebt, brandt er minstens één blokje (anders lijkt het alsof er niets gebeurt).
+  const lit = Math.min(SEGMENTS, Math.ceil(progress * SEGMENTS));
   for (let i = 0; i < SEGMENTS; i++) bar.append(el('span', i < lit ? 'seg on' : i === lit ? 'seg next' : 'seg'));
   return bar;
 }

@@ -1,32 +1,78 @@
-// Lesmotor (blok 8): houdt bij welke noot er nu gespeeld moet worden, telt foutjes en geeft sterren.
+// Lesmotor: houdt bij wat er nu gespeeld moet worden, telt foutjes en geeft sterren.
 // Pure logica: geen microfoon, geen scherm. Een les wordt een lijst taken:
-//   find  → één taak per noot
-//   echo  → één taak per stukje (eerst voorspelen)
-//   song  → één taak met alle noten
-// Je kan nooit verliezen: een foute noot telt als foutje, en je probeert gewoon opnieuw.
+//   find   → één taak per noot          sing  → één taak per toon
+//   echo   → één taak per stukje (eerst voorspelen)
+//   rhythm → één taak per ritme (eerst voorspelen)
+//   song   → één taak met alle noten     chord → één taak per akkoord (overslaan mag altijd, kost niets)
+// Een "token" is een noot (MIDI-nummer, enkel de letter telt), een akkoord ("chord:Am") of een drumpad ("snare").
+// Je kan nooit verliezen: een fout telt als foutje, en je probeert gewoon opnieuw.
 
 import { pitchClass } from '../dsp/notes';
 import type { Lesson, Step } from './content';
 
+export type Token = number | string;
+
 export interface Task {
   kind: Step['kind'];
   stepIndex: number;
-  notes: number[];
+  tokens: Token[];
   lyrics?: string[];
-  /** Eerst voorspelen (echo). */
+  /** Eerst voorspelen (echo, ritme). */
   demo: boolean;
+  /** Overslaan mag zonder foutje (akkoorden). */
+  skippable: boolean;
+  /** Ritme: tempo van het voorspelen. */
+  bpm?: number;
+  /** Zang: hoe lang de toon vastgehouden moet worden. */
+  holdMs?: number;
 }
 
 export type InputResult = 'ignored' | 'ok' | 'wrong' | 'task-done' | 'lesson-done';
 
+export const chordToken = (name: string): string => `chord:${name}`;
+
 export function tasksOf(lesson: Lesson): Task[] {
   const out: Task[] = [];
+  const base = { demo: false, skippable: false };
   lesson.steps.forEach((s, stepIndex) => {
-    if (s.kind === 'find') for (const n of s.notes) out.push({ kind: 'find', stepIndex, notes: [n], demo: false });
-    else if (s.kind === 'echo') for (const p of s.phrases) out.push({ kind: 'echo', stepIndex, notes: p, demo: true });
-    else out.push({ kind: 'song', stepIndex, notes: s.notes, lyrics: s.lyrics, demo: false });
+    switch (s.kind) {
+      case 'find':
+        for (const n of s.notes) out.push({ ...base, kind: 'find', stepIndex, tokens: [n] });
+        break;
+      case 'echo':
+        for (const p of s.phrases) out.push({ ...base, kind: 'echo', stepIndex, tokens: p, demo: true });
+        break;
+      case 'song':
+        out.push({ ...base, kind: 'song', stepIndex, tokens: s.notes, lyrics: s.lyrics });
+        break;
+      case 'chord':
+        for (const c of s.chords) out.push({ ...base, kind: 'chord', stepIndex, tokens: [chordToken(c)], skippable: true });
+        break;
+      case 'rhythm':
+        for (const p of s.patterns) out.push({ ...base, kind: 'rhythm', stepIndex, tokens: p, demo: true, bpm: s.bpm });
+        break;
+      case 'sing':
+        s.notes.forEach((n, i) =>
+          out.push({
+            ...base,
+            kind: 'sing',
+            stepIndex,
+            tokens: [n],
+            skippable: true,
+            holdMs: s.holdMs ?? 700,
+            lyrics: s.lyrics ? [s.lyrics[i]] : undefined,
+          }),
+        );
+        break;
+    }
   });
   return out;
+}
+
+/** Klopt het gespeelde met wat verwacht wordt? Noten: enkel de letter. Akkoorden en pads: exact. */
+export function sameToken(played: Token, wanted: Token): boolean {
+  if (typeof played === 'number' && typeof wanted === 'number') return pitchClass(played) === pitchClass(wanted);
+  return played === wanted;
 }
 
 /** Sterren uit het aantal foutjes: 0–2 → 3, 3–6 → 2, meer → 1. Nooit 0. */
@@ -39,12 +85,12 @@ export function starsFor(mistakes: number): number {
 export class LessonRun {
   readonly tasks: Task[];
   taskIndex = 0;
-  /** Hoeveel noten van de huidige taak al juist gespeeld zijn. */
+  /** Hoeveel tokens van de huidige taak al juist gespeeld zijn. */
   pos = 0;
   mistakes = 0;
-  /** Foutjes na elkaar op dezelfde noot (na 2 geeft het scherm een hint). */
+  /** Foutjes na elkaar op hetzelfde token (na 2 geeft het scherm een hint). */
   wrongStreak = 0;
-  /** Is het voorspelen van de huidige echo-taak klaar? */
+  /** Is het voorspelen van de huidige taak klaar? */
   demoDone = false;
 
   constructor(lesson: Lesson) {
@@ -59,11 +105,11 @@ export class LessonRun {
     return this.taskIndex >= this.tasks.length;
   }
 
-  /** De noot die nu gespeeld moet worden (of null tijdens het voorspelen / op het einde). */
-  get expected(): number | null {
+  /** Wat nu gespeeld moet worden (of null tijdens het voorspelen / op het einde). */
+  get expected(): Token | null {
     const t = this.task;
     if (!t || (t.demo && !this.demoDone)) return null;
-    return t.notes[this.pos] ?? null;
+    return t.tokens[this.pos] ?? null;
   }
 
   get showHint(): boolean {
@@ -72,8 +118,8 @@ export class LessonRun {
 
   /** Voortgang 0..1 over alle taken (voor de balk bovenaan). */
   get progress(): number {
-    const total = this.tasks.reduce((s, t) => s + t.notes.length, 0);
-    const before = this.tasks.slice(0, this.taskIndex).reduce((s, t) => s + t.notes.length, 0);
+    const total = this.tasks.reduce((s, t) => s + t.tokens.length, 0);
+    const before = this.tasks.slice(0, this.taskIndex).reduce((s, t) => s + t.tokens.length, 0);
     return total ? Math.min(1, (before + this.pos) / total) : 1;
   }
 
@@ -81,22 +127,35 @@ export class LessonRun {
     this.demoDone = true;
   }
 
-  /** Een gespeelde noot verwerken. Enkel de letter telt (de octaaf niet). */
-  input(midi: number): InputResult {
+  private advance(): InputResult {
+    this.taskIndex++;
+    this.pos = 0;
+    this.wrongStreak = 0;
+    this.demoDone = false;
+    return this.done ? 'lesson-done' : 'task-done';
+  }
+
+  /** Iets gespeeld (noot, akkoord of drumpad). */
+  input(played: Token): InputResult {
     const want = this.expected;
     if (want === null) return 'ignored';
-    if (pitchClass(midi) !== pitchClass(want)) {
+    if (!sameToken(played, want)) {
+      // Akkoorden en zingen: zoeken is geen fout (een losse noot bij een akkoord, een valse toon bij zingen).
+      if (this.task?.kind === 'chord' || this.task?.kind === 'sing') return 'ignored';
       this.mistakes++;
       this.wrongStreak++;
       return 'wrong';
     }
     this.wrongStreak = 0;
     this.pos++;
-    if (this.pos < (this.task?.notes.length ?? 0)) return 'ok';
-    this.taskIndex++;
-    this.pos = 0;
-    this.demoDone = false;
-    return this.done ? 'lesson-done' : 'task-done';
+    if (this.pos < (this.task?.tokens.length ?? 0)) return 'ok';
+    return this.advance();
+  }
+
+  /** Overslaan (enkel waar het mag, bv. akkoorden): kost niets. */
+  skip(): InputResult {
+    if (!this.task?.skippable) return 'ignored';
+    return this.advance();
   }
 
   get stars(): number {

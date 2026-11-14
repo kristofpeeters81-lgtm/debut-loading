@@ -138,6 +138,26 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 
 **Nog te testen op de tablet (met de Casio):** hoort de app elke noot? Ook twee keer dezelfde noot? Te gevoelig/te traag?
 Is het leuk en duidelijk zonder uitleg?
+**Getest door de gebruiker (2026-11-14):** enkele keyboardlessen op de tablet → in orde.
+
+**Uitbreiding (2026-11-14, op vraag: "zoveel mogelijk", alle instrumenten):** 42 lessen in totaal.
+- **Keyboard 7–17:** B en hoge C (toonladder), When the Saints, Jingle Bells, zwarte toetsen (F# met Twinkle in D, Bb met Twinkle in F),
+  linkerhand (C3, F3, G3), twee handen, akkoorden C, F, G, Am en het popschema C–G–Am–F.
+- **Gitaar 1–7:** twee dunste snaren, alle zes, eerste frets (C, D: Hot Cross Buns), Mary had a little lamb, Ode op gitaar, Em, Em↔Am.
+- **Bas 1–6:** vier snaren, grondtonen, fret 3 (G, C), baslijn C–F–G, Vader Jacob op bas, wandelende bas.
+- **Drum 1–6:** basdrum/snare, hi-hat, eerste beat, toms, fill met crash, handklap (ritme eerst voorgespeeld, daarna natikken).
+- **Zang 1–6:** zing de do (vasthouden), do-re-mi, tot de sol, sprongetjes do-mi-sol, Vader Jacob, Ode an die Freude.
+- Nieuwe opdrachten: **akkoord** (herkenning zoals in Luisteroor, mild: losse noten zijn geen fout, "Hoor het akkoord",
+  altijd **"Verder"** zonder kost), **ritme** (pads natikken, exact de juiste pad), **zing de toon** ("Hoor de toon",
+  live "iets hoger / iets lager / juist", balk die volloopt terwijl je de toon vasthoudt; octaaf vrij; valse toon = geen foutje; "Verder" mag).
+- Speelvlak per instrument (`src/screens/lesSurfaces.ts`): keyboard (bereik volgens de les, ook C3 voor de linkerhand),
+  gitaar-/bashals frets 0–5 met de plek van de noot of de akkoordgreep oplichtend, drumpads, zangvlak.
+  Microfoonbereik per instrument; drum enkel tikken.
+- Lessenlijst met tabbladen per instrument (start op het instrument van het profiel). Laadbalk = sterren over alle 42 lessen.
+
+**Getest:** unit (inhoud: Casio-bereik, frets 0–5, akkoordgrepen, akkoordherkenning, drumpads, lettergrepen; lesmotor voor akkoord,
+ritme, zang) + e2e (aantal lessen per instrument, automatisch uitgespeeld met tikken: akkoord C, gitaar 1, bas 3, drum 3;
+zangles via nep-microfoon).
 ## Blok 5 — Profielen
 
 **Gebouwd (2026-11-14):** de 10 avatars zijn goedgekeurd door de gebruiker.

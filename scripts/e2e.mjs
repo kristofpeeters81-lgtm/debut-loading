@@ -257,7 +257,7 @@ async function appTest() {
 
     // Lessen (blok 8): les 1 met tikken op het scherm (deze browser heeft geen microfoon)
     check(await tapScreen(page, 'lessen'), 'lessen: opent');
-    check((await page.$$('.lesson-card')).length === 6, 'lessen: 6 lessen');
+    check((await page.$$('.lesson-card')).length === 17, 'lessen: 17 keyboardlessen');
     check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-1-c', 'lessen: les 1 is "Volgende"');
     await page.screenshot({ path: path.join(OUT, 'lessen.png'), fullPage: true });
     await page.click('.lesson-card[data-lesson="kb-1-c"]');
@@ -280,7 +280,65 @@ async function appTest() {
     check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-2-cde', 'lessen: les 2 is nu "Volgende"');
     await page.click('.back');
     await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
-    check((await page.$$('.led-bar .seg.on')).length === 3, 'lessen: 3 sterren vullen de laadbalk (3 van 20 blokjes)');
+    check((await page.$$('.led-bar .seg.on')).length === 1, 'lessen: na de eerste sterren brandt het eerste blokje van de laadbalk');
+    check((await page.$eval('.led-meta', (e) => e.textContent)).includes('3 sterren verzameld'), 'lessen: "3 sterren verzameld"');
+
+    // Extra lessen: één les per instrument automatisch uitspelen door te tikken wat verwacht wordt.
+    const CHORD_KEYS = { C: [60, 64, 67], F: [65, 69, 72], G: [67, 71, 74], Am: [57, 60, 64], Em: [64, 67, 71], Dm: [62, 65, 69] };
+    const autoPlay = async (lessonId, tab) => {
+      await tapScreen(page, 'lessen');
+      await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
+      await page.click(`.lesson-card[data-lesson="${lessonId}"]`);
+      await waitFor(async () => (await screenOf(page)) === 'les', 3000, 'les');
+      await page.click('.lesson-intro button.big');
+      const end = Date.now() + 60000;
+      let shot = false;
+      while (Date.now() < end) {
+        if (await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false)) break;
+        const want = await page.$eval('.lesson-stage', (s) => s.dataset.expected ?? '');
+        if (want === '') {
+          await sleep(150);
+          continue;
+        }
+        if (!shot) {
+          await page.screenshot({ path: path.join(OUT, `les-${lessonId}.png`) });
+          shot = true;
+        }
+        const tap = (sel) => page.click(sel).catch(() => undefined);
+        if (want.startsWith('chord:')) {
+          for (const m of CHORD_KEYS[want.slice(6)]) await tap(`.lesson-kb .key[data-midi="${m}"]`);
+        } else if (/^\d+$/.test(want)) {
+          const m = Number(want);
+          const sel = (await page.$(`.lesson-kb .key[data-midi="${m}"]`))
+            ? `.lesson-kb .key[data-midi="${m}"]`
+            : (await page.$(`.lesson-neck .fret[data-midi="${m}"]`))
+              ? `.lesson-neck .fret[data-midi="${m}"]`
+              : `.lesson-kb .key[data-midi="${(m % 12) + 60}"]`;
+          await tap(sel);
+        } else {
+          await tap(`.drum-pad[data-pad="${want}"]`);
+        }
+        await sleep(160);
+      }
+      const done = await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false);
+      const stars = await page.$eval('.lesson-end', (e) => e.dataset.stars).catch(() => '?');
+      check(done && stars === '3', `les ${lessonId} (${tab}): uitgespeeld met 3 sterren (sterren: ${stars})`);
+      await page.click('.lesson-end .lesson-back').catch(() => undefined);
+      await waitFor(async () => (await screenOf(page)) === 'lessen', 3000, 'lessen');
+      await page.click('.back');
+      await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+    };
+    await tapScreen(page, 'lessen');
+    for (const [tab, n] of [['keyboard', 17], ['gitaar', 7], ['bas', 6], ['drum', 6], ['zang', 6]]) {
+      await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
+      check((await page.$$('.lesson-card')).length === n, `lessen: ${n} lessen voor ${tab}`);
+    }
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+    await autoPlay('kb-14-akkoord-c', 'keyboard');
+    await autoPlay('g-1-hoog', 'gitaar');
+    await autoPlay('b-3-frets', 'bas');
+    await autoPlay('d-3-beat', 'drum');
 
     // Tweede profiel (blok 5): eigen instrument per profiel, wisselen, kiezen bij de start, verwijderen
     const onScreen = (id) => waitFor(async () => (await screenOf(page)) === id, 3000, id);
@@ -477,6 +535,28 @@ async function main() {
         check(done, 'les via microfoon: "Vader Jacob" helemaal herkend');
         const stars = await page.$eval('.lesson-end', (e) => e.dataset.stars).catch(() => '?');
         console.log(`  (sterren via microfoon: ${stars})`);
+      },
+      { hash: '#/lessen', ready: '.lesson-path', start: null },
+    );
+    // Zangles "Zing de do" via de microfoon: een stem die telkens 1,2 s een C zingt.
+    const doParts = [];
+    for (let i = 0; i < 4; i++) doParts.push(voice(60, 1.2), new Float32Array(Math.round(SR * 0.5)));
+    await run(
+      url,
+      'les-zang',
+      doParts,
+      async (page) => {
+        await page.click('.lesson-tabs .chip[data-instrument="zang"]');
+        await page.click('.lesson-card[data-lesson="z-1-do"]');
+        await page.waitForSelector('.lesson-intro button.big', { timeout: 3000 });
+        await page.click('.lesson-intro button.big');
+        let done = false;
+        const end = Date.now() + 40000;
+        while (Date.now() < end && !done) {
+          done = await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false);
+          if (!done) await sleep(300);
+        }
+        check(done, 'zangles via microfoon: drie keer de do gezongen en vastgehouden');
       },
       { hash: '#/lessen', ready: '.lesson-path', start: null },
     );
