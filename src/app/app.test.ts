@@ -23,8 +23,7 @@ describe('router', () => {
       if (info.id === 'start') expect(info.parent).toBeNull();
       else expect(info.parent && SCREENS[info.parent]).toBeTruthy();
     }
-    expect(HOME_BUTTONS).toContain('downloadhoek');
-    expect(HOME_BUTTONS).toContain('instellingen');
+    expect(HOME_BUTTONS).toEqual(['vrij-spelen', 'lessen', 'liedjes', 'downloadhoek']);
   });
 });
 
@@ -60,7 +59,12 @@ describe('instellingen', () => {
   });
 
   it('houdt geldige waarden en begrenst de gevoeligheid', () => {
-    expect(sanitizeSettings({ notation: 'doremi', micSensitivity: 80 })).toEqual({ notation: 'doremi', micSensitivity: 80 });
+    expect(sanitizeSettings({ notation: 'doremi', micSensitivity: 80, instrument: 'bas' })).toEqual({
+      notation: 'doremi',
+      micSensitivity: 80,
+      instrument: 'bas',
+    });
+    expect(sanitizeSettings({ instrument: 'triangel' }).instrument).toBe('keyboard');
     expect(sanitizeSettings({ micSensitivity: 250 }).micSensitivity).toBe(100);
     expect(sanitizeSettings({ micSensitivity: -5 }).micSensitivity).toBe(0);
   });

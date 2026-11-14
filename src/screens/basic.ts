@@ -1,29 +1,98 @@
-// Eenvoudige schermen van blok 2: startscherm, lege schermen ("komt in blok X") en instellingen.
-// Sober opgemaakt; de echte stijl komt in blok 3.
+// Startscherm, lege schermen ("komt in blok X") en instellingen. Stijl A · Neon Stage (blok 3).
 
-import { HOME_BUTTONS, SCREENS, hashFor, type ScreenId, type ScreenInfo } from '../app/router';
+import { SCREENS, hashFor, type ScreenId, type ScreenInfo } from '../app/router';
 import { settings, updateSettings } from '../app/state';
-import type { Notation } from '../app/settings';
+import { INSTRUMENT_CHOICES, type Notation } from '../app/settings';
 import type { Persistence } from '../storage/db';
+import { avatarSvg } from '../ui/avatar';
 import { el } from '../ui/dom';
+import { icon, type IconName } from '../ui/icons';
+
+const TILES: { id: ScreenId; icon: IconName; color: string; sub: string }[] = [
+  { id: 'vrij-spelen', icon: 'keys', color: 'var(--cyan)', sub: 'Speel wat je wil' },
+  { id: 'lessen', icon: 'star', color: 'var(--pink)', sub: 'Stap voor stap' },
+  { id: 'liedjes', icon: 'music', color: 'var(--yellow)', sub: 'Vallende noten' },
+  { id: 'downloadhoek', icon: 'download', color: 'var(--green)', sub: 'Liedjes toevoegen' },
+];
+
+const SEGMENTS = 20;
+
+/** Laadbalk uit LED-blokjes. `progress` 0..1 (vanaf blok 5: de voortgang van het profiel). */
+export function loadingBar(progress: number): HTMLElement {
+  const bar = el('div', 'led-bar');
+  bar.setAttribute('role', 'progressbar');
+  bar.setAttribute('aria-valuemin', '0');
+  bar.setAttribute('aria-valuemax', '100');
+  bar.setAttribute('aria-valuenow', String(Math.round(progress * 100)));
+  const lit = Math.round(progress * SEGMENTS);
+  for (let i = 0; i < SEGMENTS; i++) bar.append(el('span', i < lit ? 'seg on' : i === lit ? 'seg next' : 'seg'));
+  return bar;
+}
 
 export function mountHome(app: HTMLElement): void {
-  const intro = el('p', 'sub', 'Van slaapkamer tot wereldtournee. 🎤');
-  const grid = el('nav', 'home-grid');
-  for (const id of HOME_BUTTONS) {
-    const info = SCREENS[id];
-    const a = el('a', 'home-btn');
-    a.href = hashFor(id);
-    a.dataset.screen = id;
-    a.append(el('span', 'home-icon', info.icon), el('span', 'home-label', info.title));
-    grid.append(a);
+  const home = el('div', 'home');
+
+  // Logo + laadbalk
+  const hero = el('section', 'hero');
+  const logo = el('h1', 'logo');
+  logo.append(el('span', 'logo-debut', 'DEBUT'), el('span', 'logo-loading', 'LOADING…'));
+  const progress = 0; // echte voortgang per profiel komt in blok 5
+  const meta = el('div', 'led-meta');
+  meta.append(el('span', '', `${Math.round(progress * 100)}% geladen`), el('span', '', 'Je tour begint in je slaapkamer'));
+  hero.append(el('p', 'eyebrow', 'Van slaapkamer tot wereldtournee'), logo, loadingBar(progress), meta);
+
+  // Hoofdknoppen
+  const tiles = el('nav', 'tiles');
+  tiles.setAttribute('aria-label', 'Hoofdmenu');
+  for (const t of TILES) {
+    const a = el('a', 'tile');
+    a.href = hashFor(t.id);
+    a.dataset.screen = t.id;
+    const text = el('span', 'tile-text');
+    text.append(el('span', 'tile-title', SCREENS[t.id].title), el('span', 'tile-sub', t.sub));
+    a.append(icon(t.icon, t.color, 40), text);
+    tiles.append(a);
   }
-  app.append(intro, grid);
+
+  // Podium met avatar + keuze van instrument
+  const stage = el('section', 'stage');
+  stage.append(el('div', 'beam b1'), el('div', 'beam b2 pink'), el('div', 'beam b3'));
+  const figure = el('div', 'stage-figure');
+  const chips = el('div', 'chips');
+  chips.setAttribute('role', 'radiogroup');
+  chips.setAttribute('aria-label', 'Kies je instrument');
+  const renderStage = (): void => {
+    figure.replaceChildren(avatarSvg(settings().instrument, { stage: true }));
+    for (const c of chips.querySelectorAll<HTMLButtonElement>('.chip')) {
+      const on = c.dataset.instrument === settings().instrument;
+      c.classList.toggle('on', on);
+      c.setAttribute('aria-checked', String(on));
+    }
+  };
+  for (const choice of INSTRUMENT_CHOICES) {
+    const c = el('button', 'chip', choice.label);
+    c.dataset.instrument = choice.id;
+    c.setAttribute('role', 'radio');
+    c.addEventListener('click', () => {
+      void updateSettings({ instrument: choice.id });
+      renderStage();
+    });
+    chips.append(c);
+  }
+  stage.append(figure, chips);
+  renderStage();
+
+  home.append(hero, stage, tiles);
+  app.append(home);
 }
 
 export function mountPlaceholder(app: HTMLElement, info: ScreenInfo): void {
   const card = el('section', 'card placeholder');
-  card.append(el('div', 'placeholder-icon', info.icon), el('p', '', `Dit scherm komt in ${info.comesIn ?? 'een later blok'}.`));
+  card.append(
+    icon(info.icon, 'var(--cyan)', 72),
+    el('p', 'placeholder-title', 'Hier wordt nog gebouwd'),
+    el('p', 'muted', `Dit scherm komt in ${info.comesIn ?? 'een later blok'}.`),
+  );
   app.append(card);
 }
 
@@ -42,7 +111,7 @@ export function mountSettings(app: HTMLElement, persistence: Persistence): void 
     b.dataset.notation = value;
     b.addEventListener('click', () => {
       void updateSettings({ notation: value }).then((saved) => {
-        status.textContent = saved ? '' : '⚠️ Kon niet bewaren op deze tablet.';
+        status.textContent = saved ? '' : 'Kon niet bewaren op deze tablet.';
       });
       render();
     });
@@ -58,15 +127,15 @@ export function mountSettings(app: HTMLElement, persistence: Persistence): void 
   // Hulpjes
   const tools = el('section', 'card');
   tools.append(el('h2', '', 'Hulpjes'));
-  const toolLinks: [ScreenId, string][] = [
-    ['luisteroor', 'Luisteroor: wat hoort de tablet?'],
-    ['klanktest', 'Klanktest: alle klanken van de app uitproberen'],
+  const toolLinks: [ScreenId, IconName, string][] = [
+    ['luisteroor', 'ear', 'Luisteroor: wat hoort de tablet?'],
+    ['klanktest', 'speaker', 'Klanktest: alle klanken van de app uitproberen'],
   ];
-  for (const [id, text] of toolLinks) {
+  for (const [id, ic, text] of toolLinks) {
     const a = el('a', 'tool-link');
     a.href = hashFor(id);
     a.dataset.screen = id;
-    a.append(el('span', 'home-icon', SCREENS[id].icon), el('span', '', text));
+    a.append(icon(ic, 'var(--cyan)', 30), el('span', '', text));
     tools.append(a);
   }
 
@@ -74,12 +143,12 @@ export function mountSettings(app: HTMLElement, persistence: Persistence): void 
   const about = el('section', 'card');
   about.append(el('h2', '', 'Over de app'));
   const persistText: Record<Persistence, string> = {
-    blijvend: '✅ Bewaard op deze tablet (Android ruimt het niet zomaar op).',
-    tijdelijk: 'ℹ️ Bewaard op deze tablet. Zet de app op het startscherm, dan wordt het blijvend bewaard.',
-    onbekend: 'ℹ️ Bewaard op deze tablet.',
+    blijvend: 'Bewaard op deze tablet (Android ruimt het niet zomaar op).',
+    tijdelijk: 'Bewaard op deze tablet. Zet de app op het startscherm, dan wordt het blijvend bewaard.',
+    onbekend: 'Bewaard op deze tablet.',
   };
   about.append(
-    el('p', 'small', '🔒 Alles blijft op deze tablet. De app stuurt niets naar het internet en gebruikt geen AI.'),
+    el('p', 'small', 'Alles blijft op deze tablet. De app stuurt niets naar het internet en gebruikt geen AI.'),
     el('p', 'small', persistText[persistence]),
     el('p', 'small', `Versie: ${__BUILD_TIME__}`),
   );

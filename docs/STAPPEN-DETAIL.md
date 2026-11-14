@@ -114,7 +114,24 @@ e2e: alle 36 knoppen spelen een klank, metronoom tikt, geen fouten.
 2. Voelt het meteen aan bij het tikken (geen merkbare vertraging)?
 3. Metronoom: blijft hij gelijkmatig tikken, ook bij het verschuiven van het tempo?
 4. Speel C4 in de Klanktest en kijk in Luisteroor (op een tweede toestel) of de tablet zuiver is (optioneel).
-## Blok 3 — Stijl en figuren (wensen, nog niet gebouwd)
+## Blok 3 — Stijl en figuren
+
+**Keuze gebruiker (2026-11-14): A · Neon Stage**, en 8 of meer figuren.
+
+**Gebouwd (2026-11-14):**
+- Stijl in `src/styles.css` (kleurtokens bovenaan): donker podium, neon cyaan/roze/geel/groen, lettertypes Unbounded (logo, titels)
+  en Inter (tekst), **meegeleverd in de app** via `@fontsource` (OFL-licentie, werkt offline; geen Google Fonts).
+- Startscherm zoals voorbeeld A: logo DEBUT / LOADING…, LED-laadbalk (20 blokjes, 0% tot de profielen er zijn), 4 grote knoppen,
+  podium met lichtbundels en avatar, keuze van instrument (Keyboard/Gitaar/Bas/Drum/Zang) die de avatar meteen aanpast
+  (bewaard als instelling; vanaf blok 5 per profiel). Instellingen = tandwiel rechtsboven. Staand: logo, podium, knoppen onder elkaar.
+- Lijn-iconen (`src/ui/icons.ts`) in plaats van emoji. Nieuw app-icoon: neon-D met laadbalk.
+- Avatars (`src/ui/avatar.ts`): **10 figuren** (Nova, Kai, Luna, Rio, Zoë, Max, Jade, Kat, Bliep de robot, Zib de alien), elk met
+  elk van de 5 instrumenten (instrument + armen = aparte laag). Overzicht: `node scripts/avatar-gallery.mjs` → `e2e-output/avatars.png`.
+  **Getoond ter goedkeuring** op het canvas; in de app wordt voorlopig enkel Nova gebruikt. De keuze per profiel komt in blok 5.
+
+**Nog te testen op de tablet:** startscherm liggend en staand, instrument wisselen, leesbaarheid, lettertypes ook in vliegtuigmodus.
+
+### Wensen en voorbeelden (vóór de keuze)
 
 **Voorbeelden getoond (2026-11-14):** https://claude.ai/artifact/6HvaYBbLFdp7droUeaQnw4 (privé ontwerpcanvas), per richting een startscherm en een spelscherm (keyboard, vallende noten), liggend 1280×800:
 - **A · Neon Stage:** donker podium, neon cyaan/roze, lichtbundels, logo met LED-laadbalk. Avatar met keyboard.

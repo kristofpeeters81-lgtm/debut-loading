@@ -1,6 +1,12 @@
 // DEBUT LOADING… — opstart en de schil van de app (kopbalk met terugknop, schermen, updatemelding).
 // Alles draait op de tablet: geen internet nodig na de eerste keer, niets wordt verstuurd.
 
+// Lettertypes zitten in de app zelf (gratis, OFL-licentie), zodat ze ook offline werken.
+import '@fontsource/unbounded/latin-600.css';
+import '@fontsource/unbounded/latin-900.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-600.css';
+import '@fontsource/inter/latin-800.css';
 import './styles.css';
 import { NavStack, SCREENS, hashFor, parseHash, type ScreenId } from './app/router';
 import { loadSettings, settings, updateSettings } from './app/state';
@@ -10,6 +16,7 @@ import { mountHome, mountPlaceholder, mountSettings } from './screens/basic';
 import { mountLuisteroor } from './screens/luisteroor';
 import { mountKlanktest } from './screens/klanktest';
 import { el } from './ui/dom';
+import { icon } from './ui/icons';
 
 const root = document.getElementById('app');
 if (!root) throw new Error('#app ontbreekt');
@@ -17,10 +24,16 @@ const app: HTMLElement = root;
 
 // ---------- Schil ----------
 const bar = el('header', 'topbar');
-const backBtn = el('button', 'back', '←');
+const backBtn = el('button', 'icon-btn back');
 backBtn.setAttribute('aria-label', 'Terug');
+backBtn.append(icon('back', 'var(--text)', 26));
 const title = el('h1', 'title', '');
-bar.append(backBtn, title);
+const gear = el('a', 'icon-btn gear');
+gear.href = hashFor('instellingen');
+gear.dataset.screen = 'instellingen';
+gear.setAttribute('aria-label', 'Instellingen');
+gear.append(icon('gear', 'var(--muted)', 26));
+bar.append(backBtn, title, gear);
 
 const banner = el('div', 'update-banner');
 banner.hidden = true;
@@ -38,8 +51,11 @@ function show(id: ScreenId): void {
   window.scrollTo(0, 0);
 
   const info = SCREENS[id];
-  title.textContent = id === 'start' ? 'DEBUT LOADING…' : `${info.icon} ${info.title}`;
+  // Op het startscherm staat het grote logo; daar enkel het tandwiel rechtsboven.
+  title.textContent = id === 'start' ? '' : info.title;
+  title.hidden = id === 'start';
   backBtn.hidden = info.parent === null;
+  gear.hidden = id !== 'start';
   document.body.dataset.screen = id;
 
   switch (id) {
@@ -79,7 +95,7 @@ window.addEventListener('hashchange', () => {
 // ---------- Updatemelding ----------
 setupOfflineAndUpdates((apply) => {
   banner.replaceChildren();
-  const btn = el('button', 'update-btn', '✨ Nieuwe versie klaar — tik om bij te werken');
+  const btn = el('button', 'update-btn', 'Nieuwe versie klaar — tik om bij te werken');
   btn.addEventListener('click', () => {
     btn.disabled = true;
     btn.textContent = 'Even bijwerken…';

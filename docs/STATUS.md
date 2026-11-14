@@ -6,8 +6,8 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 |---|---|---|---|---|
 | 1 | [Testpagina "Luisteroor"](STAPPEN-DETAIL.md#blok-1--testpagina-luisteroor) | ✅ | 2026-11-14 | Getest op de tablet: microfoon volstaat voor alle instrumenten, geen adapter nodig. Zie resultaten. |
 | 2 | [Projectbasis (PWA, offline, schermen, opslag)](STAPPEN-DETAIL.md#blok-2--projectbasis) | 🧪 | 2026-11-14 | Gebouwd, alle tests groen; wacht op tablettest |
-| 3 | Stijl en figuren (wereldtournee, avatars **met hun instrument**): eerst voorbeelden tonen | 🟡 | 2026-11-14 | 3 richtingen getoond (A Neon Stage, B Sticker Tour, C Holo Idol): https://claude.ai/artifact/6HvaYBbLFdp7droUeaQnw4 ; wacht op keuze |
-| 4 | [Klankmotor (piano, gitaar, bas, drum, metronoom)](STAPPEN-DETAIL.md#blok-4--klankmotor) | 🧪 | 2026-11-14 | Gebouwd + testscherm "Klanktest" onder Instellingen; wacht op tablettest |
+| 3 | [Stijl en figuren (Neon Stage, avatars met instrument)](STAPPEN-DETAIL.md#blok-3--stijl-en-figuren) | 🧪 | 2026-11-14 | Gekozen: A · Neon Stage. Ingebouwd; 10 avatars getoond ter goedkeuring (canvas: https://claude.ai/artifact/6HvaYBbLFdp7droUeaQnw4) |
+| 4 | [Klankmotor (piano, gitaar, bas, drum, metronoom)](STAPPEN-DETAIL.md#blok-4--klankmotor) | 🧪 | 2026-11-14 | Live; testscherm "Klanktest" onder Instellingen; wacht op tablettest |
 | 5 | Profielen (avatar + naam) | ⬜ | | |
 | 6 | Vrij spelen (keyboard, gitaarhals, bas, drumpads; A–G / do-re-mi) | ⬜ | | |
 | 7 | Stemapparaat + zangbereik | ⬜ | | |
@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) stijlrichting kiezen voor blok 3; (2) akkoord om blok 4 te pushen; (3) blok 2 en 4 testen op de tablet.
+**Volgende actie:** (1) akkoord op de 10 avatars (nodig voor blok 5); (2) akkoord om blok 3 te pushen; (3) blok 2, 3 en 4 testen op de tablet.

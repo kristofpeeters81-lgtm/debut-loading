@@ -1,15 +1,28 @@
 // Instellingen van de app (voor iedereen op deze tablet). Bewaard in IndexedDB, nooit online.
+// Vanaf blok 5 (profielen) verhuizen persoonlijke keuzes (zoals het instrument) naar het profiel.
 
 export type Notation = 'letters' | 'doremi';
+
+export type InstrumentId = 'keyboard' | 'gitaar' | 'bas' | 'drum' | 'zang';
+
+export const INSTRUMENT_CHOICES: { id: InstrumentId; label: string }[] = [
+  { id: 'keyboard', label: 'Keyboard' },
+  { id: 'gitaar', label: 'Gitaar' },
+  { id: 'bas', label: 'Bas' },
+  { id: 'drum', label: 'Drum' },
+  { id: 'zang', label: 'Zang' },
+];
 
 export interface Settings {
   /** Notennamen: letters (C D E …) of do-re-mi (do re mi …, Belgisch met "si"). */
   notation: Notation;
   /** Gevoeligheid van de microfoon in Luisteroor, 0–100 (hoger = stillere geluiden tellen mee). */
   micSensitivity: number;
+  /** Gekozen instrument (de avatar bespeelt dit instrument). */
+  instrument: InstrumentId;
 }
 
-export const DEFAULT_SETTINGS: Settings = { notation: 'letters', micSensitivity: 60 };
+export const DEFAULT_SETTINGS: Settings = { notation: 'letters', micSensitivity: 60, instrument: 'keyboard' };
 
 /** Maakt van wat er in de opslag stond altijd geldige instellingen (oude of kapotte waarden → standaard). */
 export function sanitizeSettings(raw: unknown): Settings {
@@ -20,5 +33,7 @@ export function sanitizeSettings(raw: unknown): Settings {
   if (typeof r.micSensitivity === 'number' && Number.isFinite(r.micSensitivity)) {
     out.micSensitivity = Math.max(0, Math.min(100, Math.round(r.micSensitivity)));
   }
+  const inst = INSTRUMENT_CHOICES.find((c) => c.id === r.instrument);
+  if (inst) out.instrument = inst.id;
   return out;
 }

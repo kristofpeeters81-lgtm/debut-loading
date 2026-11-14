@@ -60,9 +60,9 @@ export function mountKlanktest(app: HTMLElement, notation: Notation): () => void
 
   const intro = el('p', 'sub', 'Tik op een knop om de klank te horen. Alles wordt op de tablet zelf berekend.');
 
-  const piano = section('🎹 Piano', row(...PIANO_NOTES.map((m) => noteButton(name(m), 'piano', m))));
-  const gitaar = section('🎸 Gitaar (losse snaren)', row(...GUITAR_STRINGS.map((m) => noteButton(name(m), 'gitaar', m))));
-  const bas = section('🎸 Bas (losse snaren)', row(...BASS_STRINGS.map((m) => noteButton(name(m), 'bas', m))));
+  const piano = section('Piano', row(...PIANO_NOTES.map((m) => noteButton(name(m), 'piano', m))));
+  const gitaar = section('Gitaar (losse snaren)', row(...GUITAR_STRINGS.map((m) => noteButton(name(m), 'gitaar', m))));
+  const bas = section('Bas (losse snaren)', row(...BASS_STRINGS.map((m) => noteButton(name(m), 'bas', m))));
 
   const chordBtns = CHORDS.map((c) => {
     const b = el('button', 'pad wide', c.label);
@@ -73,7 +73,7 @@ export function mountKlanktest(app: HTMLElement, notation: Notation): () => void
     });
     return b;
   });
-  const akkoorden = section('🎶 Akkoorden', row(...chordBtns));
+  const akkoorden = section('Akkoorden', row(...chordBtns));
 
   const drumBtns = DRUM_PADS.map((p) => {
     const b = el('button', 'pad drum', p.label);
@@ -85,7 +85,7 @@ export function mountKlanktest(app: HTMLElement, notation: Notation): () => void
     });
     return b;
   });
-  const drum = section('🥁 Drum', row(...drumBtns));
+  const drum = section('Drum', row(...drumBtns));
 
   // Metronoom
   const bpmLabel = el('span', 'bpm', '');
@@ -110,7 +110,7 @@ export function mountKlanktest(app: HTMLElement, notation: Notation): () => void
     renderMetro();
   });
   renderMetro();
-  const metroCard = section('⏱️ Metronoom (4 tellen, de eerste tel klinkt hoger)', row(metroBtn), bpmLabel, bpm);
+  const metroCard = section('Metronoom (4 tellen, de eerste tel klinkt hoger)', row(metroBtn), bpmLabel, bpm);
 
   app.append(intro, piano, gitaar, bas, akkoorden, drum, metroCard, counter);
 

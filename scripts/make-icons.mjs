@@ -1,5 +1,5 @@
 // Maakt de PNG-iconen voor het startscherm uit public/favicon.svg (met Chrome, geen extra pakket nodig).
-// TIJDELIJK icoon (koptelefoon); het definitieve icoon komt in blok 3. Gebruik: node scripts/make-icons.mjs
+// Neon-icoon (stijl A, blok 3): een "D" met een laadbalk. Gebruik: node scripts/make-icons.mjs
 
 import fs from 'node:fs';
 import puppeteer from 'puppeteer-core';
@@ -26,7 +26,7 @@ try {
     await page.setViewport({ width: size, height: size });
     const inner = Math.round(size * scale);
     await page.setContent(
-      `<html><body style="margin:0;background:#170b2e;display:grid;place-items:center;width:${size}px;height:${size}px">` +
+      `<html><body style="margin:0;background:#0b0518;display:grid;place-items:center;width:${size}px;height:${size}px">` +
         `<img src="${data}" width="${inner}" height="${inner}"></body></html>`,
     );
     await page.screenshot({ path: file, omitBackground: false });

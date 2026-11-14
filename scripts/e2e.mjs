@@ -141,8 +141,17 @@ async function appTest() {
     // Staand
     await page.setViewport({ width: 800, height: 1280 });
     await page.goto(url, { waitUntil: 'networkidle0' });
-    check((await page.$$('.home-btn')).length === 5, 'app: startscherm met 5 knoppen');
-    check((await page.$eval('.title', (e) => e.textContent)) === 'DEBUT LOADING…', 'app: titel DEBUT LOADING…');
+    check((await page.$$('.tile')).length === 4, 'app: startscherm met 4 grote knoppen');
+    check((await page.$eval('.logo', (e) => e.textContent)) === 'DEBUTLOADING…', 'app: logo DEBUT LOADING…');
+    check((await page.$$('.led-bar .seg')).length === 20, 'app: laadbalk met 20 LED-blokjes');
+    check(await visible(page, '.stage .avatar'), 'app: avatar op het podium');
+    await page.click('.chip[data-instrument="gitaar"]');
+    check(
+      (await page.$eval('.stage .avatar', (e) => e.dataset.instrument)) === 'gitaar',
+      'app: instrument kiezen verandert het instrument van de avatar',
+    );
+    await page.screenshot({ path: path.join(OUT, 'app-staand-gitaar.png') });
+    await page.click('.chip[data-instrument="keyboard"]');
     check(!(await visible(page, '.back')), 'app: geen terugknop op het startscherm');
     check(await noSideScroll(page), 'app: staand geen zijwaarts scrollen');
     await page.screenshot({ path: path.join(OUT, 'app-staand.png') });
@@ -219,7 +228,7 @@ async function appTest() {
     const failedReq = [];
     page.on('requestfailed', (r) => failedReq.push(`${r.url()} ${r.failure()?.errorText}`));
     await page.reload({ waitUntil: 'load' });
-    const offlineOk = await waitFor(async () => (await page.$$('.home-btn')).length === 5, 5000, 'offline start');
+    const offlineOk = await waitFor(async () => (await page.$$('.tile')).length === 4, 5000, 'offline start');
     check(offlineOk, `app: werkt offline (server gestopt)${offlineOk ? '' : ` — mislukt: ${failedReq.join(' | ')}`}`);
 
     // Update: nieuwe versie van de service worker → melding → tik → nieuwe versie actief.
@@ -234,7 +243,7 @@ async function appTest() {
     );
     await page.click('.update-btn');
     check(await reloaded, 'app: tik op de melding herlaadt de app');
-    await waitFor(async () => (await page.$$('.home-btn')).length === 5, 5000, 'na update');
+    await waitFor(async () => (await page.$$('.tile')).length === 4, 5000, 'na update');
     check(!(await visible(page, '.update-banner')), 'app: na de update is de melding weg');
     check(
       await page.evaluate(() => navigator.serviceWorker.getRegistration().then((r) => !!r && !r.waiting)),
