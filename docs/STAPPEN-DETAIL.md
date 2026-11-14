@@ -41,3 +41,11 @@
 - Welke site: bij de start van dit blok uitzoeken (gratis, zonder account, weinig of geen reclame, K-pop beschikbaar)
   en eerst voorleggen aan de gebruiker.
 - Een geladen liedje blijft in de app, voor alle profielen.
+
+**Eerste verkenning van downloadsites (2026-11-14):**
+- MIDI Show (midishow.com): veel Blackpink (fan-uploads, deels CC0). Downloadvoorwaarden onbekend: de site weigert automatische opvraging → gebruiker test zelf in Chrome (account nodig? pop-ups?).
+- BitMidi: gratis, geen account, eerst beluisteren; maar geen Blackpink gevonden.
+- Mutopia Project: proper, publiek domein, enkel klassiek (goed voor oefenstukjes).
+- MuseScore: beste kwaliteit maar account + meestal betalend → valt af.
+- KATSEYE: geen gratis MIDI gevonden.
+- Fan-bestanden zijn soms rommelig (bv. Pink Venom met 21 sporen) → app moet het melodiespoor kiezen en vereenvoudigen.
