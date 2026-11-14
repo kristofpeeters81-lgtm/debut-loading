@@ -59,7 +59,29 @@
 - Updates: **melding** "Nieuwe versie klaar, tik om bij te werken" (niets verandert vanzelf midden in een liedje).
 - Scherm: **liggend én staand**; elk scherm moet in beide richtingen werken.
 
-**Plan (nog niet gebouwd, wacht op go):**
+**Gebouwd (2026-11-14):** zoals het plan hieronder. Bestanden: `src/main.ts` (schil), `src/app/router.ts` (schermen + terugknop),
+`src/app/settings.ts` + `state.ts` (instellingen: notennamen letters/do-re-mi, gevoeligheid Luisteroor), `src/app/update.ts`
+(service worker + updatemelding), `src/storage/db.ts` (IndexedDB, tabel `kv`), `src/screens/basic.ts` (start, lege schermen,
+instellingen), `src/screens/luisteroor.ts` (blok 1, nu een scherm dat de microfoon stopt bij het verlaten),
+`public/manifest.webmanifest` + tijdelijke iconen (`scripts/make-icons.mjs`). De service worker wordt gemaakt in `vite.config.ts`.
+- Luisteroor toont de grote noot nu volgens de instelling (letters of do-re-mi).
+- Instellingen toont "Versie: <bouwmoment>", zodat je op de tablet kunt zien of een update binnen is.
+- Valkuil opgelost: de cache moet `ignoreVary: true` gebruiken, anders vindt hij JS/CSS niet terug offline.
+- Valkuil (Windows): `npm test` via Git Bash faalt ("reading 'config'") door de schijfletter; via PowerShell lukt het.
+
+**Getest:** 23 unit-tests + e2e: 24 controles voor de app (navigatie, terugknop van de app en van Android/de browser,
+herladen, do-re-mi bewaard, staand en liggend zonder zijwaarts scrollen, offline met gestopte server,
+updatemelding → tik → nieuwe versie) + de 8 Luisteroor-controles met nep-microfoon. Alles in orde.
+
+**Nog te testen op de tablet (door de gebruiker):**
+1. https://kristofpeeters81-lgtm.github.io/debut-loading/ openen in Chrome → menu ⋮ → "Toevoegen aan startscherm" / "App installeren".
+2. De app openen via het icoon: opent schermvullend (zonder adresbalk)?
+3. Rondklikken, ook met de terugknop van Android; tablet draaien (staand en liggend).
+4. Instellingen → do-re-mi kiezen → Luisteroor: toont de grote noot nu "do", "re", …?
+5. Vliegtuigmodus aan → app sluiten en opnieuw openen: werkt hij nog?
+6. Updatemelding: verschijnt bij de volgende update (blok 3). Dan testen.
+
+**Plan:**
 - Installeerbare PWA: `manifest.webmanifest` (naam DEBUT LOADING…, `orientation: any`, tijdelijke iconen; definitieve iconen in blok 3).
 - Service worker (gebaseerd op die van SingApp, gegenereerd bij de build), maar **zonder automatische skipWaiting**:
   een nieuwe versie wacht, de app toont de melding, tik = bijwerken en herladen.

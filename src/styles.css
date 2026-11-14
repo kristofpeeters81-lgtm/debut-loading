@@ -1,4 +1,4 @@
-/* Eenvoudige opmaak voor de testpagina. De echte vormgeving komt in blok 3. */
+/* Sobere opmaak (blok 2). De echte vormgeving komt in blok 3. Werkt liggend en staand. */
 :root {
   --bg: #170b2e;
   --card: #241447;
@@ -23,15 +23,160 @@ body {
 }
 
 #app {
-  max-width: 760px;
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 0 16px 24px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Schil ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: var(--bg);
+}
+
+.topbar .back {
+  font-size: 1.6rem;
+  line-height: 1;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0;
+}
+
+.topbar .back[hidden] {
+  display: none;
+}
+
+.topbar .title {
+  font-size: 1.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.update-banner {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.update-banner[hidden] {
+  display: none;
+}
+
+.update-btn {
+  flex: 1;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--pink), #8a4dff);
+}
+
+/* ---------- Startscherm ---------- */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.home-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 150px;
   padding: 16px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.home-btn:active,
+.tool-link:active {
+  background: var(--line);
+}
+
+.home-icon {
+  font-size: 2.6rem;
+}
+
+/* ---------- Lege schermen en instellingen ---------- */
+.placeholder {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+}
+
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.choice {
+  flex: 1 1 220px;
+  font-size: 1.15rem;
+  padding: 16px;
+}
+
+.choice.on {
+  background: var(--neon);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.tool-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 1.1rem;
+}
+
+/* ---------- Luisteroor: liggend naast elkaar ---------- */
+@media (orientation: landscape) and (min-width: 900px) {
+  .lo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .lo-grid .live {
+    position: sticky;
+    top: 90px;
+  }
 }
 
 h1 {
   margin: 0;
   font-size: 2rem;
   color: var(--neon);
+}
+
+.sub {
+  margin: 4px 0 0;
 }
 
 h2 {

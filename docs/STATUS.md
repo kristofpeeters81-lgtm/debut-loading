@@ -5,7 +5,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | # | Blok | Status | Datum | Notitie |
 |---|---|---|---|---|
 | 1 | [Testpagina "Luisteroor"](STAPPEN-DETAIL.md#blok-1--testpagina-luisteroor) | ✅ | 2026-11-14 | Getest op de tablet: microfoon volstaat voor alle instrumenten, geen adapter nodig. Zie resultaten. |
-| 2 | [Projectbasis (PWA, offline, schermen, opslag)](STAPPEN-DETAIL.md#blok-2--projectbasis) | ⬜ | | Plan klaar, wacht op go |
+| 2 | [Projectbasis (PWA, offline, schermen, opslag)](STAPPEN-DETAIL.md#blok-2--projectbasis) | 🧪 | 2026-11-14 | Gebouwd, alle tests groen; wacht op tablettest |
 | 3 | Stijl en figuren (wereldtournee, avatars): eerst voorbeelden tonen | ⬜ | | |
 | 4 | Klankmotor (piano, gitaar, bas, drum, metronoom) | ⬜ | | |
 | 5 | Profielen (avatar + naam) | ⬜ | | |
@@ -23,4 +23,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** "go" voor blok 2.
+**Volgende actie:** blok 2 testen op de tablet (zie STAPPEN-DETAIL, blok 2: installeren, draaien, vliegtuigmodus).

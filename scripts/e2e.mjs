@@ -1,5 +1,6 @@
-// Eind-tot-eind-test van de testpagina in echte Chrome (headless) met een nep-microfoon.
-// De nep-microfoon speelt een WAV-bestand met zelf gemaakte tonen af (in een lus).
+// Eind-tot-eind-test in echte Chrome (headless).
+// 1. De app zelf: navigatie, terugknop, liggend/staand, instellingen bewaren, offline werken, updatemelding.
+// 2. Luisteroor met een nep-microfoon die een WAV-bestand met zelf gemaakte tonen afspeelt (in een lus).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -80,7 +81,8 @@ async function run(url, name, parts, steps) {
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
     await page.setViewport({ width: 800, height: 1280 });
-    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(`${url}#/luisteroor`, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('button.big', { timeout: 5000 });
     await page.click('button.big');
     await page.waitForSelector('.tabs', { timeout: 5000 });
     await steps(page);
@@ -100,10 +102,130 @@ async function waitOk(page, n, ms) {
   return okCount(page);
 }
 
+// ---------- De app zelf ----------
+const APP_PORT = 5399;
+const startServer = () => preview({ preview: { port: APP_PORT, strictPort: true }, logLevel: 'error' });
+const stopServer = (server) => new Promise((r) => server.httpServer.close(r));
+const visible = (page, sel) => page.$eval(sel, (e) => !e.hidden && e.getBoundingClientRect().height > 0).catch(() => false);
+const screenOf = (page) => page.evaluate(() => document.body.dataset.screen);
+async function waitFor(fn, ms, label) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    if (await fn()) return true;
+    await sleep(200);
+  }
+  console.log(`  (gaf op na ${ms} ms: ${label})`);
+  return false;
+}
+async function tapScreen(page, id) {
+  await page.click(`a[data-screen="${id}"]`);
+  return waitFor(async () => (await screenOf(page)) === id, 3000, `scherm ${id}`);
+}
+const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+
+async function appTest() {
+  const swFile = path.resolve('dist/sw.js');
+  const swOriginal = fs.readFileSync(swFile, 'utf8');
+  let server = await startServer();
+  const url = `http://localhost:${APP_PORT}/`;
+  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true });
+  const errors = [];
+  try {
+    const page = await browser.newPage();
+    page.on('pageerror', (e) => errors.push(e.message));
+    // Fouten door de bewust gestopte server (offline-test) tellen niet mee.
+    page.on('console', (m) => {
+      if (m.type() === 'error' && !/ERR_CONNECTION_REFUSED|Failed to load resource/.test(m.text())) errors.push(m.text());
+    });
+
+    // Staand
+    await page.setViewport({ width: 800, height: 1280 });
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    check((await page.$$('.home-btn')).length === 5, 'app: startscherm met 5 knoppen');
+    check((await page.$eval('.title', (e) => e.textContent)) === 'DEBUT LOADING…', 'app: titel DEBUT LOADING…');
+    check(!(await visible(page, '.back')), 'app: geen terugknop op het startscherm');
+    check(await noSideScroll(page), 'app: staand geen zijwaarts scrollen');
+    await page.screenshot({ path: path.join(OUT, 'app-staand.png') });
+
+    // Lege schermen tonen in welk blok ze komen
+    check(await tapScreen(page, 'downloadhoek'), 'app: downloadhoek opent');
+    check((await page.$eval('.placeholder', (e) => e.textContent)).includes('blok 10'), 'app: downloadhoek zegt "komt in blok 10"');
+    await page.click('.back');
+    check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'terug naar start'), 'app: terugknop gaat naar start');
+
+    // Instellingen → Luisteroor → terug (knop in de app) → terug (zoals Android)
+    check(await tapScreen(page, 'instellingen'), 'app: instellingen opent');
+    check(await tapScreen(page, 'luisteroor'), 'app: Luisteroor opent vanuit instellingen');
+    check(await visible(page, 'button.big'), 'app: Luisteroor toont de startknop voor de microfoon');
+    await page.click('.back');
+    check(await waitFor(async () => (await screenOf(page)) === 'instellingen', 3000, 'terug'), 'app: terugknop gaat naar instellingen');
+    await page.goBack();
+    check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'android-terug'), 'app: terugknop van de browser/Android werkt');
+
+    // Instelling bewaren en na herladen terug
+    await tapScreen(page, 'instellingen');
+    await page.click('button.choice[data-notation="doremi"]');
+    await sleep(300);
+    await page.reload({ waitUntil: 'networkidle0' });
+    check((await screenOf(page)) === 'instellingen', 'app: na herladen terug op hetzelfde scherm');
+    check(
+      await page.$eval('button.choice.on', (e) => e.dataset.notation === 'doremi').catch(() => false),
+      'app: do-re-mi blijft bewaard na herladen',
+    );
+    await page.click('.back');
+    check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'terug na herladen'), 'app: terugknop na herladen gaat naar start');
+
+    // Liggend
+    await page.setViewport({ width: 1280, height: 800 });
+    await sleep(200);
+    check(await noSideScroll(page), 'app: liggend geen zijwaarts scrollen');
+    await page.screenshot({ path: path.join(OUT, 'app-liggend.png') });
+
+    // Offline: wachten tot de service worker de app beheert, server stoppen, herladen.
+    check(
+      await waitFor(() => page.evaluate(() => !!navigator.serviceWorker.controller), 10000, 'service worker'),
+      'app: service worker actief',
+    );
+    check(!(await visible(page, '.update-banner')), 'app: geen updatemelding bij de eerste installatie');
+    await stopServer(server);
+    server = null;
+    const failedReq = [];
+    page.on('requestfailed', (r) => failedReq.push(`${r.url()} ${r.failure()?.errorText}`));
+    await page.reload({ waitUntil: 'load' });
+    const offlineOk = await waitFor(async () => (await page.$$('.home-btn')).length === 5, 5000, 'offline start');
+    check(offlineOk, `app: werkt offline (server gestopt)${offlineOk ? '' : ` — mislukt: ${failedReq.join(' | ')}`}`);
+
+    // Update: nieuwe versie van de service worker → melding → tik → nieuwe versie actief.
+    fs.writeFileSync(swFile, `${swOriginal}\n// testversie ${Date.now()}\n`);
+    server = await startServer();
+    await page.evaluate(() => navigator.serviceWorker.getRegistration().then((r) => r && r.update()));
+    check(await waitFor(() => visible(page, '.update-banner'), 10000, 'updatemelding'), 'app: updatemelding verschijnt bij een nieuwe versie');
+    await page.screenshot({ path: path.join(OUT, 'app-update.png') });
+    const reloaded = page.waitForNavigation({ timeout: 10000 }).then(
+      () => true,
+      () => false,
+    );
+    await page.click('.update-btn');
+    check(await reloaded, 'app: tik op de melding herlaadt de app');
+    await waitFor(async () => (await page.$$('.home-btn')).length === 5, 5000, 'na update');
+    check(!(await visible(page, '.update-banner')), 'app: na de update is de melding weg');
+    check(
+      await page.evaluate(() => navigator.serviceWorker.getRegistration().then((r) => !!r && !r.waiting)),
+      'app: geen wachtende versie meer',
+    );
+  } finally {
+    await browser.close();
+    if (server) await stopServer(server);
+    fs.writeFileSync(swFile, swOriginal);
+  }
+  check(errors.length === 0, `app: geen fouten in de pagina${errors.length ? ` (${errors.join(' | ')})` : ''}`);
+}
+
 async function main() {
   if (!CHROME) throw new Error('Chrome niet gevonden; zet CHROME_PATH');
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
+  await appTest();
   const server = await preview({ preview: { port: 5398, strictPort: false }, logLevel: 'error' });
   const url = server.resolvedUrls.local[0];
   try {

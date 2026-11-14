@@ -50,7 +50,12 @@ gaan voor drillen.
 - `src/dsp/`: `yin.ts` (live toonhoogte, 35–2100 Hz), `notes.ts` (letters/do-re-mi), `chroma.ts` (akkoorden),
   `onset.ts` (klappen/slagen), `biquad.ts` (gekopieerd uit SingApp). Tests: `dsp.test.ts`.
 - `src/audio/mic.ts`: microfoon + AnalyserNodes.
-- `src/main.ts` + `src/checklist.ts`: de testpagina "Luisteroor" (blok 1).
+- `src/main.ts`: schil (kopbalk + terugknop, schermen wisselen, updatemelding). Elk scherm is een `mount…(container)`-functie;
+  schermen met microfoon of animatie geven een opruimfunctie terug.
+- `src/app/`: `router.ts` (schermen via `#/…`, terugknop), `settings.ts`/`state.ts` (instellingen), `update.ts` (service worker).
+- `src/storage/db.ts`: IndexedDB `debut-loading`, tabel `kv`. Nieuwe tabellen = `DB_VERSION` verhogen.
+- `src/screens/`: `basic.ts` (start, lege schermen, instellingen), `luisteroor.ts` + `checklist.ts` (blok 1, nu onder Instellingen).
+- Offline: service worker gegenereerd in `vite.config.ts`. Nieuwe versie wacht op een tik op de melding (`SKIP_WAITING`), nooit automatisch.
 - Onderdelen uit SingApp worden **gekopieerd**, niet gedeeld, zodat de twee apps elkaar niet kunnen stukmaken.
 
 ## Commando's
@@ -58,7 +63,9 @@ gaan voor drillen.
 - `npm run dev`: ontwikkelserver (http://localhost:5318). Op de tablet werkt de microfoon alleen via https (dus via GitHub Pages).
 - `npm run build`: typecheck + productiebuild naar `dist/`
 - `npm test`: unit-tests (Vitest)
-- `npm run e2e`: build + echte Chrome met nep-microfoon (gitaar, bas, akkoorden, klappen). Screenshots in `e2e-output/`.
+- `npm run e2e`: build + echte Chrome: app (navigatie, staand/liggend, offline, updatemelding) en Luisteroor met nep-microfoon. Screenshots in `e2e-output/`.
+- `node scripts/make-icons.mjs`: PNG-iconen maken uit `public/favicon.svg`.
+- Op Windows: `npm test`/`npm run e2e` via **PowerShell** draaien; via Git Bash faalt Vitest door de schijfletter.
 
 ## Conventies
 - Commits volgens Conventional Commits (`feat:`, `fix:`, `docs:`, …).
