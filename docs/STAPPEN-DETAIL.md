@@ -30,7 +30,9 @@
 - Akkoorden onbetrouwbaar → in de lessen akkoorden niet streng controleren (enkel noten één voor één).
 - Octaaffouten bij bas → zoekbereik of boventoonaanpak bijstellen.
 
-## Blok 15 — MIDI laden via de downloadhoek (optioneel, later)
+## Blok 10 — MIDI laden via de downloadhoek
+
+*(Naar voren gehaald op 2026-11-14, was blok 15 en optioneel. Bouwt verder op het spel met vallende noten van blok 9.)*
 
 **Wensen van de gebruiker (vastgelegd 2026-11-14), nog niet gebouwd:**
 - Het heet de **downloadhoek**, niet de ouderhoek: de dochter moet het zelf kunnen zodra ze het snapt.
@@ -50,7 +52,7 @@
 - KATSEYE: geen gratis MIDI gevonden.
 - Fan-bestanden zijn soms rommelig (bv. Pink Venom met 21 sporen) → app moet het melodiespoor kiezen en vereenvoudigen.
 - **Stand nu:** geen gratis site zonder account gevonden met K-pop. Kandidaat voor de vaste link: BitMidi (proper, maar geen K-pop).
-  Bij de start van blok 15 verder zoeken; vindt er niets, dan is de downloadhoek voor andere liedjes en blijven
+  Bij de start van blok 10 verder zoeken; vindt er niets, dan is de downloadhoek voor andere liedjes en blijven
   de eigen nummers in K-popstijl de kern.
 - **Werkwijze voor de gebruiker:** pc → tablet (USB-C "Bestanden overdragen", Quick Share of cloud, bv. naar `Download/MIDI`)
   → in de app: downloadhoek → "Liedje toevoegen" → Android-bestandskiezer, **meerdere bestanden tegelijk** → bewaard in de app
