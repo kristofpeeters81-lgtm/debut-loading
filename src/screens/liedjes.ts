@@ -3,6 +3,7 @@
 import { SONGS } from '../songs/songs';
 import { songStarKey } from '../songs/arrange';
 import { importedSongs, studioSongs } from '../songs/library';
+import { LOADING_ID } from '../songs/loading';
 import { activeProfile, settings } from '../app/state';
 import { INSTRUMENT_CHOICES, type InstrumentId } from '../app/settings';
 import { hashFor } from '../app/router';
@@ -27,6 +28,14 @@ export function mountLiedjes(app: HTMLElement): void {
   const tabs = el('div', 'chips lesson-tabs');
   const intro = el('p', 'sub lessons-intro', '');
   const list = el('ol', 'lesson-path');
+  // Eigen nummer (blok 12) bovenaan, met de bandmodus erbij.
+  const ownTitle = el('h2', 'songs-own-title', 'Eigen nummer');
+  const ownList = el('ol', 'lesson-path');
+  const toBand = el('a', 'tool-link band-link');
+  toBand.href = hashFor('band');
+  toBand.dataset.screen = 'band';
+  toBand.append(icon('music', 'var(--cyan)', 26), el('span', '', 'Bandmodus: speel LOADING samen, de app speelt de rest'));
+  const otherTitle = el('h2', 'songs-known-title', 'Bekende liedjes');
   const mineTitle = el('h2', 'songs-mine-title', 'Mijn liedjes');
   const mine = el('ol', 'lesson-path');
   const own = importedSongs();
@@ -54,6 +63,10 @@ export function mountLiedjes(app: HTMLElement): void {
     shown = inst;
     for (const t of tabs.querySelectorAll<HTMLButtonElement>('.chip')) t.classList.toggle('on', t.dataset.instrument === inst);
     intro.textContent = HOW[inst];
+    const best = Math.max(stars[songStarKey(`${LOADING_ID}-makkelijk`, inst)] ?? 0, stars[songStarKey(`${LOADING_ID}-moeilijk`, inst)] ?? 0);
+    const ownCard = card(LOADING_ID, 'LOADING', 'Eigen nummer van DEBUT LOADING… · makkelijk of moeilijk', 1, inst);
+    ownCard.querySelector('.star-row')?.replaceWith(starRow(best));
+    ownList.replaceChildren(ownCard);
     list.replaceChildren(...SONGS.map((s, i) => card(s.id, s.title, s.source, i + 1, inst)));
     mine.replaceChildren(
       ...own.map((r, i) => card(r.id, r.title, `Eigen liedje · ${r.song.notes.length} noten`, i + 1, inst)),
@@ -73,5 +86,5 @@ export function mountLiedjes(app: HTMLElement): void {
   toStudio.href = hashFor('studio');
   toStudio.dataset.screen = 'studio';
   toStudio.append(icon('music', 'var(--pink)', 26), el('span', '', 'Naspeelstudio: speel een mp3 na (ook K-pop!)'));
-  app.append(tabs, intro, list, mineTitle, mine, toCorner, toStudio);
+  app.append(tabs, intro, ownTitle, ownList, toBand, otherTitle, list, mineTitle, mine, toCorner, toStudio);
 }

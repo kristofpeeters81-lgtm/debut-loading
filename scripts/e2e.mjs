@@ -432,7 +432,7 @@ async function appTest() {
 
     // Spel met vallende noten (blok 9): Ode an die Freude uitspelen in "Wacht op mij"
     check(await tapScreen(page, 'liedjes'), 'liedjes: opent');
-    check((await page.$$('.lesson-card[data-song]')).length === 6, 'liedjes: 6 liedjes');
+    check((await page.$$('.songs-known-title + .lesson-path .lesson-card[data-song]')).length === 6, 'liedjes: 6 bekende liedjes');
     await page.click('.lesson-card[data-song="ode"]');
     await waitFor(async () => (await screenOf(page)) === 'spel', 3000, 'spel');
     await page.click('.lesson-intro button.big');
@@ -518,6 +518,55 @@ async function appTest() {
       await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
     }
 
+    // Eigen nummer LOADING (blok 12): makkelijk/moeilijk, tekst meelezen, eerste noten spelen
+    await tapScreen(page, 'liedjes');
+    await page.click('.lesson-tabs .chip[data-instrument="keyboard"]');
+    check((await page.$$('.songs-own-title + .lesson-path .lesson-card[data-song="loading"]')).length === 1, 'liedjes: eigen nummer LOADING bovenaan');
+    await page.click('.lesson-card[data-song="loading"]');
+    await waitFor(async () => (await screenOf(page)) === 'spel', 3000, 'spel');
+    check((await page.$$('.level-chips .chip')).length === 2, 'LOADING: keuze makkelijk / moeilijk');
+    await page.click('.level-chips .chip[data-level="moeilijk"]');
+    check(await waitFor(async () => (await page.$eval('.level-chips .chip.on', (e) => e.dataset.level).catch(() => '')) === 'moeilijk', 3000, 'moeilijk'), 'LOADING: moeilijk gekozen');
+    await page.click('.level-chips .chip[data-level="makkelijk"]');
+    await waitFor(async () => (await page.$eval('.level-chips .chip.on', (e) => e.dataset.level).catch(() => '')) === 'makkelijk', 3000, 'makkelijk');
+    await page.click('.lesson-intro button.big');
+    {
+      let played = 0;
+      const end = Date.now() + 30000;
+      while (Date.now() < end && played < 5) {
+        const want = await page.$eval('.game', (g) => g.dataset.expected ?? '');
+        if (want) {
+          if (played === 0) check((await page.$eval('.game-lyrics .lyric.now', (e) => e.textContent).catch(() => '')) === 'Vier', 'LOADING: tekst meelezen ("Vier" licht op)');
+          const sel = (await page.$(`.lesson-kb .key[data-midi="${want}"]`)) ? `.lesson-kb .key[data-midi="${want}"]` : `.lesson-kb .key[data-midi="${(Number(want) % 12) + 60}"]`;
+          await page.click(sel).catch(() => undefined);
+          played++;
+          await sleep(150);
+        }
+        await sleep(60);
+      }
+      check(played === 5, `LOADING: eerste 5 noten gespeeld (${played})`);
+    }
+    await page.screenshot({ path: path.join(OUT, 'loading-spel.png') });
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'liedjes', 3000, 'liedjes');
+    // Bandmodus: keyboard (eigen instrument) + drum, de app speelt de rest
+    check(await tapScreen(page, 'band'), 'bandmodus: opent');
+    await page.click('.band-player[data-instrument="drum"] .band-toggle');
+    check((await page.$$('.band-player.on')).length === 2, 'bandmodus: 2 spelers gekozen');
+    await page.click('.band-player[data-instrument="drum"] .chip[data-level="moeilijk"]');
+    await page.screenshot({ path: path.join(OUT, 'band-opstelling.png') });
+    await page.click('.band-start');
+    await sleep(6000);
+    check((await page.$$('.band-lane')).length === 2, 'bandmodus: een strook per speler');
+    check(Number(await page.$eval('.band-stage', (e) => e.dataset.beat ?? '-9')) >= 1, 'bandmodus: het nummer loopt (na het aftellen)');
+    check((await page.$$('.band-lane[data-instrument="drum"] .band-note')).length > 0, 'bandmodus: drum ziet zijn volgende slagen');
+    await page.screenshot({ path: path.join(OUT, 'band-optreden.png') });
+    {
+      const stopBtn = await page.evaluateHandle(() => [...document.querySelectorAll('.band-stage button')].find((b) => b.textContent === 'Stop'));
+      await stopBtn.click();
+    }
+    check(await waitFor(() => visible(page, '.band-setup'), 2000, 'stop'), 'bandmodus: stoppen brengt je terug naar de opstelling');
+    await page.goto(url, { waitUntil: 'networkidle0' });
     // Naspeelstudio (blok 11): een geluidsbestand (zelf gemaakt) laden, meetikken, bewaren en spelen met het nummer erbij
     {
       const parts = [];

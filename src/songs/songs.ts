@@ -26,6 +26,10 @@ export interface Song {
   source: string;
   /** Naspeelstudio: id van de mp3 die als begeleiding meespeelt (1 tel = 1 seconde in de mp3). */
   audio?: string;
+  /** Lettergreep per noot (meelezen). */
+  lyrics?: string[];
+  /** Eigen nummer met partijen per instrument: de app speelt de andere partijen mee (bandmodus). */
+  band?: boolean;
 }
 
 /** Maakt noten van [midi, lengte]-paren die na elkaar komen. Rust = midi 0. */

@@ -16,14 +16,15 @@ import { Game, MAX_TEMPO, MIN_TEMPO, type GameNote } from '../songs/game';
 import { BASS_STRINGS, GUITAR_STRINGS, arrangeFor, placeOnNeck, songStarKey } from '../songs/arrange';
 import type { Song } from '../songs/songs';
 import { findSong, studioSong } from '../songs/library';
+import { LOADING_ID, backingParts, loadingSong, type PartLevel } from '../songs/loading';
 import { COLOR_OF_PC, drumSurface, keyboardSurface, neckSurface, singSurface, type Surface } from './lesSurfaces';
 import { starRow } from './lessen';
 import { el } from '../ui/dom';
 
-let current: { id: string; inst: InstrumentId } | null = null;
+let current: { id: string; inst: InstrumentId; level: PartLevel } | null = null;
 
-export function openSong(id: string, inst: InstrumentId = 'keyboard'): void {
-  current = { id, inst };
+export function openSong(id: string, inst: InstrumentId = 'keyboard', level: PartLevel = 'makkelijk'): void {
+  current = { id, inst, level };
   location.hash = hashFor('spel');
 }
 
@@ -62,13 +63,18 @@ function keyLanes(from: number, to: number): Map<number, { x: number; w: number 
 }
 
 export function mountSpel(app: HTMLElement): () => void {
-  const base = current ? findSong(current.id) : undefined;
+  const isBand = current?.id === LOADING_ID;
+  const base = current ? (isBand ? loadingSong(current.inst, current.level) : findSong(current.id)) : undefined;
   if (!base || !current) {
     location.replace(hashFor('liedjes'));
     return () => undefined;
   }
   const inst = current.inst;
-  const song: Song = arrangeFor(base, inst, settings().voiceRange);
+  const level = current.level;
+  // Eigen nummer: de partij is al per instrument geschreven (geen omzetting nodig).
+  const song: Song = isBand ? base : arrangeFor(base, inst, settings().voiceRange);
+  // Bandnummer: de app speelt de andere partijen van het nummer mee.
+  const backingTracks = isBand ? backingParts([inst]).map((p) => ({ ...p, idx: 0 })) : [];
   // Naspeelstudio: het echte nummer (mp3) speelt mee en is de klok van het spel (1 tel = 1 seconde).
   const studioRec = base.audio ? studioSong(base.audio) : undefined;
   let track: HTMLAudioElement | null = null;
@@ -150,6 +156,7 @@ export function mountSpel(app: HTMLElement): () => void {
   const progFill = el('div', 'lesson-progress-fill');
   progress.append(progFill);
   head.append(title, progress);
+  const lyricsBox = el('div', 'game-lyrics');
   const canvas = el('canvas', 'game-canvas');
   canvas.setAttribute('aria-label', 'Vallende noten');
   const tapNote = (m: number): void => {
@@ -178,7 +185,7 @@ export function mountSpel(app: HTMLElement): () => void {
   const surfaceWrap = el('div', isNeck ? 'neck-wrap game-surface' : 'game-surface');
   surfaceWrap.append(surface.el);
   const micNote = el('p', 'small lesson-mic', '');
-  main.append(head, canvas, surfaceWrap, micNote);
+  main.append(head, lyricsBox, canvas, surfaceWrap, micNote);
   wrap.append(side, main);
 
   const LABEL: Record<InstrumentId, string> = { keyboard: 'Keyboard', gitaar: 'Gitaar', bas: 'Bas', drum: 'Drum', zang: 'Zang' };
@@ -192,13 +199,23 @@ export function mountSpel(app: HTMLElement): () => void {
     drum: 'Tik op de pad als de noot de lijn raakt.',
     zang: 'Zing de toon als de noot de lijn raakt. Hoog of laag zingen mag allebei.',
   };
-  startCard.append(
-    el('div', 'lesson-intro-title', song.title),
-    el('p', 'lesson-intro-goal', `${LABEL[inst]} · ${song.source}`),
-    el('p', 'small', how[inst]),
-    listen,
-    startBtn,
-  );
+  startCard.append(el('div', 'lesson-intro-title', song.title), el('p', 'lesson-intro-goal', `${LABEL[inst]} · ${song.source}`), el('p', 'small', how[inst]));
+  if (isBand) {
+    // Makkelijk of moeilijk kiezen (opnieuw opbouwen met de andere partij).
+    const lv = el('div', 'chips level-chips');
+    for (const l of ['makkelijk', 'moeilijk'] as PartLevel[]) {
+      const c = el('button', l === level ? 'chip on' : 'chip', l === 'makkelijk' ? 'Makkelijk' : 'Moeilijk');
+      c.dataset.level = l;
+      c.addEventListener('click', () => {
+        if (!current || l === level) return;
+        current = { ...current, level: l };
+        window.dispatchEvent(new HashChangeEvent('hashchange'));
+      });
+      lv.append(c);
+    }
+    startCard.append(lv);
+  }
+  startCard.append(listen, startBtn);
   const end = el('section', 'card lesson-end');
   end.hidden = true;
   wrap.hidden = true;
@@ -244,7 +261,7 @@ export function mountSpel(app: HTMLElement): () => void {
       engine.drum('hihat', 0.9);
       return;
     }
-    if (track) return; // het echte nummer is de begeleiding
+    if (track || isBand) return; // het echte nummer / de andere partijen zijn de begeleiding
     if (!backing || b >= game.length) return;
     const inBar = b % song.beatsPerBar;
     if (inBar === 0 && inst !== 'bas') {
@@ -366,6 +383,38 @@ export function mountSpel(app: HTMLElement): () => void {
     g.globalAlpha = 1;
   };
 
+  /** Andere partijen van het bandnummer afspelen tussen twee tijdstippen (in tellen). */
+  function playBacking(from: number, to: number): void {
+    if (!backingTracks.length || !backing) return;
+    for (const t of backingTracks) {
+      if (to < from) t.idx = t.notes.findIndex((n) => n.beat >= to); // stukje herhalen: terugspringen
+      if (t.idx < 0) t.idx = t.notes.length;
+      while (t.idx < t.notes.length && t.notes[t.idx].beat <= to) {
+        const n = t.notes[t.idx++];
+        if (n.beat < from - 0.01) continue;
+        if (n.pad) engine.drum(n.pad, 0.7);
+        else engine.noteOn(t.inst === 'gitaar' ? 'gitaar' : t.inst === 'bas' ? 'bas' : 'piano', n.midi, t.inst === 'keyboard' ? 0.35 : 0.55).stop();
+      }
+    }
+  }
+
+  /** Meelezen: de lettergreep die nu komt, met de rest van de zin. */
+  let lastLyric = -1;
+  function renderLyrics(): void {
+    if (!song.lyrics) return;
+    const next = game.nextOpen;
+    const i = next ? game.notes.indexOf(next) : -1;
+    if (i === lastLyric) return;
+    lastLyric = i;
+    lyricsBox.replaceChildren();
+    if (i < 0) return;
+    for (let k = Math.max(0, i - 2); k < Math.min(song.lyrics.length, i + 7); k++) {
+      const w = song.lyrics[k];
+      if (!w) continue;
+      lyricsBox.append(el('span', k === i ? 'lyric now' : k < i ? 'lyric done' : 'lyric', w));
+    }
+  }
+
   const tick = (now: number): void => {
     if (!alive) return;
     const dt = last ? Math.min(100, now - last) : 0;
@@ -389,6 +438,7 @@ export function mountSpel(app: HTMLElement): () => void {
       }
       for (let b = Math.floor(before) + 1; b <= Math.floor(game.beat); b++) onBeat(b);
       if (game.beat < before) onBeat(Math.ceil(game.beat));
+      playBacking(before, game.beat);
     } else if (track && !track.paused) {
       track.pause();
     }
@@ -397,6 +447,7 @@ export function mountSpel(app: HTMLElement): () => void {
     surface.target(showTarget ? (showTarget.pad ?? showTarget.midi) : null);
     wrap.dataset.expected = game.waiting && next ? String(next.pad ?? next.midi) : '';
     progFill.style.width = `${Math.round(Math.max(0, Math.min(1, game.beat / game.length)) * 100)}%`;
+    renderLyrics();
     draw(now);
     if (game.finished) {
       finish();
@@ -411,7 +462,7 @@ export function mountSpel(app: HTMLElement): () => void {
     tracker?.stop();
     tracker = null;
     const stars = game.stars;
-    void saveStars(songStarKey(base!.id, inst), stars);
+    void saveStars(songStarKey(isBand ? `${base!.id}-${level}` : base!.id, inst), stars);
     wrap.hidden = true;
     end.hidden = false;
     end.replaceChildren();

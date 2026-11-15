@@ -24,6 +24,7 @@ import { mountLiedjes } from './screens/liedjes';
 import { mountSpel } from './screens/spel';
 import { mountDownloadhoek } from './screens/downloadhoek';
 import { mountStudio } from './screens/studio';
+import { mountBand } from './screens/band';
 import { loadLibrary } from './songs/library';
 import { avatarSvg } from './ui/avatar';
 import { el } from './ui/dom';
@@ -94,6 +95,9 @@ function show(id: ScreenId): void {
       mountHome(content);
       break;
     }
+    case 'band':
+      cleanup = mountBand(content);
+      break;
     case 'studio':
       cleanup = mountStudio(content);
       break;

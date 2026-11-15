@@ -1235,6 +1235,155 @@ button.danger {
   }
 }
 
+/* ---------- Eigen nummer en bandmodus (blok 12) ---------- */
+.songs-own-title {
+  margin-top: 8px;
+}
+
+.songs-known-title {
+  margin-top: 24px;
+}
+
+.band-link {
+  margin: 10px 0 8px;
+  border-color: var(--cyan);
+}
+
+.level-chips {
+  justify-content: center;
+}
+
+.game-lyrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 8px;
+  min-height: 2em;
+  margin: 4px 0 8px;
+  font: 600 1.3rem var(--display);
+}
+
+.lyric {
+  color: var(--muted);
+}
+
+.lyric.done {
+  opacity: 0.4;
+}
+
+.lyric.now {
+  color: var(--pink);
+  text-shadow: 0 0 12px rgba(255, 79, 216, 0.7);
+}
+
+.band-who {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.band-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.band-toggle {
+  min-width: 150px;
+}
+
+.band-player.on .band-toggle {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--bg);
+  font-weight: 800;
+}
+
+.small-chip {
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+}
+
+.band-tempo {
+  justify-content: flex-start;
+  margin: 6px 0 16px;
+}
+
+.band-start {
+  max-width: 420px;
+}
+
+.band-stage {
+  text-align: center;
+}
+
+.band-section {
+  margin-top: 12px;
+  font: 600 1.6rem var(--display);
+  color: var(--cyan);
+}
+
+.band-lyrics {
+  min-height: 3em;
+  font-size: 1.6rem;
+}
+
+.band-lanes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.band-lane {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 2px solid var(--line);
+  background: var(--panel);
+}
+
+.band-lane-name {
+  flex: none;
+  width: 90px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.band-lane-notes {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.band-note {
+  flex: none;
+  min-width: 52px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: var(--panel-2);
+  font-weight: 800;
+}
+
+.band-note.now {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--bg);
+  box-shadow: 0 0 16px rgba(255, 228, 92, 0.8);
+}
+
+.band-note.rest {
+  border-style: dashed;
+  color: var(--muted);
+}
+
 /* ---------- Naspeelstudio (blok 11) ---------- */
 .studio-pick,
 .studio-rec,

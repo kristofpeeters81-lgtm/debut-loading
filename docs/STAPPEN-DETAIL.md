@@ -326,6 +326,33 @@ Op alle spelschermen: noten in een vaste kleur per letter, letter op de toets, t
   (keyboard, gitaar, bas, drum, microfoon). In de bandmodus (blok 12) staan de avatars samen op het podium.
   Tekenaanpak: instrument als aparte laag over dezelfde pose, zodat niet elke avatar × elk instrument apart getekend moet worden.
 
+## Blok 12 — Eerste eigen nummer + bandmodus
+
+**Keuzes van de gebruiker (2026-11-15):** stoer en krachtig in KATSEYE-stijl (eigen compositie, niets overgenomen), tekst half Nederlands
+(coupletten) / half Engels (refrein), girl power + attitude + een verhaal, catchy hook, rap, Engelse slang (kindvriendelijk),
+korte harde zinnen; band = wisselend (de app speelt aan wat niemand speelt); per instrument een makkelijke en moeilijke partij.
+Eerste tekstvoorstel afgekeurd ("niet cool"); na interview nieuwe tekst goedgekeurd ("ik denk het wel"); voorproefje van het refrein
+(WAV, met de app-klanken) goedgekeurd ("klinkt goed").
+
+**Gebouwd (2026-11-15):** `src/songs/loading.ts`
+- **"LOADING"**: A-mineur, 112 bpm, Am–F–C–G (= keyboardles "Droevig popschema"). 54 maten (±1:56): intro · couplet (NL) · aanloop ·
+  refrein (EN, hook "L-O-A-D… loading up") · rap · couplet 2 · drop ("Loading… complete") · refrein · slot ("Garage band? Nah. Main stage.").
+  Verhaal: vier meiden oefenen in een garage, niemand gelooft erin, dan het grote podium.
+- **Partijen** (makkelijk / moeilijk): keyboard (melodie / + linkerhand-grondtoon), gitaar (grondtonen / lead-melodie refrein+drop
+  een octaaf lager), bas (hele noten / kwartnoten), drum (basdrum+snare / beat met crashes en fills), zang (refrein+drop / alles).
+- **In het spel met vallende noten:** LOADING bovenaan bij Liedjes ("Eigen nummer"), keuze Makkelijk/Moeilijk op de startkaart,
+  **tekst meelezen** (huidige lettergreep in roze), en de app speelt de **andere partijen van het nummer** als begeleiding.
+  Sterren per instrument en niveau.
+- **Bandmodus** (`src/screens/band.ts`, via Liedjes): wie speelt mee (instrument + niveau per speler), tempo 70/85/100 %, 4 tellen aftellen;
+  per speler een strook met de volgende noten (keyboard: letter, gitaar/bas: fret·letter, drum: pad, zang: lettergreep), het deel van
+  het nummer en de tekst; de app speelt wat niemand speelt (melodie op piano als niemand zingt of keyboard speelt). Geen punten.
+- `tsconfig`: lib ES2019 (flat/flatMap; Chrome op de tablet ondersteunt dat al jaren).
+
+**Getest:** unit (54 maten, melodie op volgorde met tekst, bereik Casio/gitaar/bas, makkelijk < moeilijk, drumpads, speelbaar,
+begeleiding = wat niemand speelt) + e2e (LOADING bovenaan, makkelijk/moeilijk, tekst licht op, eerste noten, bandmodus met
+keyboard + drum: stroken, nummer loopt, stoppen).
+
+**Nog te testen op de tablet:** samen spelen in de bandmodus; klinkt de begeleiding goed; is de tekst goed te lezen.
 ## Blok 10 — MIDI laden via de downloadhoek
 
 *(Naar voren gehaald op 2026-11-14, was blok 15 en optioneel. Bouwt verder op het spel met vallende noten van blok 9.)*

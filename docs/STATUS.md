@@ -15,7 +15,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | 9 | [Spel met vallende noten (tempo, herhalen, sterren)](STAPPEN-DETAIL.md#blok-9--spel-met-vallende-noten) | 🧪 | 2026-11-14 | Live voor alle instrumenten (keyboard, gitaar, bas, drum, zang) |
 | 10 | [MIDI laden via de downloadhoek](STAPPEN-DETAIL.md#blok-10--midi-laden-via-de-downloadhoek) (ook zelf te gebruiken door het kind) | 🧪 | 2026-11-15 | Import live; vaste link BitMidi met zoekvakje (gekozen 2026-11-15) |
 | 11 | [Naspeelstudio: mp3 laden, trager afspelen, melodie meespelen → liedje](STAPPEN-DETAIL.md#blok-11--naspeelstudio) | 🧪 | 2026-11-15 | Gebouwd: mp3 + meespelen/tikken → liedje met het echte nummer als begeleiding in het spel |
-| 12 | Eerste eigen nummer + bandmodus (zonder punten, avatars samen op het podium) | ⬜ | | |
+| 12 | [Eerste eigen nummer + bandmodus](STAPPEN-DETAIL.md#blok-12--eerste-eigen-nummer--bandmodus) (zonder punten) | 🧪 | 2026-11-15 | "LOADING" (eigen nummer, NL/EN, 2 niveaus per instrument) + bandmodus |
 | 13 | Wereldtournee-kaart (zonder streaks) | ⬜ | | |
 | 14 | Zangspel (lijn voor de toonhoogte, songtekst uit karaoke-MIDI) | ⬜ | | |
 | 15 | Opnemen, terugluisteren en downloaden (alleen lokaal) | ⬜ | | |
@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) BitMidi-link staat live; (2) testen op de tablet (lessen niveau 5, naspeelstudio, downloadhoek); (3) blok 12 eerste eigen nummer + bandmodus.
+**Volgende actie:** (1) akkoord om blok 12 te pushen; (2) testen op de tablet (LOADING, bandmodus, naspeelstudio, lessen niveau 5); (3) blok 13 wereldtournee-kaart.
