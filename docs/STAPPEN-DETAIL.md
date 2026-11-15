@@ -196,6 +196,18 @@ Is het leuk en duidelijk zonder uitleg?
 **Getest:** unit (inhoud: Casio-bereik, frets 0–5, akkoordgrepen, akkoordherkenning, drumpads, lettergrepen; lesmotor voor akkoord,
 ritme, zang) + e2e (aantal lessen per instrument, automatisch uitgespeeld met tikken: akkoord C, gitaar 1, bas 3, drum 3;
 zangles via nep-microfoon).
+**Tweede reeks: stevige basis (2026-11-15, op vraag van de gebruiker):** 82 lessen in totaal (keyboard 28, gitaar 15, bas 13, drum 13, zang 13).
+- **Keyboard 18–28:** octaven, G-toonladder (F#), C# en Eb, enkel zwarte toetsen, linkerhand bij Kortjakje (C3/G3 + melodie),
+  Dm en Em, akkoorden onder Kortjakje, Happy Birthday, London Bridge, sprongen (C–G, C–E–G–C), finale twee handen + akkoorden.
+  In de notenstrook krijgen lage noten (onder C4) hun octaaf erbij ("C3"), zodat de linkerhand zichtbaar is.
+- **Gitaar 8–15:** noten op de G-snaar (A, B) en D-snaar (E, F), Kortjakje en London Bridge op gitaar, akkoorden C en G,
+  popschema C–G–Am–Em, Dm.
+- **Bas 7–13:** octaven, grondtoon + kwint, baslijn popschema (C–G–A–F), Ode en Kortjakje op bas, wandelen in G (B erbij), rockbas.
+- **Drum 7–13:** open hi-hat, dubbele basdrum, rockbeat over 2 maten, discobeat, tom-roffel, klap-pop, finale beat + fill.
+- **Zang 7–13:** toonladder omhoog en omlaag, octaafsprong, do–sol–do, Kortjakje (met tekst), Happy Birthday, London Bridge.
+- Liedjes publiek domein (Happy Birthday: publiek domein sinds 2016 VS / 2017 EU).
+- Alles automatisch gecontroleerd (Casio-bereik, fret 0–5, akkoordgrepen, lettergrepen); e2e speelt o.a. zwarte toetsen,
+  linkerhand, D-snaar, bas-kwint en discobeat volledig uit.
 ## Blok 5 — Profielen
 
 **Gebouwd (2026-11-14):** de 10 avatars zijn goedgekeurd door de gebruiker.

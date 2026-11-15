@@ -73,6 +73,306 @@ const G2 = 43;
 const JACOB = [C, D, E, C, C, D, E, C, E, F, G, E, F, G];
 const JACOB_TEXT = ['Va', 'der', 'Ja', 'cob', 'va', 'der', 'Ja', 'cob', 'slaapt', 'gij', 'nog', 'slaapt', 'gij', 'nog'];
 
+// ---------- Tweede reeks (stevige basis, 2026-11-15) ----------
+const A3 = 57;
+const Cs = 61;
+const Eb = 63;
+const Gs = 68;
+const As = 70;
+const Cs5 = 73;
+const Eb5 = 75;
+const B1 = 35;
+const A2 = 45;
+const C3s = C3; // linkerhand
+const G3s = G3;
+
+/** Happy Birthday (publiek domein sinds 2016/2017), in C. */
+const BIRTHDAY = [G3, G3, A3, G3, C, B3, G3, G3, A3, G3, D, C, G3, G3, G, E, C, B3, A3, F, F, E, C, D, C];
+/** London Bridge is falling down (traditioneel), in C. */
+const LONDON = [G, A, G, F, E, F, G, D, E, F, E, F, G, G, A, G, F, E, F, G, D, G, E, C];
+/** Altijd is Kortjakje ziek (traditioneel). */
+const KORTJAKJE = [C, C, G, G, A, A, G, F, F, E, E, D, D, C];
+const KORTJAKJE_TEXT = ['Al', 'tijd', 'is', 'Kort', 'ja', 'kje', 'ziek', 'mid', 'den', 'in', 'de', 'week', 'maar', '’s zondags niet'];
+
+const BASIS_2: Lesson[] = [
+  // Keyboard 18–28
+  {
+    id: 'kb-18-octaven',
+    title: 'Octaven',
+    goal: 'Dezelfde letter, hoog en laag',
+    instrument: 'keyboard',
+    steps: [
+      { kind: 'find', notes: [C3, C, C5, G3, G] },
+      { kind: 'echo', phrases: [[C3, C, C5], [C5, C, C3], [G3, G, G3]] },
+    ],
+  },
+  {
+    id: 'kb-19-g-ladder',
+    title: 'De G-toonladder',
+    goal: 'Een toonladder met F#',
+    instrument: 'keyboard',
+    steps: [
+      { kind: 'find', notes: [G, Fs, G] },
+      { kind: 'song', notes: [G3, A3, B3, C, D, E, Fs, G, G, Fs, E, D, C, B3, A3, G3] },
+    ],
+  },
+  {
+    id: 'kb-20-cis-es',
+    title: 'Zwarte toetsen: C# en Eb',
+    goal: 'Nog twee zwarte toetsen',
+    instrument: 'keyboard',
+    steps: [
+      { kind: 'find', notes: [Cs, Eb, Cs, Eb] },
+      { kind: 'echo', phrases: [[C, Cs, D], [D, Eb, E], [Eb, D, Cs, C]] },
+    ],
+  },
+  {
+    id: 'kb-21-zwart',
+    title: 'Enkel zwarte toetsen',
+    goal: 'Een melodie met vijf zwarte toetsen',
+    instrument: 'keyboard',
+    steps: [
+      { kind: 'find', notes: [Fs, Gs, As, Cs5, Eb5] },
+      { kind: 'echo', phrases: [[Fs, Gs, As], [As, Gs, Fs], [Cs5, As, Gs, Fs], [Fs, As, Cs5, Eb5]] },
+    ],
+  },
+  {
+    id: 'kb-22-links-kortjakje',
+    title: 'Linkerhand bij Kortjakje',
+    goal: 'Links C en G, rechts de melodie',
+    instrument: 'keyboard',
+    steps: [
+      {
+        kind: 'song',
+        notes: [C3s, C, C, G, G, A, A, G, G3s, F, F, E, E, D, D, C3s, C],
+      },
+    ],
+  },
+  {
+    id: 'kb-23-dm-em',
+    title: 'Akkoorden Dm en Em',
+    goal: 'Twee nieuwe mineurakkoorden',
+    instrument: 'keyboard',
+    steps: [{ kind: 'chord', chords: ['Dm', 'Em', 'Dm', 'Em', 'C', 'Dm', 'Em', 'F'] }],
+  },
+  {
+    id: 'kb-24-twinkle-akkoorden',
+    title: 'Akkoorden onder Kortjakje',
+    goal: 'Begeleid een liedje',
+    instrument: 'keyboard',
+    steps: [{ kind: 'chord', chords: ['C', 'F', 'C', 'G', 'C', 'F', 'C', 'G', 'C'] }],
+  },
+  {
+    id: 'kb-25-birthday',
+    title: 'Happy Birthday',
+    goal: 'Voor de volgende verjaardag',
+    instrument: 'keyboard',
+    steps: [{ kind: 'song', notes: BIRTHDAY }],
+  },
+  {
+    id: 'kb-26-london',
+    title: 'London Bridge',
+    goal: 'Een Engels kinderliedje',
+    instrument: 'keyboard',
+    steps: [{ kind: 'song', notes: LONDON }],
+  },
+  {
+    id: 'kb-27-sprongen',
+    title: 'Sprongen',
+    goal: 'Van C naar G zonder tussenstapjes',
+    instrument: 'keyboard',
+    steps: [{ kind: 'echo', phrases: [[C, G, C], [C, E, G, C5], [C5, G, E, C], [D, A, D], [E, B, E]] }],
+  },
+  {
+    id: 'kb-28-finale',
+    title: 'Grote finale: twee handen + akkoorden',
+    goal: 'Alles samen',
+    instrument: 'keyboard',
+    steps: [
+      { kind: 'song', notes: [C3s, E, E, F, G, G3s, G, F, E, D, C3s, C, C, D, E, G3s, E, D, D] },
+      { kind: 'chord', chords: ['C', 'G', 'C'] },
+    ],
+  },
+
+  // Gitaar 8–15
+  {
+    id: 'g-8-g-snaar',
+    title: 'Noten op de G-snaar',
+    goal: 'A en B',
+    instrument: 'gitaar',
+    steps: [
+      { kind: 'find', notes: [G3, A3, B3, A3] },
+      { kind: 'echo', phrases: [[G3, A3, B3], [B3, A3, G3], [G3, B3, C, B3]] },
+    ],
+  },
+  {
+    id: 'g-9-d-snaar',
+    title: 'Noten op de D-snaar',
+    goal: 'E en F',
+    instrument: 'gitaar',
+    steps: [
+      { kind: 'find', notes: [50, 52, 53, 52] },
+      { kind: 'echo', phrases: [[50, 52, 53], [53, 52, 50], [50, 53, G3, A3]] },
+    ],
+  },
+  {
+    id: 'g-10-kortjakje',
+    title: 'Kortjakje op gitaar',
+    goal: 'Een heel liedje op de hoge snaren',
+    instrument: 'gitaar',
+    steps: [{ kind: 'song', notes: KORTJAKJE, lyrics: KORTJAKJE_TEXT }],
+  },
+  {
+    id: 'g-11-london',
+    title: 'London Bridge op gitaar',
+    goal: 'Tot fret 5',
+    instrument: 'gitaar',
+    steps: [{ kind: 'song', notes: LONDON }],
+  },
+  { id: 'g-12-c', title: 'Akkoord C', goal: 'Drie vingers', instrument: 'gitaar', steps: [{ kind: 'chord', chords: ['C', 'C', 'Am', 'C'] }] },
+  { id: 'g-13-g', title: 'Akkoord G', goal: 'Een groot, vol akkoord', instrument: 'gitaar', steps: [{ kind: 'chord', chords: ['G', 'G', 'Em', 'G'] }] },
+  {
+    id: 'g-14-popschema',
+    title: 'Het popschema op gitaar',
+    goal: 'C, G, Am, Em',
+    instrument: 'gitaar',
+    steps: [{ kind: 'chord', chords: ['C', 'G', 'Am', 'Em', 'C', 'G', 'Am', 'Em'] }],
+  },
+  { id: 'g-15-dm', title: 'Akkoord Dm', goal: 'Mineur op vier snaren', instrument: 'gitaar', steps: [{ kind: 'chord', chords: ['Dm', 'Am', 'Dm', 'Am', 'Em', 'Am'] }] },
+
+  // Bas 7–13
+  {
+    id: 'b-7-octaven',
+    title: 'Octaven op de bas',
+    goal: 'Twee keer dezelfde letter',
+    instrument: 'bas',
+    steps: [
+      { kind: 'find', notes: [E1, E2, A1, A2] },
+      { kind: 'echo', phrases: [[E1, E2, E1], [A1, A2, A1], [E1, E2, A1, A2]] },
+    ],
+  },
+  {
+    id: 'b-8-kwint',
+    title: 'Grondtoon en kwint',
+    goal: 'C en G: de bas zijn beste vrienden',
+    instrument: 'bas',
+    steps: [{ kind: 'echo', phrases: [[C2, G2, C2, G2], [A1, E2, A1, E2], [G1, D2, G1, D2]] }],
+  },
+  {
+    id: 'b-9-popschema',
+    title: 'Baslijn van het popschema',
+    goal: 'C, G, A, F',
+    instrument: 'bas',
+    steps: [{ kind: 'song', notes: [C2, C2, G1, G1, A1, A1, F1, F1, C2, C2, G1, G1, A1, A1, F1, F1] }],
+  },
+  {
+    id: 'b-10-ode',
+    title: 'Ode an die Freude op bas',
+    goal: 'Beethoven op de bas',
+    instrument: 'bas',
+    steps: [{ kind: 'song', notes: [E2, E2, F2, G2, G2, F2, E2, D2, C2, C2, D2, E2, E2, D2, D2] }],
+  },
+  {
+    id: 'b-11-kortjakje',
+    title: 'Kortjakje op bas',
+    goal: 'Met de A op de G-snaar',
+    instrument: 'bas',
+    steps: [{ kind: 'song', notes: [C2, C2, G2, G2, A2, A2, G2, F2, F2, E2, E2, D2, D2, C2], lyrics: KORTJAKJE_TEXT }],
+  },
+  {
+    id: 'b-12-g',
+    title: 'Wandelen in G',
+    goal: 'Met de B erbij',
+    instrument: 'bas',
+    steps: [
+      { kind: 'find', notes: [B1, G1, B1] },
+      { kind: 'echo', phrases: [[G1, A1, B1, C2, D2], [D2, C2, B1, A1, G1], [G1, B1, D2, B1]] },
+    ],
+  },
+  {
+    id: 'b-13-rock',
+    title: 'Rockbas',
+    goal: 'Veel dezelfde noot, stoer en strak',
+    instrument: 'bas',
+    steps: [{ kind: 'echo', phrases: [[E1, E1, E1, E1, G1, G1, A1, A1], [A1, A1, A1, A1, C2, C2, D2, D2]] }],
+  },
+
+  // Drum 7–13
+  {
+    id: 'd-7-open',
+    title: 'Open hi-hat',
+    goal: 'Tsss!',
+    instrument: 'drum',
+    steps: [{ kind: 'rhythm', bpm: 90, patterns: [['hihat', 'hihat', 'hihat', 'open-hihat'], ['kick', 'hihat', 'snare', 'open-hihat']] }],
+  },
+  {
+    id: 'd-8-dubbel',
+    title: 'Dubbele basdrum',
+    goal: 'Boem-boem tsjak',
+    instrument: 'drum',
+    steps: [{ kind: 'rhythm', bpm: 90, patterns: [['kick', 'kick', 'snare'], ['kick', 'hihat', 'kick', 'snare'], ['kick', 'kick', 'hihat', 'snare']] }],
+  },
+  {
+    id: 'd-9-rock',
+    title: 'Rockbeat over twee maten',
+    goal: 'Een beat die blijft lopen',
+    instrument: 'drum',
+    steps: [
+      {
+        kind: 'rhythm',
+        bpm: 100,
+        patterns: [['kick', 'hihat', 'snare', 'hihat', 'kick', 'kick', 'snare', 'hihat']],
+      },
+    ],
+  },
+  {
+    id: 'd-10-disco',
+    title: 'Discobeat',
+    goal: 'Open hi-hat tussen de tellen',
+    instrument: 'drum',
+    steps: [{ kind: 'rhythm', bpm: 110, patterns: [['kick', 'open-hihat', 'snare', 'open-hihat'], ['kick', 'open-hihat', 'kick', 'open-hihat', 'snare']] }],
+  },
+  {
+    id: 'd-11-roffel',
+    title: 'Tom-roffel',
+    goal: 'Rond de toms',
+    instrument: 'drum',
+    steps: [{ kind: 'rhythm', bpm: 110, patterns: [['tom-hoog', 'tom-hoog', 'tom-laag', 'tom-laag', 'snare', 'snare', 'crash']] }],
+  },
+  {
+    id: 'd-12-klappop',
+    title: 'Klap-pop',
+    goal: 'Een popbeat met handklap',
+    instrument: 'drum',
+    steps: [{ kind: 'rhythm', bpm: 100, patterns: [['kick', 'clap', 'kick', 'kick', 'clap'], ['kick', 'hihat', 'clap', 'hihat', 'kick', 'kick', 'clap', 'hihat']] }],
+  },
+  {
+    id: 'd-13-finale',
+    title: 'Grote finale: beat + fill',
+    goal: 'Alles wat je kan',
+    instrument: 'drum',
+    steps: [
+      {
+        kind: 'rhythm',
+        bpm: 100,
+        patterns: [
+          ['crash', 'hihat', 'snare', 'hihat', 'kick', 'hihat', 'snare', 'hihat'],
+          ['snare', 'snare', 'tom-hoog', 'tom-hoog', 'tom-laag', 'tom-laag', 'kick', 'crash'],
+        ],
+      },
+    ],
+  },
+
+  // Zang 7–13
+  { id: 'z-7-ladder-op', title: 'De toonladder omhoog', goal: 'Do tot hoge do', instrument: 'zang', steps: [{ kind: 'sing', notes: [C, D, E, F, G, A, B, C5], holdMs: 600 }] },
+  { id: 'z-8-ladder-neer', title: 'En weer omlaag', goal: 'Hoge do tot do', instrument: 'zang', steps: [{ kind: 'sing', notes: [C5, B, A, G, F, E, D, C], holdMs: 600 }] },
+  { id: 'z-9-octaaf', title: 'De grote sprong', goal: 'Do en de hoge do', instrument: 'zang', steps: [{ kind: 'sing', notes: [C, C5, C, C5, C] }] },
+  { id: 'z-10-sol', title: 'Do, sol, do', goal: 'Een sterke sprong', instrument: 'zang', steps: [{ kind: 'sing', notes: [C, G, C, G, C5, G, C] }] },
+  { id: 'z-11-kortjakje', title: 'Zing Kortjakje', goal: 'Met de woorden erbij', instrument: 'zang', steps: [{ kind: 'sing', notes: KORTJAKJE, holdMs: 350, lyrics: KORTJAKJE_TEXT }] },
+  { id: 'z-12-birthday', title: 'Zing Happy Birthday', goal: 'Voor de volgende verjaardag', instrument: 'zang', steps: [{ kind: 'sing', notes: BIRTHDAY, holdMs: 300 }] },
+  { id: 'z-13-london', title: 'Zing London Bridge', goal: 'Een liedje zonder pauze', instrument: 'zang', steps: [{ kind: 'sing', notes: LONDON, holdMs: 300 }] },
+];
+
 export const LESSONS: Lesson[] = [
   // ---------- Keyboard ----------
   { id: 'kb-1-c', title: 'Waar is de C?', goal: 'Vind de C, D en E', instrument: 'keyboard', steps: [{ kind: 'find', notes: [C, C5, C, D, E] }] },
@@ -420,6 +720,7 @@ export const LESSONS: Lesson[] = [
     instrument: 'zang',
     steps: [{ kind: 'sing', notes: [E, E, F, G, G, F, E, D, C, C, D, E, E, D, D], holdMs: 350 }],
   },
+  ...BASIS_2,
 ];
 
 export function lessonById(id: string): Lesson | undefined {

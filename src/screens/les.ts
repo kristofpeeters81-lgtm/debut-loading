@@ -140,7 +140,15 @@ export function mountLes(app: HTMLElement): () => void {
   app.append(intro, playArea, end);
 
   // ---------- Weergave ----------
-  const label = (t: Token): string => (typeof t === 'number' ? name(t) : t.startsWith('chord:') ? t.slice(6) : padLabel(t));
+  // Keyboard: lage noten (linkerhand, onder C4) met hun octaaf erbij, zodat "C3" en "C" verschillen.
+  const label = (t: Token): string =>
+    typeof t === 'number'
+      ? inst === 'keyboard' && t < 60
+        ? noteName(t, settings().notation, true)
+        : name(t)
+      : t.startsWith('chord:')
+        ? t.slice(6)
+        : padLabel(t);
 
   const render = (): void => {
     fill.style.width = `${Math.round(run.progress * 100)}%`;

@@ -260,7 +260,7 @@ async function appTest() {
 
     // Lessen (blok 8): les 1 met tikken op het scherm (deze browser heeft geen microfoon)
     check(await tapScreen(page, 'lessen'), 'lessen: opent');
-    check((await page.$$('.lesson-card')).length === 17, 'lessen: 17 keyboardlessen');
+    check((await page.$$('.lesson-card')).length === 28, 'lessen: 28 keyboardlessen');
     check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-1-c', 'lessen: les 1 is "Volgende"');
     await page.screenshot({ path: path.join(OUT, 'lessen.png'), fullPage: true });
     await page.click('.lesson-card[data-lesson="kb-1-c"]');
@@ -332,7 +332,7 @@ async function appTest() {
       await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
     };
     await tapScreen(page, 'lessen');
-    for (const [tab, n] of [['keyboard', 17], ['gitaar', 7], ['bas', 6], ['drum', 6], ['zang', 6]]) {
+    for (const [tab, n] of [['keyboard', 28], ['gitaar', 15], ['bas', 13], ['drum', 13], ['zang', 13]]) {
       await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
       check((await page.$$('.lesson-card')).length === n, `lessen: ${n} lessen voor ${tab}`);
     }
@@ -342,6 +342,12 @@ async function appTest() {
     await autoPlay('g-1-hoog', 'gitaar');
     await autoPlay('b-3-frets', 'bas');
     await autoPlay('d-3-beat', 'drum');
+    // Tweede reeks: een les per instrument (zwarte toetsen, linkerhand, D-snaar, bas-kwint, discobeat)
+    await autoPlay('kb-21-zwart', 'keyboard');
+    await autoPlay('kb-22-links-kortjakje', 'keyboard');
+    await autoPlay('g-9-d-snaar', 'gitaar');
+    await autoPlay('b-8-kwint', 'bas');
+    await autoPlay('d-10-disco', 'drum');
 
     // Spel met vallende noten (blok 9): Ode an die Freude uitspelen in "Wacht op mij"
     check(await tapScreen(page, 'liedjes'), 'liedjes: opent');
