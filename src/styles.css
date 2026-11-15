@@ -883,6 +883,116 @@ button.danger {
   margin-bottom: 10px;
 }
 
+/* ---------- In de maat (niveau 5) ---------- */
+.timed {
+  width: 100%;
+}
+
+.timed-row {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.timed-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 12px 2px;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  background: var(--panel-2);
+  font-weight: 800;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timed-cell.now {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.timed-cell.hit.ontime {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--bg);
+}
+
+.timed-cell.hit.early,
+.timed-cell.hit.late {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--bg);
+}
+
+.timed-cell.miss {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+.timed-count {
+  min-height: 1.3em;
+  margin-top: 8px;
+  font: 900 2.4rem var(--display);
+  color: var(--pink);
+}
+
+.timed-verdict {
+  min-height: 1.5em;
+  font: 600 1.2rem var(--display);
+}
+
+/* ---------- Tabs lezen (niveau 5) ---------- */
+.tab-view {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--panel-2);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+.tab-line {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(180deg, transparent 47%, var(--muted) 47%, var(--muted) 53%, transparent 53%);
+}
+
+.tab-string {
+  flex: none;
+  width: 2em;
+  font-weight: 800;
+  color: var(--muted);
+  background: var(--panel-2);
+}
+
+.tab-cell {
+  flex: none;
+  width: 2em;
+  min-height: 1.6em;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.tab-cell:not(:empty) {
+  background: var(--panel-2);
+  border-radius: 6px;
+}
+
+.tab-cell.now:not(:empty) {
+  background: var(--cyan);
+  color: var(--bg);
+}
+
+.tab-cell.done {
+  opacity: 0.4;
+}
+
 .lesson-buttons {
   justify-content: center;
   margin-top: 10px;

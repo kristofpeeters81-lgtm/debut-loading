@@ -11,8 +11,10 @@ export type Step =
   | { kind: 'find'; notes: number[] }
   /** De app speelt een stukje voor, jij speelt het na. */
   | { kind: 'echo'; phrases: number[][] }
-  /** Een liedje noot per noot; de app wacht op jou. Lettergrepen (optioneel) per noot. */
-  | { kind: 'song'; notes: number[]; lyrics?: string[] }
+  /** Een liedje noot per noot; de app wacht op jou. Lettergrepen (optioneel) per noot. `tab` = als gitaar-/bastab tonen. */
+  | { kind: 'song'; notes: number[]; lyrics?: string[]; tab?: boolean }
+  /** In de maat (niveau 5): 4 tellen aftellen, metronoom mee, elke noot/pad op zijn tel. `beat` in tellen. */
+  | { kind: 'timed'; bpm: number; events: { token: number | DrumPad; beat: number }[] }
   /** Akkoorden: mild gecontroleerd, met altijd een knop "Verder" (beslissing blok 1). */
   | { kind: 'chord'; chords: ChordName[] }
   /** Drum: de app speelt een ritme voor, jij tikt het na. */
@@ -33,7 +35,7 @@ export interface Lesson {
   flats?: boolean;
 }
 
-export const LEVEL_NAMES: Record<number, string> = { 1: 'Start', 2: 'Basis', 3: 'Stevig', 4: 'Uitdaging' };
+export const LEVEL_NAMES: Record<number, string> = { 1: 'Start', 2: 'Basis', 3: 'Stevig', 4: 'Uitdaging', 5: 'In de maat' };
 
 /** Akkoorden: grondtoon (0 = C), mineur, en de noten per instrument (voor voorspelen en tikken). */
 export const CHORDS: Record<ChordName, { root: number; minor: boolean; keyboard: number[]; gitaar: number[] }> = {
@@ -413,7 +415,8 @@ function scaleLesson(
   const accidentals = [...new Set(blacks.map((n) => nameOf(n % 12)))];
   const list = accidentals.length > 1 ? `${accidentals.slice(0, -1).join(', ')} en ${accidentals[accidentals.length - 1]}` : accidentals[0];
   const steps: Step[] = [];
-  if (blacks.length) steps.push({ kind: 'find', notes: [...new Set(blacks)] });
+  // Zang: geen "speel de F#"-stap; de zwarte tonen zitten gewoon in de gezongen toonladder.
+  if (blacks.length && inst !== 'zang') steps.push({ kind: 'find', notes: [...new Set(blacks)] });
   if (inst === 'zang') steps.push({ kind: 'sing', notes: upDown(notes), holdMs: 450 });
   else steps.push({ kind: 'song', notes: upDown(notes) });
   return {
@@ -641,7 +644,7 @@ const BASIS_4: Lesson[] = [
   { id: 'z-4-jacob-g', title: 'Vader Jacob in G', goal: 'Hetzelfde liedje, hoger', instrument: 'zang', level: 4, steps: [{ kind: 'sing', notes: tr(JACOB, 7), holdMs: 300, lyrics: JACOB_TEXT }] },
 ];
 
-export const LESSONS: Lesson[] = [
+const BASE_LESSONS: Lesson[] = [
   // ---------- Keyboard ----------
   { id: 'kb-1-c', title: 'Waar is de C?', goal: 'Vind de C, D en E', instrument: 'keyboard', steps: [{ kind: 'find', notes: [C, C5, C, D, E] }] },
   {
@@ -992,6 +995,133 @@ export const LESSONS: Lesson[] = [
   ...BASIS_2.map((l) => ({ ...l, level: 2 })),
   ...BASIS_3,
   ...BASIS_4,
+];
+
+// ---------- Niveau 5 "In de maat" (2026-11-15): timing, tabs lezen, oefenmixen ----------
+
+type Hit = [number | DrumPad, number];
+const timed = (bpm: number, hits: Hit[]): Step => ({ kind: 'timed', bpm, events: hits.map(([token, beat]) => ({ token, beat })) });
+/** Een rij tokens op gelijke afstand (bv. kwartnoten: stap 1, achtsten: stap 0.5). */
+const even = (tokens: (number | DrumPad)[], step = 1, start = 0): Hit[] => tokens.map((t, i) => [t, start + i * step]);
+
+/** Oefenmix: stukjes uit eerdere lessen (van de gegeven niveaus) door elkaar, zodat ze niet vergeten worden. */
+function mixLesson(inst: InstrumentId, id: string, title: string, levels: number[], base: Lesson[]): Lesson {
+  const src = base.filter((l) => l.instrument === inst && levels.includes(l.level ?? 1));
+  const finds: number[] = [];
+  const phrases: number[][] = [];
+  const chords: ChordName[] = [];
+  const rhythms: DrumPad[][] = [];
+  const sings: number[] = [];
+  src.forEach((l, i) => {
+    for (const s of l.steps) {
+      if (s.kind === 'find' && i % 2 === 0 && inst !== 'zang') finds.push(s.notes[0]);
+      if (s.kind === 'echo' && i % 3 === 1) phrases.push(s.phrases[s.phrases.length - 1]);
+      if (s.kind === 'chord' && i % 2 === 1) chords.push(s.chords[0]);
+      if (s.kind === 'rhythm' && i % 2 === 0) rhythms.push(s.patterns[0]);
+      if (s.kind === 'sing' && i % 2 === 0) sings.push(...s.notes.slice(0, 2));
+    }
+  });
+  const steps: Step[] = [];
+  if (finds.length) steps.push({ kind: 'find', notes: finds.slice(0, 6) });
+  if (phrases.length) steps.push({ kind: 'echo', phrases: phrases.slice(0, 4) });
+  if (chords.length) steps.push({ kind: 'chord', chords: chords.slice(0, 5) });
+  if (rhythms.length) steps.push({ kind: 'rhythm', bpm: 95, patterns: rhythms.slice(0, 4) });
+  if (sings.length) steps.push({ kind: 'sing', notes: sings.slice(0, 8), holdMs: 500 });
+  return { id, title, goal: 'Herhaling: stukjes uit eerdere lessen', instrument: inst, level: 5, steps };
+}
+
+const BEAT: DrumPad[] = ['kick', 'hihat', 'snare', 'hihat'];
+
+const LEVEL_5: Lesson[] = [
+  // Keyboard: notenwaarden en ritme
+  { id: 'kb-m-kwart', title: 'Kwartnoten', goal: 'Elke tel één noot, mee met de metronoom', instrument: 'keyboard', level: 5, steps: [timed(70, even([C, D, E, F, G, F, E, D]))] },
+  { id: 'kb-m-half', title: 'Halve noten', goal: 'Elke noot twee tellen', instrument: 'keyboard', level: 5, steps: [timed(80, even([C, E, G, C5, G, E, C], 2))] },
+  {
+    id: 'kb-m-mix',
+    title: 'Kwart en half door elkaar',
+    goal: 'Kort, kort, lang',
+    instrument: 'keyboard',
+    level: 5,
+    steps: [timed(80, [[C, 0], [C, 1], [E, 2], [D, 4], [D, 5], [C, 6], [E, 8], [E, 9], [G, 10], [F, 12], [E, 13], [C, 14]])],
+  },
+  { id: 'kb-m-achtst', title: 'Achtste noten', goal: 'Twee noten per tel', instrument: 'keyboard', level: 5, steps: [timed(60, [...even([C, D, E, F, G, F, E, D], 0.5), [C, 4]])] },
+  {
+    id: 'kb-m-jacob',
+    title: 'Vader Jacob in de maat',
+    goal: 'Een liedje met echt ritme',
+    instrument: 'keyboard',
+    level: 5,
+    steps: [timed(80, [...even([C, D, E, C, C, D, E, C]), [E, 8], [F, 9], [G, 10], [E, 12], [F, 13], [G, 14]])],
+  },
+  {
+    id: 'kb-m-rust',
+    title: 'Rusten',
+    goal: 'Ook stilte hoort bij de maat',
+    instrument: 'keyboard',
+    level: 5,
+    steps: [timed(80, [[C, 0], [E, 1], [G, 3], [G, 4], [E, 5], [C, 7], [D, 8], [D, 9], [C, 11]])],
+  },
+
+  // Gitaar: tabs lezen en ritme
+  { id: 'g-m-tab-1', title: 'Tabs lezen: één snaar', goal: 'Het getal is de fret', instrument: 'gitaar', level: 5, steps: [{ kind: 'song', notes: [64, 65, 67, 65, 64, 64, 67, 69, 67], tab: true }] },
+  { id: 'g-m-tab-2', title: 'Tabs lezen: twee snaren', goal: 'Welke lijn is welke snaar?', instrument: 'gitaar', level: 5, steps: [{ kind: 'song', notes: [59, 60, 62, 64, 62, 60, 59, 64, 65, 64], tab: true }] },
+  { id: 'g-m-tab-ode', title: 'Ode an die Freude in tab', goal: 'Een heel liedje uit een tab', instrument: 'gitaar', level: 5, steps: [{ kind: 'song', notes: ODE, tab: true }] },
+  { id: 'g-m-tab-kortjakje', title: 'Kortjakje in tab', goal: 'Over drie snaren', instrument: 'gitaar', level: 5, steps: [{ kind: 'song', notes: KORTJAKJE, tab: true }] },
+  { id: 'g-m-kwart', title: 'Losse snaren in de maat', goal: 'Elke tel één snaar', instrument: 'gitaar', level: 5, steps: [timed(70, even([64, 64, 59, 59, 55, 55, 59, 64]))] },
+  {
+    id: 'g-m-buns',
+    title: 'Hot Cross Buns in de maat',
+    goal: 'Met achtste noten',
+    instrument: 'gitaar',
+    level: 5,
+    steps: [timed(70, [[E, 0], [D, 1], [C, 2], [E, 4], [D, 5], [C, 6], ...even([C, C, C, C, D, D, D, D], 0.5, 8), [E, 12], [D, 13], [C, 14]])],
+  },
+  {
+    id: 'g-m-mary',
+    title: 'Mary in de maat',
+    goal: 'Een liedje met echt ritme',
+    instrument: 'gitaar',
+    level: 5,
+    steps: [timed(80, [...even([E, D, C, D, E, E]), [E, 6], [D, 8], [D, 9], [D, 10], [E, 12], [G, 13], [G, 14]])],
+  },
+
+  // Bas: tabs en strak in de maat
+  { id: 'b-m-tab-1', title: 'Bastab lezen', goal: 'Het getal is de fret', instrument: 'bas', level: 5, steps: [{ kind: 'song', notes: [33, 35, 36, 35, 33, 28, 31, 33], tab: true }] },
+  { id: 'b-m-tab-pop', title: 'Popschema in bastab', goal: 'C, G, A, F', instrument: 'bas', level: 5, steps: [{ kind: 'song', notes: [36, 36, 31, 31, 33, 33, 29, 29], tab: true }] },
+  { id: 'b-m-kwart', title: 'Grondtoon in de maat', goal: 'Vier keer E, vier keer A', instrument: 'bas', level: 5, steps: [timed(80, even([28, 28, 28, 28, 33, 33, 33, 33]))] },
+  { id: 'b-m-kwint', title: 'Kwint in de maat', goal: 'C – G – C – G', instrument: 'bas', level: 5, steps: [timed(80, even([36, 43, 36, 43, 33, 40, 33, 40]))] },
+  { id: 'b-m-achtst', title: 'Rock-achtsten', goal: 'Twee noten per tel, strak', instrument: 'bas', level: 5, steps: [timed(70, even([28, 28, 28, 28, 28, 28, 31, 33, 33, 33, 33, 33, 33, 33, 36, 38], 0.5))] },
+  { id: 'b-m-pop', title: 'Popschema in de maat', goal: 'Elke grondtoon twee tellen', instrument: 'bas', level: 5, steps: [timed(80, even([36, 36, 31, 31, 33, 33, 29, 29]))] },
+
+  // Drum: echt in de maat
+  { id: 'd-m-beat', title: 'De beat in de maat', goal: 'Basdrum, hi-hat, snare, hi-hat op de tellen', instrument: 'drum', level: 5, steps: [timed(80, even([...BEAT, ...BEAT]))] },
+  { id: 'd-m-half', title: 'Langzaam: om de twee tellen', goal: 'Wachten is ook drummen', instrument: 'drum', level: 5, steps: [timed(80, even(['kick', 'snare', 'kick', 'snare'], 2))] },
+  { id: 'd-m-achtst', title: 'Achtste noten op de hi-hat', goal: 'Twee tikken per tel', instrument: 'drum', level: 5, steps: [timed(70, even(['hihat', 'hihat', 'hihat', 'hihat', 'hihat', 'hihat', 'hihat', 'hihat'], 0.5))] },
+  { id: 'd-m-vloer', title: 'Vier op de vloer in de maat', goal: 'Basdrum en klap', instrument: 'drum', level: 5, steps: [timed(100, even(['kick', 'clap', 'kick', 'clap', 'kick', 'clap', 'kick', 'clap']))] },
+  {
+    id: 'd-m-fill',
+    title: 'Beat en fill in de maat',
+    goal: 'Een maat beat, een maat fill',
+    instrument: 'drum',
+    level: 5,
+    steps: [timed(80, [...even(BEAT), ...even(['snare', 'snare', 'tom-hoog', 'tom-hoog', 'tom-laag', 'tom-laag'], 0.5, 4), ['crash', 8]])],
+  },
+  { id: 'd-m-snel', title: 'Beat op 110 in de maat', goal: 'Sneller, maar nog steeds strak', instrument: 'drum', level: 5, steps: [timed(110, even([...BEAT, ...BEAT, ...BEAT]))] },
+];
+
+export const LESSONS: Lesson[] = [
+  ...BASE_LESSONS,
+  ...LEVEL_5,
+  mixLesson('keyboard', 'kb-5-oefenmix-1', 'Oefenmix: niveau 1 en 2', [1, 2], BASE_LESSONS),
+  mixLesson('keyboard', 'kb-5-oefenmix-2', 'Oefenmix: niveau 3 en 4', [3, 4], BASE_LESSONS),
+  mixLesson('gitaar', 'g-5-oefenmix-1', 'Oefenmix: niveau 1 en 2', [1, 2], BASE_LESSONS),
+  mixLesson('gitaar', 'g-5-oefenmix-2', 'Oefenmix: niveau 3 en 4', [3, 4], BASE_LESSONS),
+  mixLesson('bas', 'b-5-oefenmix-1', 'Oefenmix: niveau 1 en 2', [1, 2], BASE_LESSONS),
+  mixLesson('bas', 'b-5-oefenmix-2', 'Oefenmix: niveau 3 en 4', [3, 4], BASE_LESSONS),
+  mixLesson('drum', 'd-5-oefenmix-1', 'Oefenmix: niveau 1 en 2', [1, 2], BASE_LESSONS),
+  mixLesson('drum', 'd-5-oefenmix-2', 'Oefenmix: niveau 3 en 4', [3, 4], BASE_LESSONS),
+  mixLesson('zang', 'z-5-oefenmix-1', 'Oefenmix: niveau 1 en 2', [1, 2], BASE_LESSONS),
+  mixLesson('zang', 'z-5-oefenmix-2', 'Oefenmix: niveau 3 en 4', [3, 4], BASE_LESSONS),
 ];
 
 export function lessonById(id: string): Lesson | undefined {

@@ -227,6 +227,19 @@ zangles via nep-microfoon).
 - **Mollen:** lessen in een toonsoort met Bb (F, D-mineur, London Bridge in F, blues, "Zwarte toets: Bb") tonen Bb/Eb
   (do-re-mi: sib/mib) in plaats van A#/D#. Les 20 heet nu "C# en D#" (titel = wat op het scherm staat).
 - Alles automatisch gecontroleerd; e2e speelt o.a. toonladder G, akkoorden in D, gitaarladder G, grondtoon–kwint–octaaf en de drumsolo uit.
+**Niveau 5 "In de maat" (2026-11-15):** 201 lessen in totaal (keyboard 62, gitaar 43, bas 35, drum 33, zang 28).
+Waarom: na 166 lessen was het aantal voldoende, maar ontbraken ritme/timing, herhaling en lezen (zie gesprek 2026-11-15).
+- **Timing** (`src/lessons/timing.ts`, scherm `src/screens/lesTimed.ts`): nieuwe opdracht `timed`. Rij vakjes (één per noot, breedte =
+  lengte), cursor loopt mee, metronoom + 4 tellen aftellen. Eerst voorspelen ("Luister"), dan "Ik speel!". Per noot: **op tijd**
+  (±120 ms), **te vroeg / te laat** (±250 ms) of **gemist**. Gemist = foutje (enkel minder sterren). Microfoon: 100 ms vertraging
+  gecorrigeerd. Lessen: kwartnoten, halve noten, kwart+half, achtsten, rusten, Vader Jacob/Mary/Hot Cross Buns in de maat,
+  grondtoon/kwint/rock-achtsten/popschema op bas, beat/halve tellen/achtsten hi-hat/vier op de vloer/beat+fill/beat op 110 op drum.
+- **Tabs lezen** (gitaar, bas): opdracht `song` met `tab: true`. Tab zoals op internet (dunste snaar bovenaan, fretnummers op de lijn),
+  huidige noot oplichtend. Gitaar: één snaar, twee snaren, Ode, Kortjakje. Bas: bastab, popschema.
+- **Oefenmixen** (2 per instrument: niveau 1+2 en 3+4), automatisch samengesteld uit eerdere lessen (noten zoeken, echo's, akkoorden,
+  ritmes, zingen), zodat geleerde dingen terugkomen.
+- Ids van niveau 5: `kb-m-…`, `g-m-…`, `b-m-…`, `d-m-…` (de eerste test vond een botsing met de oude `d-5-fill`).
+- Zang-toonladders: geen "speel de F#"-stap meer (zwarte tonen zitten in de gezongen toonladder).
 ## Blok 5 — Profielen
 
 **Gebouwd (2026-11-14):** de 10 avatars zijn goedgekeurd door de gebruiker.

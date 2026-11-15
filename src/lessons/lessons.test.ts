@@ -65,8 +65,21 @@ describe('lesinhoud', () => {
     expect(lessonById('kb-3-ladder-e')!.title).toBe('Toonladder van E');
   });
 
-  it('elke les heeft een niveau van 1 tot 4', () => {
-    for (const l of LESSONS) expect([1, 2, 3, 4]).toContain(l.level ?? 1);
+  it('elke les heeft een niveau van 1 tot 5', () => {
+    for (const l of LESSONS) expect([1, 2, 3, 4, 5]).toContain(l.level ?? 1);
+  });
+
+  it('niveau 5: oefenmixen hebben inhoud, timinglessen staan op volgorde', () => {
+    for (const l of LESSONS.filter((x) => x.id.includes('oefenmix'))) expect(tasksOf(l).reduce((n, t) => n + t.tokens.length, 0)).toBeGreaterThanOrEqual(6);
+    for (const l of LESSONS) for (const s of l.steps) if (s.kind === 'timed') for (let i = 1; i < s.events.length; i++) expect(s.events[i].beat).toBeGreaterThan(s.events[i - 1].beat);
+  });
+
+  it('in de maat: één taak die pas na de timing verder gaat (gemist = foutje)', () => {
+    const run = new LessonRun(lessonById('kb-m-kwart')!);
+    expect(run.task?.kind).toBe('timed');
+    expect(run.input(60)).toBe('ignored');
+    expect(run.completeTimed(2)).toBe('lesson-done');
+    expect(run.stars).toBe(3);
   });
 
   it('songteksten hebben evenveel lettergrepen als noten', () => {

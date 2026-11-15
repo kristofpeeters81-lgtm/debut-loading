@@ -260,8 +260,8 @@ async function appTest() {
 
     // Lessen (blok 8): les 1 met tikken op het scherm (deze browser heeft geen microfoon)
     check(await tapScreen(page, 'lessen'), 'lessen: opent');
-    check((await page.$$('.lesson-card')).length === 54, 'lessen: 54 keyboardlessen');
-    check((await page.$$('.level-head')).length === 4, 'lessen: 4 niveaus');
+    check((await page.$$('.lesson-card')).length === 62, 'lessen: 62 keyboardlessen');
+    check((await page.$$('.level-head')).length === 5, 'lessen: 5 niveaus');
     check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-1-c', 'lessen: les 1 is "Volgende"');
     await page.screenshot({ path: path.join(OUT, 'lessen.png'), fullPage: true });
     await page.click('.lesson-card[data-lesson="kb-1-c"]');
@@ -333,7 +333,7 @@ async function appTest() {
       await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
     };
     await tapScreen(page, 'lessen');
-    for (const [tab, n] of [['keyboard', 54], ['gitaar', 34], ['bas', 27], ['drum', 25], ['zang', 26]]) {
+    for (const [tab, n] of [['keyboard', 62], ['gitaar', 43], ['bas', 35], ['drum', 33], ['zang', 28]]) {
       await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
       check((await page.$$('.lesson-card')).length === n, `lessen: ${n} lessen voor ${tab}`);
     }
@@ -355,6 +355,61 @@ async function appTest() {
     await autoPlay('g-3-ladder-g', 'gitaar');
     await autoPlay('b-3-octaaf', 'bas');
     await autoPlay('d-4-solo', 'drum');
+    // Niveau 5: tabs lezen (gitaar) en in de maat (keyboard, bas, drum)
+    await autoPlay('g-m-tab-ode', 'gitaar');
+    const autoTimed = async (lessonId, tab) => {
+      await tapScreen(page, 'lessen');
+      await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
+      await page.click(`.lesson-card[data-lesson="${lessonId}"]`);
+      await waitFor(async () => (await screenOf(page)) === 'les', 3000, 'les');
+      await page.click('.lesson-intro button.big');
+      const end = Date.now() + 90000;
+      let shot = false;
+      while (Date.now() < end) {
+        if (await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false)) break;
+        // Wachten tot het voorspelen klaar is, dan "Ik speel!"
+        const ready = await page.$eval('.timed-verdict', (e) => e.textContent.startsWith('Nu jij')).catch(() => false);
+        if (!ready) {
+          await sleep(150);
+          continue;
+        }
+        await page.click('.timed-go');
+        let last = -1;
+        const stop = Date.now() + 30000;
+        while (Date.now() < stop) {
+          const r = await page.evaluate(() => {
+            const cells = [...document.querySelectorAll('.timed-cell')];
+            const i = cells.findIndex((c) => c.classList.contains('now'));
+            return { i, token: i >= 0 ? cells[i].dataset.token : '', misses: document.querySelector('.timed')?.dataset.misses ?? '' };
+          });
+          if (r.misses !== '') break;
+          if (r.i >= 0 && r.i !== last) {
+            last = r.i;
+            const sel = /^\d+$/.test(r.token)
+              ? (await page.$(`.lesson-kb .key[data-midi="${r.token}"]`))
+                ? `.lesson-kb .key[data-midi="${r.token}"]`
+                : `.lesson-neck .fret[data-midi="${r.token}"]`
+              : `.drum-pad[data-pad="${r.token}"]`;
+            await page.click(sel).catch(() => undefined);
+            if (!shot) {
+              await page.screenshot({ path: path.join(OUT, `les-${lessonId}.png`) });
+              shot = true;
+            }
+          }
+          await sleep(15);
+        }
+        await sleep(200);
+      }
+      const stars = await page.$eval('.lesson-end', (e) => (e.hidden ? '' : e.dataset.stars)).catch(() => '');
+      check(stars === '3', `in de maat ${lessonId} (${tab}): uitgespeeld met 3 sterren (${stars || 'niet klaar'})`);
+      await page.click('.lesson-end .lesson-back').catch(() => undefined);
+      await waitFor(async () => (await screenOf(page)) === 'lessen', 3000, 'lessen');
+      await page.click('.back');
+      await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
+    };
+    await autoTimed('kb-m-kwart', 'keyboard');
+    await autoTimed('b-m-kwint', 'bas');
+    await autoTimed('d-m-beat', 'drum');
     // Mollen: de les "Zwarte toets: Bb" toont Bb (niet A#)
     await tapScreen(page, 'lessen');
     await page.click('.lesson-tabs .chip[data-instrument="keyboard"]');

@@ -15,6 +15,8 @@ import { starRow } from './lessen';
 import { COLOR_OF_PC, drumSurface, keyboardSurface, neckSurface, singSurface, type Surface } from './lesSurfaces';
 import { DRUM_PADS } from '../audio/synth';
 import { el } from '../ui/dom';
+import { timedPanel, type TimedPanel } from './lesTimed';
+import { BASS_STRINGS, GUITAR_STRINGS, placeOnNeck } from '../songs/arrange';
 
 let currentLessonId: string | null = null;
 
@@ -29,6 +31,8 @@ const DEMO_STEP_MS = 650;
 const DEAF_AFTER_MS = 450;
 /** Tikken op het scherm: akkoordtonen die binnen deze tijd samen getikt worden, tellen als akkoord. */
 const CHORD_TAP_MS = 1800;
+/** Vertraging van de microfoonherkenning (stabiel na ±90 ms + venster), voor de timinglessen. */
+const MIC_LAG_MS = 100;
 
 const MIC_RANGE: Record<string, { minHz: number; maxHz: number }> = {
   keyboard: { minHz: 120, maxHz: 1100 },
@@ -42,6 +46,7 @@ function keyboardRange(lesson: Lesson): [number, number] {
   const notes: number[] = [];
   for (const s of lesson.steps) {
     if (s.kind === 'find' || s.kind === 'song') notes.push(...s.notes);
+    if (s.kind === 'timed') for (const e of s.events) if (typeof e.token === 'number') notes.push(e.token);
     if (s.kind === 'echo') for (const p of s.phrases) notes.push(...p);
     if (s.kind === 'chord') for (const c of s.chords) notes.push(...CHORDS[c].keyboard);
   }
@@ -68,6 +73,30 @@ export function mountLes(app: HTMLElement): () => void {
   let chordTaps: { midi: number; t: number }[] = [];
   let holdStart = 0;
   let holdPc = -1;
+  let timed: TimedPanel | null = null;
+  const tabStrings = inst === 'bas' ? BASS_STRINGS : GUITAR_STRINGS; // laag → hoog
+  /** "fret 3 op de B-snaar" kort: "3 (B)". */
+  const fretLabel = (m: number): string => {
+    const p = placeOnNeck(m, tabStrings, 5) ?? placeOnNeck(m, tabStrings);
+    return p ? `${p.fret}` : name(m);
+  };
+  /** Tab zoals op internet: één lijn per snaar (dunste bovenaan), fretnummers op de juiste lijn. */
+  const tabView = (tokens: Token[], pos: number): HTMLElement => {
+    const box = el('div', 'tab-view');
+    const lines = [...tabStrings].reverse();
+    for (const open of lines) {
+      const line = el('div', 'tab-line');
+      line.append(el('span', 'tab-string', noteName(open, settings().notation, false)));
+      tokens.forEach((tok, i) => {
+        const p = typeof tok === 'number' ? (placeOnNeck(tok, tabStrings, 5) ?? placeOnNeck(tok, tabStrings)) : null;
+        const onThis = p !== null && tabStrings[p.string] === open;
+        const cell = el('span', i === pos ? 'tab-cell now' : i < pos ? 'tab-cell done' : 'tab-cell', onThis ? String(p.fret) : '');
+        line.append(cell);
+      });
+      box.append(line);
+    }
+    return box;
+  };
   const timers: number[] = [];
   const later = (fn: () => void, ms: number): void => {
     timers.push(window.setTimeout(() => alive && fn(), ms));
@@ -94,6 +123,10 @@ export function mountLes(app: HTMLElement): () => void {
   const tapNote = (m: number): void => {
     engine.noteOn(voice, m);
     deafUntil = performance.now() + DEAF_AFTER_MS;
+    if (run.task?.kind === 'timed') {
+      timed?.input(m, performance.now());
+      return;
+    }
     if (run.task?.kind === 'chord') {
       const now = performance.now();
       chordTaps = chordTaps.filter((x) => now - x.t < CHORD_TAP_MS).concat({ midi: m, t: now });
@@ -117,7 +150,8 @@ export function mountLes(app: HTMLElement): () => void {
         : inst === 'drum'
           ? drumSurface((p: DrumPad) => {
               engine.drum(p);
-              handle(p);
+              if (run.task?.kind === 'timed') timed?.input(p, performance.now());
+              else handle(p);
             })
           : (sing = singSurface(() => playReference()));
   const micNote = el('p', 'small lesson-mic', '');
@@ -156,7 +190,7 @@ export function mountLes(app: HTMLElement): () => void {
     const t = run.task;
     if (!t) return;
     const want = run.expected;
-    again.hidden = !((t.demo && run.demoDone) || t.kind === 'chord');
+    again.hidden = t.kind === 'timed' || !((t.demo && run.demoDone) || t.kind === 'chord');
     again.textContent = t.kind === 'chord' ? 'Hoor het akkoord' : 'Nog eens horen';
     skip.hidden = !t.skippable;
     seq.replaceChildren();
@@ -177,9 +211,14 @@ export function mountLes(app: HTMLElement): () => void {
         surface.target(run.showHint ? want : null, true);
         break;
       case 'song':
-        prompt.textContent = t.lyrics?.[run.pos] ?? 'Speel mee';
-        big.textContent = want === null ? '' : label(want);
+        prompt.textContent = t.lyrics?.[run.pos] ?? (t.tab ? 'Lees de tab' : 'Speel mee');
+        big.textContent = want === null ? '' : t.tab && typeof want === 'number' ? fretLabel(want) : label(want);
         big.style.color = colorOf(want);
+        if (t.tab) {
+          seq.append(tabView(t.tokens, run.pos));
+          surface.target(want);
+          break;
+        }
         t.tokens.forEach((n, i) => {
           const chip = el('span', i < run.pos ? 'seq-note done' : i === run.pos ? 'seq-note now' : 'seq-note', label(n));
           if (i === run.pos) chip.style.borderColor = colorOf(n);
@@ -191,6 +230,11 @@ export function mountLes(app: HTMLElement): () => void {
         prompt.textContent = 'Speel het akkoord';
         big.textContent = want === null ? '' : label(want);
         surface.target(want);
+        break;
+      case 'timed':
+        prompt.textContent = 'In de maat';
+        big.textContent = '';
+        if (timed) seq.append(timed.el);
         break;
       case 'sing':
         prompt.textContent = t.lyrics?.[0] ?? 'Zing de';
@@ -237,6 +281,24 @@ export function mountLes(app: HTMLElement): () => void {
 
   const nextTask = (): void => {
     feedback.textContent = '';
+    timed?.stop();
+    timed = null;
+    if (run.task?.kind === 'timed') {
+      timed = timedPanel({
+        task: run.task,
+        label,
+        surface,
+        voice,
+        setDeaf: (until) => (deafUntil = until),
+        onDone: (misses) => {
+          timed?.stop();
+          timed = null;
+          const r = run.completeTimed(misses);
+          if (r === 'lesson-done') later(finish, 300);
+          else later(nextTask, 300);
+        },
+      });
+    }
     chordTaps = [];
     lastChord = null;
     holdStart = 0;
@@ -245,7 +307,8 @@ export function mountLes(app: HTMLElement): () => void {
       events = new NoteEvents(t.holdMs ?? 700, 120);
       later(playReference, 250);
     }
-    if (t?.demo) playDemo();
+    // In de maat heeft een eigen voorspelen (met metronoom en aftellen), zie lesTimed.ts.
+    if (t?.demo && t.kind !== 'timed') playDemo();
     render();
   };
 
@@ -373,6 +436,11 @@ export function mountLes(app: HTMLElement): () => void {
       return;
     }
     const ev = events.push(m === null ? null : Math.round(m), recentLevel, timeMs);
+    // In de maat: de microfoon herkent een noot pas na ±100 ms; dat trekken we eraf.
+    if (ev !== null && t?.kind === 'timed') {
+      timed?.input(ev, timeMs - MIC_LAG_MS);
+      return;
+    }
     if (ev !== null) handle(ev);
   };
 
@@ -400,6 +468,7 @@ export function mountLes(app: HTMLElement): () => void {
   });
 
   return () => {
+    timed?.stop();
     alive = false;
     for (const t of timers) window.clearTimeout(t);
     tracker?.stop();

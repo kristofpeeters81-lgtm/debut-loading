@@ -4,6 +4,7 @@
 //   echo   → één taak per stukje (eerst voorspelen)
 //   rhythm → één taak per ritme (eerst voorspelen)
 //   song   → één taak met alle noten     chord → één taak per akkoord (overslaan mag altijd, kost niets)
+//   timed  → één taak per oefening in de maat (de schermlogica meet de timing, zie timing.ts)
 // Een "token" is een noot (MIDI-nummer, enkel de letter telt), een akkoord ("chord:Am") of een drumpad ("snare").
 // Je kan nooit verliezen: een fout telt als foutje, en je probeert gewoon opnieuw.
 
@@ -25,6 +26,10 @@ export interface Task {
   bpm?: number;
   /** Zang: hoe lang de toon vastgehouden moet worden. */
   holdMs?: number;
+  /** Tab tonen (gitaar/bas). */
+  tab?: boolean;
+  /** In de maat: op welke tel elk token valt, en het tempo. */
+  timed?: { beats: number[]; bpm: number };
 }
 
 export type InputResult = 'ignored' | 'ok' | 'wrong' | 'task-done' | 'lesson-done';
@@ -43,7 +48,17 @@ export function tasksOf(lesson: Lesson): Task[] {
         for (const p of s.phrases) out.push({ ...base, kind: 'echo', stepIndex, tokens: p, demo: true });
         break;
       case 'song':
-        out.push({ ...base, kind: 'song', stepIndex, tokens: s.notes, lyrics: s.lyrics });
+        out.push({ ...base, kind: 'song', stepIndex, tokens: s.notes, lyrics: s.lyrics, tab: s.tab });
+        break;
+      case 'timed':
+        out.push({
+          ...base,
+          kind: 'timed',
+          stepIndex,
+          tokens: s.events.map((e) => e.token),
+          demo: true,
+          timed: { beats: s.events.map((e) => e.beat), bpm: s.bpm },
+        });
         break;
       case 'chord':
         for (const c of s.chords) out.push({ ...base, kind: 'chord', stepIndex, tokens: [chordToken(c)], skippable: true });
@@ -149,6 +164,13 @@ export class LessonRun {
     this.wrongStreak = 0;
     this.pos++;
     if (this.pos < (this.task?.tokens.length ?? 0)) return 'ok';
+    return this.advance();
+  }
+
+  /** In de maat: de beurt is voorbij; gemiste tellen tellen als foutjes (enkel minder sterren). */
+  completeTimed(misses: number): InputResult {
+    if (this.task?.kind !== 'timed') return 'ignored';
+    this.mistakes += misses;
     return this.advance();
   }
 
