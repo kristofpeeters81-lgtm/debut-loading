@@ -11,7 +11,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | 5 | [Profielen (avatar + naam)](STAPPEN-DETAIL.md#blok-5--profielen) | 🧪 | 2026-11-14 | Live; wacht op tablettest |
 | 6 | [Vrij spelen (keyboard, gitaarhals, bas, drumpads; A–G / do-re-mi)](STAPPEN-DETAIL.md#blok-6--vrij-spelen) | 🧪 | 2026-11-14 | Live; wacht op tablettest |
 | 7 | [Stemapparaat + zangbereik](STAPPEN-DETAIL.md#blok-7--stemapparaat-en-zangbereik) | 🧪 | 2026-11-14 | Live; zangbereik per profiel sinds blok 5 |
-| 8 | [Lessen (alle instrumenten)](STAPPEN-DETAIL.md#blok-8--eerste-lessen-keyboard) | 🧪 | 2026-11-14 | 6 keyboardlessen getest door gebruiker (in orde); uitgebreid tot 82 lessen: keyboard 28, gitaar 15, bas 13, drum 13, zang 13 (tweede reeks 2026-11-15) |
+| 8 | [Lessen (alle instrumenten)](STAPPEN-DETAIL.md#blok-8--eerste-lessen-keyboard) | 🧪 | 2026-11-14 | 6 keyboardlessen getest door gebruiker (in orde); uitgebreid tot 166 lessen in 4 niveaus: keyboard 54, gitaar 34, bas 27, drum 25, zang 26 (2026-11-15) |
 | 9 | [Spel met vallende noten (tempo, herhalen, sterren)](STAPPEN-DETAIL.md#blok-9--spel-met-vallende-noten) | 🧪 | 2026-11-14 | Live voor alle instrumenten (keyboard, gitaar, bas, drum, zang) |
 | 10 | [MIDI laden via de downloadhoek](STAPPEN-DETAIL.md#blok-10--midi-laden-via-de-downloadhoek) (ook zelf te gebruiken door het kind) | 🟡 | 2026-11-14 | Importeren gebouwd (eigen MIDI → vallende noten); vaste downloadsite nog te kiezen en voor te leggen |
 | 11 | [Naspeelstudio: mp3 laden, trager afspelen, melodie meespelen → liedje](STAPPEN-DETAIL.md#blok-11--naspeelstudio) | ⬜ | | Nieuw 2026-11-14: voor nummers zonder MIDI, met het echte nummer als begeleiding |
@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) akkoord om de tweede lessenreeks te pushen; (2) testen op de tablet; (3) downloadsite voor de vaste link uitzoeken en voorleggen; (4) blok 11 naspeelstudio.
+**Volgende actie:** (1) akkoord om niveau 3 en 4 te pushen; (2) testen op de tablet; (3) downloadsite voor de vaste link uitzoeken en voorleggen; (4) blok 11 naspeelstudio.

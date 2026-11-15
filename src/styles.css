@@ -617,6 +617,31 @@ button.danger {
   border-radius: var(--radius);
 }
 
+.level-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-top: 18px;
+  padding: 0 4px 4px;
+  border-bottom: 2px solid var(--line);
+}
+
+.level-head:first-child {
+  margin-top: 0;
+}
+
+.level-name {
+  font: 600 1.15rem var(--display);
+  color: var(--pink);
+}
+
+.level-stars {
+  font-weight: 600;
+  color: var(--muted);
+}
+
 .lesson-card.next {
   border-color: var(--cyan);
   box-shadow: var(--glow-cyan);

@@ -55,6 +55,20 @@ describe('lesinhoud', () => {
     for (const l of lessonsFor('drum')) for (const t of tasksOf(l)) for (const tok of t.tokens) expect(pads.has(tok as never)).toBe(true);
   });
 
+  it('toonladders noemen kruisen en mollen correct', () => {
+    const goal = (id: string): string => lessonById(id)!.goal;
+    expect(goal('kb-3-ladder-e')).toBe('Met F#, G#, C# en D#');
+    expect(goal('kb-3-ladder-a')).toBe('Met C#, F# en G#'); // in de volgorde waarin je ze speelt
+    expect(goal('kb-3-ladder-f')).toBe('Met Bb');
+    expect(goal('kb-3-ladder-dm')).toBe('Met Bb');
+    expect(goal('kb-3-ladder-am')).toBe('Enkel witte toetsen');
+    expect(lessonById('kb-3-ladder-e')!.title).toBe('Toonladder van E');
+  });
+
+  it('elke les heeft een niveau van 1 tot 4', () => {
+    for (const l of LESSONS) expect([1, 2, 3, 4]).toContain(l.level ?? 1);
+  });
+
   it('songteksten hebben evenveel lettergrepen als noten', () => {
     for (const l of LESSONS)
       for (const s of l.steps) if ((s.kind === 'song' || s.kind === 'sing') && s.lyrics) expect(s.lyrics.length).toBe(s.notes.length);

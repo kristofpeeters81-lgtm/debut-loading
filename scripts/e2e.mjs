@@ -260,7 +260,8 @@ async function appTest() {
 
     // Lessen (blok 8): les 1 met tikken op het scherm (deze browser heeft geen microfoon)
     check(await tapScreen(page, 'lessen'), 'lessen: opent');
-    check((await page.$$('.lesson-card')).length === 28, 'lessen: 28 keyboardlessen');
+    check((await page.$$('.lesson-card')).length === 54, 'lessen: 54 keyboardlessen');
+    check((await page.$$('.level-head')).length === 4, 'lessen: 4 niveaus');
     check((await page.$eval('.lesson-card.next', (e) => e.dataset.lesson)) === 'kb-1-c', 'lessen: les 1 is "Volgende"');
     await page.screenshot({ path: path.join(OUT, 'lessen.png'), fullPage: true });
     await page.click('.lesson-card[data-lesson="kb-1-c"]');
@@ -287,7 +288,7 @@ async function appTest() {
     check((await page.$eval('.led-meta', (e) => e.textContent)).includes('3 sterren verzameld'), 'lessen: "3 sterren verzameld"');
 
     // Extra lessen: één les per instrument automatisch uitspelen door te tikken wat verwacht wordt.
-    const CHORD_KEYS = { C: [60, 64, 67], F: [65, 69, 72], G: [67, 71, 74], Am: [57, 60, 64], Em: [64, 67, 71], Dm: [62, 65, 69] };
+    const CHORD_KEYS = { C: [60, 64, 67], F: [65, 69, 72], G: [67, 71, 74], Am: [57, 60, 64], Em: [64, 67, 71], Dm: [62, 65, 69], D: [62, 66, 69], A: [57, 61, 64], E: [64, 68, 71], Bm: [59, 62, 66] };
     const autoPlay = async (lessonId, tab) => {
       await tapScreen(page, 'lessen');
       await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
@@ -332,7 +333,7 @@ async function appTest() {
       await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
     };
     await tapScreen(page, 'lessen');
-    for (const [tab, n] of [['keyboard', 28], ['gitaar', 15], ['bas', 13], ['drum', 13], ['zang', 13]]) {
+    for (const [tab, n] of [['keyboard', 54], ['gitaar', 34], ['bas', 27], ['drum', 25], ['zang', 26]]) {
       await page.click(`.lesson-tabs .chip[data-instrument="${tab}"]`);
       check((await page.$$('.lesson-card')).length === n, `lessen: ${n} lessen voor ${tab}`);
     }
@@ -348,6 +349,24 @@ async function appTest() {
     await autoPlay('g-9-d-snaar', 'gitaar');
     await autoPlay('b-8-kwint', 'bas');
     await autoPlay('d-10-disco', 'drum');
+    // Niveau 3 en 4
+    await autoPlay('kb-3-ladder-g', 'keyboard');
+    await autoPlay('kb-3-akk-d', 'keyboard');
+    await autoPlay('g-3-ladder-g', 'gitaar');
+    await autoPlay('b-3-octaaf', 'bas');
+    await autoPlay('d-4-solo', 'drum');
+    // Mollen: de les "Zwarte toets: Bb" toont Bb (niet A#)
+    await tapScreen(page, 'lessen');
+    await page.click('.lesson-tabs .chip[data-instrument="keyboard"]');
+    await page.click('.lesson-card[data-lesson="kb-11-bes"]');
+    await waitFor(async () => (await screenOf(page)) === 'les', 3000, 'les');
+    await page.click('.lesson-intro button.big');
+    await sleep(300);
+    check((await page.$eval('.lesson-big', (e) => e.textContent)) === 'Bb', 'les: toonsoort met mollen toont "Bb" in plaats van "A#"');
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'lessen', 3000, 'lessen');
+    await page.click('.back');
+    await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
 
     // Spel met vallende noten (blok 9): Ode an die Freude uitspelen in "Wacht op mij"
     check(await tapScreen(page, 'liedjes'), 'liedjes: opent');

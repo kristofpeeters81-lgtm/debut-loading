@@ -1,7 +1,7 @@
 // Lessen: per instrument een pad van lessen met sterren. Alles is vrij te kiezen;
 // de eerste les zonder sterren is gemarkeerd als "Volgende".
 
-import { MAX_STARS, lessonsFor } from '../lessons/content';
+import { LEVEL_NAMES, MAX_STARS, lessonsFor } from '../lessons/content';
 import { activeProfile, settings } from '../app/state';
 import { INSTRUMENT_CHOICES, type InstrumentId } from '../app/settings';
 import { el } from '../ui/dom';
@@ -43,7 +43,21 @@ export function mountLessen(app: HTMLElement): void {
     const list = lessonsFor(inst);
     const nextId = list.find((l) => !stars[l.id])?.id;
     path.replaceChildren();
+    let lastLevel = 0;
     list.forEach((l, i) => {
+      const level = l.level ?? 1;
+      if (level !== lastLevel) {
+        lastLevel = level;
+        const ofLevel = list.filter((x) => (x.level ?? 1) === level);
+        const got = ofLevel.reduce((s, x) => s + (stars[x.id] ?? 0), 0);
+        const head = el('li', 'level-head');
+        head.dataset.level = String(level);
+        head.append(
+          el('span', 'level-name', `Niveau ${level} · ${LEVEL_NAMES[level] ?? ''}`),
+          el('span', 'level-stars', `${got} / ${ofLevel.length * MAX_STARS} sterren`),
+        );
+        path.append(head);
+      }
       const li = el('li', 'lesson-item');
       const card = el('button', l.id === nextId ? 'lesson-card next' : 'lesson-card');
       card.dataset.lesson = l.id;

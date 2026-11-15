@@ -30,9 +30,18 @@ export function solfegeName(midi: number): string {
   return SOLFEGE[pitchClass(midi)];
 }
 
-/** Naam volgens de instelling: "C4" of "do4" (zonder octaaf: "C" of "do"). */
-export function noteName(midi: number, notation: 'letters' | 'doremi', withOctave = true): string {
-  const base = notation === 'doremi' ? solfegeName(midi) : letterName(midi, false);
+// Met mollen (voor toonsoorten zoals F of D-mineur): Bb in plaats van A#.
+const LETTERS_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const SOLFEGE_FLAT = ['do', 'reb', 're', 'mib', 'mi', 'fa', 'solb', 'sol', 'lab', 'la', 'sib', 'si'];
+
+/** Naam volgens de instelling: "C4" of "do4" (zonder octaaf: "C" of "do"). `flats` = zwarte toetsen als mol. */
+export function noteName(midi: number, notation: 'letters' | 'doremi', withOctave = true, flats = false): string {
+  const pc = pitchClass(midi);
+  const base = flats
+    ? (notation === 'doremi' ? SOLFEGE_FLAT : LETTERS_FLAT)[pc]
+    : notation === 'doremi'
+      ? solfegeName(midi)
+      : letterName(midi, false);
   return withOctave ? `${base}${octaveOf(midi)}` : base;
 }
 

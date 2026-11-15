@@ -4,7 +4,7 @@
 import type { InstrumentId } from '../app/settings';
 import type { DrumPad } from '../audio/synth';
 
-export type ChordName = 'C' | 'F' | 'G' | 'Am' | 'Em' | 'Dm';
+export type ChordName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'Am' | 'Em' | 'Dm' | 'Bm';
 
 export type Step =
   /** Eén toets/noot tegelijk; speel die letter. */
@@ -27,7 +27,13 @@ export interface Lesson {
   goal: string;
   instrument: InstrumentId;
   steps: Step[];
+  /** Niveau: 1 Start, 2 Basis, 3 Stevig, 4 Uitdaging (standaard 1). */
+  level?: number;
+  /** Zwarte toetsen als mol tonen (Bb, Eb) in plaats van kruis (A#, D#). */
+  flats?: boolean;
 }
+
+export const LEVEL_NAMES: Record<number, string> = { 1: 'Start', 2: 'Basis', 3: 'Stevig', 4: 'Uitdaging' };
 
 /** Akkoorden: grondtoon (0 = C), mineur, en de noten per instrument (voor voorspelen en tikken). */
 export const CHORDS: Record<ChordName, { root: number; minor: boolean; keyboard: number[]; gitaar: number[] }> = {
@@ -37,6 +43,11 @@ export const CHORDS: Record<ChordName, { root: number; minor: boolean; keyboard:
   Am: { root: 9, minor: true, keyboard: [57, 60, 64], gitaar: [45, 52, 57, 60, 64] },
   Em: { root: 4, minor: true, keyboard: [64, 67, 71], gitaar: [40, 47, 52, 55, 59, 64] },
   Dm: { root: 2, minor: true, keyboard: [62, 65, 69], gitaar: [50, 57, 62, 65] },
+  D: { root: 2, minor: false, keyboard: [62, 66, 69], gitaar: [50, 57, 62, 66] },
+  A: { root: 9, minor: false, keyboard: [57, 61, 64], gitaar: [45, 52, 57, 61, 64] },
+  E: { root: 4, minor: false, keyboard: [64, 68, 71], gitaar: [40, 47, 52, 56, 59, 64] },
+  // Kleine Bm-greep op de drie dunste snaren (zonder barré).
+  Bm: { root: 11, minor: true, keyboard: [59, 62, 66], gitaar: [59, 62, 66] },
 };
 
 // Noten
@@ -118,7 +129,7 @@ const BASIS_2: Lesson[] = [
   },
   {
     id: 'kb-20-cis-es',
-    title: 'Zwarte toetsen: C# en Eb',
+    title: 'Zwarte toetsen: C# en D#',
     goal: 'Nog twee zwarte toetsen',
     instrument: 'keyboard',
     steps: [
@@ -373,6 +384,263 @@ const BASIS_2: Lesson[] = [
   { id: 'z-13-london', title: 'Zing London Bridge', goal: 'Een liedje zonder pauze', instrument: 'zang', steps: [{ kind: 'sing', notes: LONDON, holdMs: 300 }] },
 ];
 
+// ---------- Niveau 3 en 4 (stevige basis, 2026-11-15) ----------
+// Lesmakers: zo worden toonladders, akkoorden en intervallen in elke toonsoort correct opgebouwd.
+
+const MAJOR = [0, 2, 4, 5, 7, 9, 11, 12];
+const MINOR = [0, 2, 3, 5, 7, 8, 10, 12];
+const BLACK = new Set([1, 3, 6, 8, 10]);
+const LETTERS_FLAT: Record<number, string> = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'Gb', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B' };
+const LETTERS_SHARP: Record<number, string> = { 0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'A#', 11: 'B' };
+const tr = (notes: number[], semis: number): number[] => notes.map((n) => n + semis);
+const upDown = (notes: number[]): number[] => [...notes, ...[...notes].reverse().slice(1)];
+
+/** Toonladder: de zwarte toetsen (kruisen/mollen) eerst zoeken, dan omhoog en omlaag. */
+function scaleLesson(
+  inst: InstrumentId,
+  id: string,
+  root: number,
+  type: 'majeur' | 'mineur',
+  level: number,
+): Lesson {
+  const notes = (type === 'majeur' ? MAJOR : MINOR).map((i) => root + i);
+  const blacks = notes.filter((n) => BLACK.has(n % 12));
+  // Mollen voor toonsoorten met Bb (F, D-mineur), anders kruisen (E-groot heeft D#, geen Eb).
+  const pcs = new Set(notes.map((n) => n % 12));
+  const useFlats = pcs.has(10) && !pcs.has(11);
+  const nameOf = (pc: number): string => (BLACK.has(pc) && !useFlats ? LETTERS_SHARP[pc] : LETTERS_FLAT[pc]);
+  const name = nameOf(root % 12) + (type === 'mineur' ? '-mineur' : '');
+  const accidentals = [...new Set(blacks.map((n) => nameOf(n % 12)))];
+  const list = accidentals.length > 1 ? `${accidentals.slice(0, -1).join(', ')} en ${accidentals[accidentals.length - 1]}` : accidentals[0];
+  const steps: Step[] = [];
+  if (blacks.length) steps.push({ kind: 'find', notes: [...new Set(blacks)] });
+  if (inst === 'zang') steps.push({ kind: 'sing', notes: upDown(notes), holdMs: 450 });
+  else steps.push({ kind: 'song', notes: upDown(notes) });
+  return {
+    id,
+    title: `Toonladder van ${name}`,
+    goal: blacks.length ? `Met ${list}` : 'Enkel witte toetsen',
+    instrument: inst,
+    level,
+    flats: useFlats,
+    steps,
+  };
+}
+
+/** Echo's met twee noten: zo leer je sprongen (intervallen) herkennen. */
+function intervalLesson(inst: InstrumentId, id: string, title: string, goal: string, steps: number[], base: number[], level: number): Lesson {
+  const phrases: number[][] = [];
+  for (const b of base) for (const s of steps) phrases.push([b, b + s]);
+  const flat: number[] = [];
+  for (const p of phrases.slice(0, 8)) flat.push(...p);
+  return inst === 'zang'
+    ? { id, title, goal, instrument: inst, level, steps: [{ kind: 'sing', notes: flat, holdMs: 450 }] }
+    : { id, title, goal, instrument: inst, level, steps: [{ kind: 'echo', phrases: phrases.slice(0, 6) }] };
+}
+
+const SAINTS = [C, E, F, G, C, E, F, G, C, E, F, G, E, C, E, D];
+const ODE = [E, E, F, G, G, F, E, D, C, C, D, E, E, D, D];
+const MARY = [E, D, C, D, E, E, E, D, D, D, E, G, G, E, D, C, D, E, E, E, E, D, D, E, D, C];
+const JINGLE = [E, E, E, E, E, E, E, G, C, D, E, F, F, F, F, F, E, E, E, E, D, D, E, D, G];
+
+const BASIS_3: Lesson[] = [
+  // Keyboard: toonladders, akkoorden per toonsoort, gebroken akkoorden
+  scaleLesson('keyboard', 'kb-3-ladder-g', 67, 'majeur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-d', 62, 'majeur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-a', 69, 'majeur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-e', 64, 'majeur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-f', 65, 'majeur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-am', 57, 'mineur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-em', 64, 'mineur', 3),
+  scaleLesson('keyboard', 'kb-3-ladder-dm', 62, 'mineur', 3),
+  { id: 'kb-3-akk-g', title: 'Akkoorden in G', goal: 'G, C en D', instrument: 'keyboard', level: 3, steps: [{ kind: 'chord', chords: ['G', 'C', 'D', 'G', 'C', 'D', 'G'] }] },
+  { id: 'kb-3-akk-d', title: 'Akkoorden in D', goal: 'D, G en A', instrument: 'keyboard', level: 3, steps: [{ kind: 'chord', chords: ['D', 'G', 'A', 'D', 'G', 'A', 'D'] }] },
+  { id: 'kb-3-akk-a', title: 'Akkoorden in A', goal: 'A, D en E', instrument: 'keyboard', level: 3, steps: [{ kind: 'chord', chords: ['A', 'D', 'E', 'A', 'D', 'E', 'A'] }] },
+  { id: 'kb-3-akk-mineur', title: 'Mineur-akkoorden', goal: 'Am, Dm, Em en Bm', instrument: 'keyboard', level: 3, steps: [{ kind: 'chord', chords: ['Am', 'Dm', 'Em', 'Am', 'Em', 'Bm', 'Em'] }] },
+  {
+    id: 'kb-3-gebroken',
+    title: 'Gebroken akkoorden',
+    goal: 'De noten van een akkoord na elkaar',
+    instrument: 'keyboard',
+    level: 3,
+    steps: [{ kind: 'echo', phrases: [[C, E, G, C5], [F, A, C5, 77], [G, B, D5, 79], [A3, C, E, A], [C5, G, E, C]] }],
+  },
+  { id: 'kb-3-saints', title: 'When the Saints', goal: 'Met de hele melodie', instrument: 'keyboard', level: 3, steps: [{ kind: 'song', notes: SAINTS }] },
+
+  // Gitaar: noten op elke snaar, toonladders, nieuwe akkoorden en wissels
+  {
+    id: 'g-3-a-snaar',
+    title: 'Noten op de A-snaar',
+    goal: 'B en C',
+    instrument: 'gitaar',
+    level: 3,
+    steps: [
+      { kind: 'find', notes: [45, 47, 48, 47] },
+      { kind: 'echo', phrases: [[45, 47, 48], [48, 47, 45], [45, 48, 50]] },
+    ],
+  },
+  {
+    id: 'g-3-e-snaar',
+    title: 'Noten op de dikke E-snaar',
+    goal: 'F en G',
+    instrument: 'gitaar',
+    level: 3,
+    steps: [
+      { kind: 'find', notes: [40, 41, 43, 41] },
+      { kind: 'echo', phrases: [[40, 41, 43], [43, 41, 40], [40, 43, 45]] },
+    ],
+  },
+  scaleLesson('gitaar', 'g-3-ladder-c', 48, 'majeur', 3),
+  scaleLesson('gitaar', 'g-3-ladder-g', 43, 'majeur', 3),
+  scaleLesson('gitaar', 'g-3-ladder-am', 45, 'mineur', 3),
+  { id: 'g-3-d', title: 'Akkoord D', goal: 'Een driehoekje op de dunne snaren', instrument: 'gitaar', level: 3, steps: [{ kind: 'chord', chords: ['D', 'D', 'G', 'D'] }] },
+  { id: 'g-3-a', title: 'Akkoord A', goal: 'Drie vingers op een rij', instrument: 'gitaar', level: 3, steps: [{ kind: 'chord', chords: ['A', 'A', 'D', 'A'] }] },
+  { id: 'g-3-e', title: 'Akkoord E', goal: 'Het grote E-akkoord', instrument: 'gitaar', level: 3, steps: [{ kind: 'chord', chords: ['E', 'E', 'Am', 'E'] }] },
+  { id: 'g-3-gcd', title: 'Kampvuurakkoorden', goal: 'G, C en D', instrument: 'gitaar', level: 3, steps: [{ kind: 'chord', chords: ['G', 'C', 'D', 'G', 'C', 'D', 'G'] }] },
+  { id: 'g-3-ead', title: 'Wisselen: E, A en D', goal: 'Rock-akkoorden', instrument: 'gitaar', level: 3, steps: [{ kind: 'chord', chords: ['E', 'A', 'D', 'A', 'E'] }] },
+  { id: 'g-3-ode-laag', title: 'Ode an die Freude laag', goal: 'Op de D- en G-snaar', instrument: 'gitaar', level: 3, steps: [{ kind: 'song', notes: tr(ODE, -12) }] },
+
+  // Bas: noten op elke snaar, toonladders, grondtoon-kwint-octaaf
+  { id: 'b-3-e-snaar', title: 'Noten op de E-snaar', goal: 'F, G en A', instrument: 'bas', level: 3, steps: [{ kind: 'find', notes: [28, 29, 31, 33] }, { kind: 'echo', phrases: [[28, 29, 31], [31, 29, 28], [28, 31, 33]] }] },
+  { id: 'b-3-a-snaar', title: 'Noten op de A-snaar', goal: 'B, C en D', instrument: 'bas', level: 3, steps: [{ kind: 'find', notes: [33, 35, 36, 38] }, { kind: 'echo', phrases: [[33, 35, 36], [36, 35, 33], [33, 36, 38]] }] },
+  { id: 'b-3-d-snaar', title: 'Noten op de D-snaar', goal: 'E, F en G', instrument: 'bas', level: 3, steps: [{ kind: 'find', notes: [38, 40, 41, 43] }, { kind: 'echo', phrases: [[38, 40, 41], [41, 40, 38], [38, 41, 43]] }] },
+  { id: 'b-3-g-snaar', title: 'Noten op de G-snaar', goal: 'A, B en C', instrument: 'bas', level: 3, steps: [{ kind: 'find', notes: [43, 45, 47, 48] }, { kind: 'echo', phrases: [[43, 45, 47], [47, 45, 43], [43, 47, 48]] }] },
+  scaleLesson('bas', 'b-3-ladder-c', 36, 'majeur', 3),
+  scaleLesson('bas', 'b-3-ladder-g', 31, 'majeur', 3),
+  scaleLesson('bas', 'b-3-ladder-am', 33, 'mineur', 3),
+  {
+    id: 'b-3-octaaf',
+    title: 'Grondtoon, kwint, octaaf',
+    goal: 'Het bekendste baspatroon',
+    instrument: 'bas',
+    level: 3,
+    steps: [{ kind: 'echo', phrases: [[36, 43, 48], [31, 38, 43], [33, 40, 45], [29, 36, 41]] }],
+  },
+
+  // Drum: beats in oplopend tempo, nieuwe grooves
+  { id: 'd-3-tempo-80', title: 'Beat op 80', goal: 'Rustig en strak', instrument: 'drum', level: 3, steps: [{ kind: 'rhythm', bpm: 80, patterns: [['kick', 'hihat', 'snare', 'hihat', 'kick', 'hihat', 'snare', 'hihat']] }] },
+  { id: 'd-3-tempo-100', title: 'Beat op 100', goal: 'Iets sneller', instrument: 'drum', level: 3, steps: [{ kind: 'rhythm', bpm: 100, patterns: [['kick', 'hihat', 'snare', 'hihat', 'kick', 'hihat', 'snare', 'hihat']] }] },
+  { id: 'd-3-tempo-120', title: 'Beat op 120', goal: 'Popsnelheid!', instrument: 'drum', level: 3, steps: [{ kind: 'rhythm', bpm: 120, patterns: [['kick', 'hihat', 'snare', 'hihat', 'kick', 'hihat', 'snare', 'hihat']] }] },
+  { id: 'd-3-vloer', title: 'Vier op de vloer', goal: 'Basdrum op elke tel (dansmuziek)', instrument: 'drum', level: 3, steps: [{ kind: 'rhythm', bpm: 110, patterns: [['kick', 'kick', 'kick', 'kick'], ['kick', 'clap', 'kick', 'clap', 'kick', 'clap', 'kick', 'clap']] }] },
+  { id: 'd-3-halftime', title: 'Halftime', goal: 'Snare enkel op tel 3', instrument: 'drum', level: 3, steps: [{ kind: 'rhythm', bpm: 90, patterns: [['kick', 'hihat', 'hihat', 'hihat', 'snare', 'hihat', 'hihat', 'hihat']] }] },
+  { id: 'd-3-fill-toms', title: 'Fill over de toms', goal: 'Van snare naar crash', instrument: 'drum', level: 3, steps: [{ kind: 'rhythm', bpm: 100, patterns: [['snare', 'tom-hoog', 'tom-hoog', 'tom-laag', 'tom-laag', 'crash'], ['kick', 'hihat', 'snare', 'hihat', 'snare', 'tom-hoog', 'tom-laag', 'crash']] }] },
+
+  // Zang: toonladders en eerste intervallen
+  scaleLesson('zang', 'z-3-ladder-g', 55, 'majeur', 3),
+  scaleLesson('zang', 'z-3-ladder-f', 53, 'majeur', 3),
+  scaleLesson('zang', 'z-3-ladder-am', 57, 'mineur', 3),
+  intervalLesson('zang', 'z-3-terts', 'De terts', 'Do–mi: een kleine sprong', [4], [60, 62, 65, 67], 3),
+  intervalLesson('zang', 'z-3-kwint', 'De kwint', 'Do–sol: een grote sprong', [7], [60, 62, 65, 57], 3),
+  { id: 'z-3-mineur', title: 'Droevig klinken', goal: 'La, do, mi: een mineur-akkoord zingen', instrument: 'zang', level: 3, steps: [{ kind: 'sing', notes: [A3, C, E, C, A3], holdMs: 500 }] },
+  { id: 'z-3-saints', title: 'Zing When the Saints', goal: 'Een vrolijk marsliedje', instrument: 'zang', level: 3, steps: [{ kind: 'sing', notes: SAINTS, holdMs: 300 }] },
+];
+
+const BASIS_4: Lesson[] = [
+  // Keyboard: intervallen, liedjes in andere toonsoorten, popschema's, blues
+  intervalLesson('keyboard', 'kb-4-kleine-sprong', 'Hoor de kleine sprongen', 'Secunde en terts op gehoor', [2, 4], [60, 65, 67], 4),
+  intervalLesson('keyboard', 'kb-4-grote-sprong', 'Hoor de grote sprongen', 'Kwart en kwint op gehoor', [5, 7], [60, 62, 64], 4),
+  intervalLesson('keyboard', 'kb-4-octaaf', 'Hoor de heel grote sprongen', 'Sext en octaaf op gehoor', [9, 12], [60, 62, 65], 4),
+  { id: 'kb-4-ode-g', title: 'Ode an die Freude in G', goal: 'Hetzelfde liedje, nu met F#', instrument: 'keyboard', level: 4, steps: [{ kind: 'song', notes: tr(ODE, 7) }] },
+  { id: 'kb-4-jacob-d', title: 'Vader Jacob in D', goal: 'Met F# en C#', instrument: 'keyboard', level: 4, steps: [{ kind: 'song', notes: tr(JACOB, 2), lyrics: JACOB_TEXT }] },
+  { id: 'kb-4-london-f', title: 'London Bridge in F', goal: 'Met Bb', instrument: 'keyboard', level: 4, flats: true, steps: [{ kind: 'song', notes: tr(LONDON, 5).map((n) => (n > 84 ? n - 12 : n)) }] },
+  { id: 'kb-4-mary-g', title: 'Mary in G', goal: 'Transponeren: alles een stukje hoger', instrument: 'keyboard', level: 4, steps: [{ kind: 'song', notes: tr(MARY, 7) }] },
+  { id: 'kb-4-pop-g', title: 'Popschema in G', goal: 'G, D, Em, C', instrument: 'keyboard', level: 4, steps: [{ kind: 'chord', chords: ['G', 'D', 'Em', 'C', 'G', 'D', 'Em', 'C'] }] },
+  { id: 'kb-4-pop-mineur', title: 'Droevig popschema', goal: 'Am, F, C, G', instrument: 'keyboard', level: 4, steps: [{ kind: 'chord', chords: ['Am', 'F', 'C', 'G', 'Am', 'F', 'C', 'G'] }] },
+  {
+    id: 'kb-4-blues',
+    title: 'De blues',
+    flats: true,
+    goal: 'Een bluestoonladder met zwarte toetsen',
+    instrument: 'keyboard',
+    level: 4,
+    steps: [
+      { kind: 'find', notes: [Eb, Fs, As] },
+      { kind: 'echo', phrases: [[C, Eb, F, Fs, G], [G, Fs, F, Eb, C], [C, Eb, C, As, G], [C5, As, G, Fs, F, Eb, C]] },
+    ],
+  },
+  { id: 'kb-4-jingle', title: 'Jingle Bells, het hele refrein', goal: 'Een lang stuk zonder fouten', instrument: 'keyboard', level: 4, steps: [{ kind: 'song', notes: [...JINGLE, ...JINGLE.slice(0, 11), F, F, F, F, F, E, E, E, G, G, F, D, C] }] },
+  {
+    id: 'kb-4-meester',
+    title: 'Meesterproef keyboard',
+    goal: 'Toonladder, akkoorden en een liedje',
+    instrument: 'keyboard',
+    level: 4,
+    steps: [
+      { kind: 'song', notes: upDown(MAJOR.map((i) => 67 + i)) },
+      { kind: 'chord', chords: ['C', 'G', 'Am', 'F'] },
+      { kind: 'song', notes: BIRTHDAY },
+    ],
+  },
+
+  // Gitaar: liedjes, langere wissels, mineur
+  { id: 'g-4-birthday', title: 'Happy Birthday op gitaar', goal: 'Voor de volgende verjaardag', instrument: 'gitaar', level: 4, steps: [{ kind: 'song', notes: BIRTHDAY }] },
+  { id: 'g-4-jingle', title: 'Jingle Bells op gitaar', goal: 'Belletjes op de hoge snaren', instrument: 'gitaar', level: 4, steps: [{ kind: 'song', notes: JINGLE }] },
+  { id: 'g-4-saints', title: 'When the Saints op gitaar', goal: 'Marsliedje op twee snaren', instrument: 'gitaar', level: 4, steps: [{ kind: 'song', notes: SAINTS }] },
+  { id: 'g-4-pop-g', title: 'Popschema in G', goal: 'G, D, Em, C', instrument: 'gitaar', level: 4, steps: [{ kind: 'chord', chords: ['G', 'D', 'Em', 'C', 'G', 'D', 'Em', 'C'] }] },
+  { id: 'g-4-mineur', title: 'Mineur-wissels', goal: 'Am, Dm en E', instrument: 'gitaar', level: 4, steps: [{ kind: 'chord', chords: ['Am', 'Dm', 'E', 'Am', 'Dm', 'E', 'Am'] }] },
+  { id: 'g-4-bm', title: 'Akkoord Bm (klein)', goal: 'Op de drie dunste snaren', instrument: 'gitaar', level: 4, steps: [{ kind: 'chord', chords: ['Bm', 'G', 'D', 'A', 'Bm'] }] },
+  intervalLesson('gitaar', 'g-4-gehoor', 'Speel na op gehoor', 'Sprongetjes op de hoge snaren', [2, 3, 5], [64, 59], 4),
+  {
+    id: 'g-4-meester',
+    title: 'Meesterproef gitaar',
+    goal: 'Noten en akkoorden door elkaar',
+    instrument: 'gitaar',
+    level: 4,
+    steps: [
+      { kind: 'song', notes: MARY },
+      { kind: 'chord', chords: ['G', 'C', 'D', 'Em', 'Am', 'E'] },
+    ],
+  },
+
+  // Bas: songs, walking, riffs
+  { id: 'b-4-birthday', title: 'Happy Birthday op bas', goal: 'De melodie, laag', instrument: 'bas', level: 4, steps: [{ kind: 'song', notes: tr(BIRTHDAY, -24).map((n) => (n < 28 ? n + 12 : n)) }] },
+  { id: 'b-4-saints', title: 'When the Saints op bas', goal: 'Een marsbas', instrument: 'bas', level: 4, steps: [{ kind: 'song', notes: tr(SAINTS, -24) }] },
+  { id: 'b-4-pop-g', title: 'Baslijn popschema in G', goal: 'G, D, E, C', instrument: 'bas', level: 4, steps: [{ kind: 'song', notes: [31, 31, 38, 38, 40, 40, 36, 36, 31, 31, 38, 38, 40, 40, 36, 36] }] },
+  { id: 'b-4-walking', title: 'Walking bass', goal: 'Stapjes naar de volgende grondtoon', instrument: 'bas', level: 4, steps: [{ kind: 'echo', phrases: [[36, 38, 40, 41], [43, 41, 40, 38], [33, 35, 36, 38], [29, 31, 33, 35]] }] },
+  intervalLesson('bas', 'b-4-gehoor', 'Speel na op gehoor', 'Kwint en octaaf', [7, 12], [28, 33], 4),
+  {
+    id: 'b-4-meester',
+    title: 'Meesterproef bas',
+    goal: 'Toonladder, baslijn en liedje',
+    instrument: 'bas',
+    level: 4,
+    steps: [
+      { kind: 'song', notes: upDown(MAJOR.map((i) => 36 + i)) },
+      { kind: 'song', notes: [36, 36, 31, 31, 33, 33, 29, 29] },
+      { kind: 'song', notes: tr(ODE, -24) },
+    ],
+  },
+
+  // Drum: langere grooves en een solo
+  { id: 'd-4-shuffle', title: 'Shuffle', goal: 'Een huppelende beat', instrument: 'drum', level: 4, steps: [{ kind: 'rhythm', bpm: 100, patterns: [['kick', 'hihat', 'hihat', 'snare', 'hihat', 'hihat'], ['kick', 'hihat', 'kick', 'snare', 'hihat', 'hihat']] }] },
+  { id: 'd-4-reggae', title: 'Reggae', goal: 'Basdrum en snare samen op tel 3', instrument: 'drum', level: 4, steps: [{ kind: 'rhythm', bpm: 80, patterns: [['hihat', 'hihat', 'kick', 'hihat'], ['hihat', 'open-hihat', 'kick', 'snare']] }] },
+  { id: 'd-4-funk', title: 'Funk', goal: 'Veel basdrum, strakke hi-hat', instrument: 'drum', level: 4, steps: [{ kind: 'rhythm', bpm: 95, patterns: [['kick', 'hihat', 'kick', 'snare', 'hihat', 'kick', 'snare', 'hihat']] }] },
+  { id: 'd-4-twee-maten', title: 'Beat en fill afwisselen', goal: 'Drie maten beat, één maat fill', instrument: 'drum', level: 4, steps: [{ kind: 'rhythm', bpm: 100, patterns: [['kick', 'hihat', 'snare', 'hihat', 'kick', 'hihat', 'snare', 'hihat', 'kick', 'hihat', 'snare', 'hihat', 'snare', 'tom-hoog', 'tom-laag', 'crash']] }] },
+  { id: 'd-4-snel', title: 'Beat op 140', goal: 'Echt snel!', instrument: 'drum', level: 4, steps: [{ kind: 'rhythm', bpm: 140, patterns: [['kick', 'hihat', 'snare', 'hihat', 'kick', 'kick', 'snare', 'hihat']] }] },
+  {
+    id: 'd-4-solo',
+    title: 'Drumsolo',
+    goal: 'Alle pads, één lange solo',
+    instrument: 'drum',
+    level: 4,
+    steps: [
+      {
+        kind: 'rhythm',
+        bpm: 110,
+        patterns: [['crash', 'kick', 'snare', 'kick', 'snare', 'tom-hoog', 'tom-hoog', 'tom-laag', 'tom-laag', 'clap', 'open-hihat', 'kick', 'kick', 'snare', 'crash']],
+      },
+    ],
+  },
+
+  // Zang: grotere sprongen, liedjes in andere toonsoorten
+  intervalLesson('zang', 'z-4-kwart', 'De kwart', 'Do–fa', [5], [60, 62, 67], 4),
+  intervalLesson('zang', 'z-4-sext', 'De sext', 'Do–la: een lange sprong', [9], [60, 62, 64], 4),
+  intervalLesson('zang', 'z-4-octaaf', 'Octaven zingen', 'Laag en hoog dezelfde toon', [12], [57, 60, 62], 4),
+  { id: 'z-4-mary', title: 'Zing Mary had a little lamb', goal: 'Een liedje met veel herhaling', instrument: 'zang', level: 4, steps: [{ kind: 'sing', notes: MARY, holdMs: 300 }] },
+  { id: 'z-4-jingle', title: 'Zing Jingle Bells', goal: 'Snel achter elkaar', instrument: 'zang', level: 4, steps: [{ kind: 'sing', notes: JINGLE, holdMs: 250 }] },
+  { id: 'z-4-jacob-g', title: 'Vader Jacob in G', goal: 'Hetzelfde liedje, hoger', instrument: 'zang', level: 4, steps: [{ kind: 'sing', notes: tr(JACOB, 7), holdMs: 300, lyrics: JACOB_TEXT }] },
+];
+
 export const LESSONS: Lesson[] = [
   // ---------- Keyboard ----------
   { id: 'kb-1-c', title: 'Waar is de C?', goal: 'Vind de C, D en E', instrument: 'keyboard', steps: [{ kind: 'find', notes: [C, C5, C, D, E] }] },
@@ -463,6 +731,7 @@ export const LESSONS: Lesson[] = [
   {
     id: 'kb-11-bes',
     title: 'Zwarte toets: Bb',
+    flats: true,
     goal: 'Een mol',
     instrument: 'keyboard',
     steps: [
@@ -720,7 +989,9 @@ export const LESSONS: Lesson[] = [
     instrument: 'zang',
     steps: [{ kind: 'sing', notes: [E, E, F, G, G, F, E, D, C, C, D, E, E, D, D], holdMs: 350 }],
   },
-  ...BASIS_2,
+  ...BASIS_2.map((l) => ({ ...l, level: 2 })),
+  ...BASIS_3,
+  ...BASIS_4,
 ];
 
 export function lessonById(id: string): Lesson | undefined {

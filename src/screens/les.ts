@@ -72,7 +72,8 @@ export function mountLes(app: HTMLElement): () => void {
   const later = (fn: () => void, ms: number): void => {
     timers.push(window.setTimeout(() => alive && fn(), ms));
   };
-  const name = (m: number): string => noteName(m, settings().notation, false);
+  const flats = lesson.flats === true;
+  const name = (m: number): string => noteName(m, settings().notation, false, flats);
   const padLabel = (p: string): string => DRUM_PADS.find((d) => d.id === p)?.label ?? p;
 
   // ---------- Opbouw ----------
@@ -144,7 +145,7 @@ export function mountLes(app: HTMLElement): () => void {
   const label = (t: Token): string =>
     typeof t === 'number'
       ? inst === 'keyboard' && t < 60
-        ? noteName(t, settings().notation, true)
+        ? noteName(t, settings().notation, true, flats)
         : name(t)
       : t.startsWith('chord:')
         ? t.slice(6)

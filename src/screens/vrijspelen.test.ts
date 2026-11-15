@@ -40,5 +40,8 @@ describe('vrij spelen: snaren', () => {
     expect(noteName(60, 'letters')).toBe('C4');
     expect(noteName(60, 'doremi')).toBe('do4');
     expect(noteName(71, 'doremi', false)).toBe('si');
+    expect(noteName(70, 'letters', false)).toBe('A#');
+    expect(noteName(70, 'letters', false, true)).toBe('Bb');
+    expect(noteName(63, 'doremi', true, true)).toBe('mib4');
   });
 });

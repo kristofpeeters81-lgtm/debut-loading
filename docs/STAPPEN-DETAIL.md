@@ -208,6 +208,25 @@ zangles via nep-microfoon).
 - Liedjes publiek domein (Happy Birthday: publiek domein sinds 2016 VS / 2017 EU).
 - Alles automatisch gecontroleerd (Casio-bereik, fret 0–5, akkoordgrepen, lettergrepen); e2e speelt o.a. zwarte toetsen,
   linkerhand, D-snaar, bas-kwint en discobeat volledig uit.
+**Niveau 3 en 4 (2026-11-15, op vraag: "veel meer lessen, naar een stevige basis"):** 166 lessen in totaal
+(keyboard 54, gitaar 34, bas 27, drum 25, zang 26), per instrument ingedeeld in **niveaus** met een titel en sterrenteller in de lijst:
+1 Start (eerste reeks) · 2 Basis (tweede reeks) · 3 Stevig · 4 Uitdaging.
+- **Lesmakers** in `src/lessons/content.ts`: `scaleLesson` (toonladder in elke toonsoort: eerst de zwarte toetsen zoeken, dan omhoog
+  en omlaag; kruisen of mollen volgens de toonsoort) en `intervalLesson` (sprongen op gehoor).
+- **Niveau 3 · Stevig:** keyboard: toonladders G, D, A, E, F, A-, E- en D-mineur, akkoorden in G, D en A, mineur-akkoorden (met Bm),
+  gebroken akkoorden, Saints. Gitaar: noten op de A- en dikke E-snaar, toonladders C, G en A-mineur, akkoorden D, A, E,
+  kampvuurakkoorden G–C–D, wissel E–A–D, Ode laag. Bas: noten op elke snaar, toonladders, grondtoon–kwint–octaaf.
+  Drum: dezelfde beat op 80, 100 en 120, vier op de vloer, halftime, fill over de toms. Zang: toonladders G, F, A-mineur, terts, kwint,
+  mineur-akkoord zingen, Saints.
+- **Niveau 4 · Uitdaging:** keyboard: intervallen op gehoor (3 lessen), liedjes in andere toonsoorten (Ode in G, Jacob in D,
+  London Bridge in F, Mary in G), popschema in G, droevig popschema, blues, heel Jingle Bells, meesterproef.
+  Gitaar: Birthday, Jingle Bells, Saints, popschema in G, mineur-wissels, kleine Bm, op gehoor, meesterproef.
+  Bas: Birthday, Saints, baslijn popschema in G, walking bass, op gehoor, meesterproef. Drum: shuffle, reggae, funk,
+  beat + fill afwisselen, beat op 140, drumsolo. Zang: kwart, sext, octaven, Mary, Jingle Bells, Jacob in G.
+- Nieuwe akkoorden: D, A, E en een kleine Bm-greep op de drie dunste snaren (zonder barré).
+- **Mollen:** lessen in een toonsoort met Bb (F, D-mineur, London Bridge in F, blues, "Zwarte toets: Bb") tonen Bb/Eb
+  (do-re-mi: sib/mib) in plaats van A#/D#. Les 20 heet nu "C# en D#" (titel = wat op het scherm staat).
+- Alles automatisch gecontroleerd; e2e speelt o.a. toonladder G, akkoorden in D, gitaarladder G, grondtoon–kwint–octaaf en de drumsolo uit.
 ## Blok 5 — Profielen
 
 **Gebouwd (2026-11-14):** de 10 avatars zijn goedgekeurd door de gebruiker.
