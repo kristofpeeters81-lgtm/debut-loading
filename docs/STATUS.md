@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) akkoord om de BitMidi-link te pushen; (2) testen op de tablet (lessen niveau 5, naspeelstudio, downloadhoek); (3) blok 12 eerste eigen nummer + bandmodus.
+**Volgende actie:** (1) BitMidi-link staat live; (2) testen op de tablet (lessen niveau 5, naspeelstudio, downloadhoek); (3) blok 12 eerste eigen nummer + bandmodus.
