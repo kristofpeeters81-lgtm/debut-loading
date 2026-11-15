@@ -1,6 +1,6 @@
 // Downloadhoek (blok 10): zelf liedjes (MIDI-bestanden) toevoegen, in kindertaal.
 // De app zoekt zelf niets online: het bestand komt van de tablet (Android-bestandskiezer).
-// De vaste link naar één betrouwbare downloadsite komt erbij zodra die gekozen is (eerst voorleggen aan de ouder).
+// Vaste link naar één downloadsite: BitMidi (gekozen met de ouder op 2026-11-15).
 
 import { engine } from '../audio/engine';
 import { noteName } from '../dsp/notes';
@@ -30,12 +30,14 @@ export function mountDownloadhoek(app: HTMLElement): () => void {
   };
 
   // ---------- Stappenplan ----------
+  // Vaste downloadsite (gekozen met de ouder, 2026-11-15): BitMidi. Gratis, geen account, eerst beluisteren.
+  // De app opent enkel de link in Chrome; ze haalt zelf niets van internet (connect-src 'none' blijft).
   const how = el('section', 'card how-to');
   how.append(el('h2', '', 'Zo zet je een liedje in de app'));
   const steps: [string, string][] = [
-    ['1', 'Zoek je liedje als MIDI-bestand. Zo’n bestand eindigt op .mid. Zoek samen met mama of papa.'],
-    ['2', 'Download het. Het komt in de map "Downloads" op de tablet.'],
-    ['3', 'Tik hieronder op "Liedje toevoegen" en kies het bestand. Meer liedjes tegelijk mag ook.'],
+    ['1', 'Typ hieronder de naam van je liedje en tik op "Zoek op BitMidi". Chrome gaat open.'],
+    ['2', 'Tik op een liedje. Druk op ▶ "Play" om te luisteren. Is het goed? Tik dan op "Download …mid".'],
+    ['3', 'Kom terug naar deze app en tik op "Liedje toevoegen". Kies het bestand in "Downloads".'],
   ];
   const list = el('ol', 'how-steps');
   for (const [n, text] of steps) {
@@ -43,7 +45,29 @@ export function mountDownloadhoek(app: HTMLElement): () => void {
     li.append(el('span', 'how-num', n), el('span', '', text));
     list.append(li);
   }
-  how.append(list);
+  const searchRow = el('div', 'pad-row bitmidi-row');
+  const searchLabel = el('label', 'sr-only', 'Naam van het liedje');
+  searchLabel.htmlFor = 'bitmidi-q';
+  const q = el('input', 'name-input bitmidi-q');
+  q.id = 'bitmidi-q';
+  q.type = 'search';
+  q.placeholder = 'Bv. Jingle Bells';
+  q.autocomplete = 'off';
+  const go = el('a', 'big bitmidi-go', 'Zoek op BitMidi');
+  go.target = '_blank';
+  go.rel = 'noopener noreferrer';
+  const updateLink = (): void => {
+    const term = q.value.trim();
+    go.href = term ? `https://bitmidi.com/search?q=${encodeURIComponent(term)}` : 'https://bitmidi.com/';
+  };
+  q.addEventListener('input', updateLink);
+  updateLink();
+  searchRow.append(searchLabel, q, go);
+  how.append(
+    list,
+    searchRow,
+    el('p', 'small', 'BitMidi is gratis en je hebt geen account nodig. K-pop staat er bijna niet op: speel die na met een mp3 in de Naspeelstudio.'),
+  );
 
   const input = el('input');
   input.type = 'file';

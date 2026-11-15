@@ -177,6 +177,13 @@ async function appTest() {
     // Lege schermen tonen in welk blok ze komen
     check(await tapScreen(page, 'downloadhoek'), 'app: downloadhoek opent');
     check(await visible(page, '.how-to'), 'app: downloadhoek toont het stappenplan');
+    await page.type('#bitmidi-q', 'Jingle Bells');
+    check(
+      (await page.$eval('.bitmidi-go', (a) => a.href)) === 'https://bitmidi.com/search?q=Jingle%20Bells' &&
+        (await page.$eval('.bitmidi-go', (a) => a.target)) === '_blank',
+      'app: "Zoek op BitMidi" opent de zoekresultaten in Chrome (vaste link)',
+    );
+    await page.screenshot({ path: path.join(OUT, 'downloadhoek-bitmidi.png') });
     await page.click('.back');
     check(await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'terug naar start'), 'app: terugknop gaat naar start');
 

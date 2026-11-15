@@ -1314,6 +1314,39 @@ button.danger {
   font: 600 1.2rem var(--display);
 }
 
+.bitmidi-row {
+  align-items: stretch;
+  margin-bottom: 8px;
+}
+
+.bitmidi-q {
+  flex: 1 1 220px;
+  width: auto;
+}
+
+.bitmidi-go {
+  flex: 0 1 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 14px 18px;
+  border-radius: 14px;
+  color: var(--bg);
+  background: var(--green);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .add-song {
   display: flex;
   align-items: center;

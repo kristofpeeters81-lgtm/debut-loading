@@ -24,7 +24,7 @@ gaan voor drillen.
   Een MIDI-bestand laden kan via een **downloadhoek** (blok 10): het bestand wordt lokaal geladen,
   de app zelf zoekt niets online. De downloadhoek moet zo duidelijk zijn (stappenplan met prentjes) dat de dochter het zelf kan:
   uitleg in **heel simpele taal (verstaanbaar voor een 10-jarige)** + een **vaste link naar één betrouwbare downloadsite**
-  (opent in Chrome), zodat ze geen rommel binnenhaalt. Welke site dat wordt: uitzoeken en voorleggen bij blok 10.
+  (opent in Chrome), zodat ze geen rommel binnenhaalt. **Gekozen (2026-11-15): BitMidi** (gratis, geen account, eerst beluisteren); zoekvakje in de downloadhoek opent `https://bitmidi.com/search?q=…` in Chrome. K-pop via de naspeelstudio (mp3). Nonstop2k, MidiShow en FreeMIDI.org vallen af.
 - **Naspeelstudio (blok 11):** mp3 lokaal laden, trager afspelen, melodie meespelen → liedje. mp3's blijven op de tablet.
 - **MIDI-bestanden van de gebruiker staan in `midi-lokaal/`** (genegeerd door git, ook `*.mid`/`*.midi` overal).
   Enkel om de MIDI-functie lokaal te bouwen en te testen. **Nooit committen, nooit in `public/` of `dist/`**:

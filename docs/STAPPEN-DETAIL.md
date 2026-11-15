@@ -375,6 +375,8 @@ een stuk (bv. refrein) kiezen bij lange liedjes, gitaar/bas in het spel.
     de downloadpagina geeft een serverfout HTTP 500) → valt af als vaste link voor een kind.
   - BitMidi: netjes, geen account, eerst beluisteren, maar bijna geen K-pop → advies voor de vaste link (gewone liedjes).
   - K-pop: via de **naspeelstudio** (mp3, blok 11) of door de ouder op de pc gedownload.
+  - **Gekozen door de gebruiker (2026-11-15): BitMidi.** Downloadhoek: stappenplan in kindertaal + zoekvakje "Zoek op BitMidi"
+    (opent de zoekresultaten in Chrome; de app zelf haalt niets van internet). Getest in e2e (juiste link, nieuw tabblad).
 - **Werkwijze voor de gebruiker:** pc → tablet (USB-C "Bestanden overdragen", Quick Share of cloud, bv. naar `Download/MIDI`)
   → in de app: downloadhoek → "Liedje toevoegen" → Android-bestandskiezer, **meerdere bestanden tegelijk** → bewaard in de app
   (IndexedDB), daarna mogen de bestanden op de tablet weg. `midi-lokaal/` op de pc dient enkel om de functie te bouwen/testen.
