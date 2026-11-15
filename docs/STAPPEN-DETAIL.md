@@ -369,6 +369,12 @@ een stuk (bv. refrein) kiezen bij lange liedjes, gitaar/bas in het spel.
 - **Stand nu:** geen gratis site zonder account gevonden met K-pop. Kandidaat voor de vaste link: BitMidi (proper, maar geen K-pop).
   Bij de start van blok 10 verder zoeken; vindt er niets, dan is de downloadhoek voor andere liedjes en blijven
   de eigen nummers in K-popstijl de kern.
+- **Tweede verkenning (2026-11-15):** geen enkele site is gratis + zonder account + zonder reclame + met K-pop.
+  - ❌ Nonstop2k: veel K-pop (ook KATSEYE), maar credits/premium → valt af.
+  - ❌ FreeMIDI.org: enkele Blackpink-nummers, reclame en trackers; **downloadknop werkt niet** (getest door de gebruiker;
+    de downloadpagina geeft een serverfout HTTP 500) → valt af als vaste link voor een kind.
+  - BitMidi: netjes, geen account, eerst beluisteren, maar bijna geen K-pop → advies voor de vaste link (gewone liedjes).
+  - K-pop: via de **naspeelstudio** (mp3, blok 11) of door de ouder op de pc gedownload.
 - **Werkwijze voor de gebruiker:** pc → tablet (USB-C "Bestanden overdragen", Quick Share of cloud, bv. naar `Download/MIDI`)
   → in de app: downloadhoek → "Liedje toevoegen" → Android-bestandskiezer, **meerdere bestanden tegelijk** → bewaard in de app
   (IndexedDB), daarna mogen de bestanden op de tablet weg. `midi-lokaal/` op de pc dient enkel om de functie te bouwen/testen.

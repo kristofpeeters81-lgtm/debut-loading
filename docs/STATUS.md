@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) akkoord om de naspeelstudio te pushen; (2) keuze downloadsite voor de vaste link (zie gesprek 2026-11-15); (3) testen op de tablet; (4) blok 12 eerste eigen nummer + bandmodus.
+**Volgende actie:** (1) naspeelstudio staat live; (2) keuze vaste link: FreeMIDI.org valt af (download werkt niet), advies BitMidi; (3) testen op de tablet; (4) blok 12 eerste eigen nummer + bandmodus.
