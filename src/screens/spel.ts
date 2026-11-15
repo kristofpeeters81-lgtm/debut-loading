@@ -15,7 +15,7 @@ import { NoteEvents } from '../lessons/noteEvents';
 import { Game, MAX_TEMPO, MIN_TEMPO, type GameNote } from '../songs/game';
 import { BASS_STRINGS, GUITAR_STRINGS, arrangeFor, placeOnNeck, songStarKey } from '../songs/arrange';
 import type { Song } from '../songs/songs';
-import { findSong } from '../songs/library';
+import { findSong, studioSong } from '../songs/library';
 import { COLOR_OF_PC, drumSurface, keyboardSurface, neckSurface, singSurface, type Surface } from './lesSurfaces';
 import { starRow } from './lessen';
 import { el } from '../ui/dom';
@@ -69,6 +69,16 @@ export function mountSpel(app: HTMLElement): () => void {
   }
   const inst = current.inst;
   const song: Song = arrangeFor(base, inst, settings().voiceRange);
+  // Naspeelstudio: het echte nummer (mp3) speelt mee en is de klok van het spel (1 tel = 1 seconde).
+  const studioRec = base.audio ? studioSong(base.audio) : undefined;
+  let track: HTMLAudioElement | null = null;
+  let trackUrl = '';
+  if (studioRec) {
+    trackUrl = URL.createObjectURL(studioRec.audio);
+    track = new Audio(trackUrl);
+    track.preload = 'auto';
+    (track as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
+  }
   const voice: Voice = inst === 'gitaar' ? 'gitaar' : inst === 'bas' ? 'bas' : 'piano';
   const strings = inst === 'bas' ? BASS_STRINGS : GUITAR_STRINGS;
   const isNeck = inst === 'gitaar' || inst === 'bas';
@@ -234,6 +244,7 @@ export function mountSpel(app: HTMLElement): () => void {
       engine.drum('hihat', 0.9);
       return;
     }
+    if (track) return; // het echte nummer is de begeleiding
     if (!backing || b >= game.length) return;
     const inBar = b % song.beatsPerBar;
     if (inBar === 0 && inst !== 'bas') {
@@ -361,9 +372,25 @@ export function mountSpel(app: HTMLElement): () => void {
     last = now;
     if (!paused) {
       const before = game.beat;
-      game.update(dt);
+      if (track && game.beat >= 0 && !game.waiting && !track.ended) {
+        track.playbackRate = game.tempo;
+        if (track.paused) {
+          if (Math.abs(track.currentTime - game.beat) > 0.15) track.currentTime = Math.max(0, game.beat);
+          void track.play().catch(() => undefined);
+          game.update(dt);
+        } else {
+          // De mp3 bepaalt de tijd: het spel loopt mee tot waar de muziek is.
+          game.update((Math.max(0, track.currentTime - game.beat) * 1000) / game.tempo);
+          if (game.beat < track.currentTime - 0.5) track.currentTime = Math.max(0, game.beat); // stukje herhalen
+        }
+      } else {
+        if (track && !track.paused) track.pause();
+        game.update(dt);
+      }
       for (let b = Math.floor(before) + 1; b <= Math.floor(game.beat); b++) onBeat(b);
       if (game.beat < before) onBeat(Math.ceil(game.beat));
+    } else if (track && !track.paused) {
+      track.pause();
     }
     const next = game.nextOpen;
     const showTarget = next && (game.waiting || next.beat - game.beat < 1) ? next : null;
@@ -380,6 +407,7 @@ export function mountSpel(app: HTMLElement): () => void {
 
   function finish(): void {
     paused = true;
+    track?.pause();
     tracker?.stop();
     tracker = null;
     const stars = game.stars;
@@ -447,6 +475,14 @@ export function mountSpel(app: HTMLElement): () => void {
   }
 
   listen.addEventListener('click', () => {
+    if (track) {
+      // Eerste 10 seconden van het echte nummer.
+      track.currentTime = 0;
+      track.playbackRate = game.tempo;
+      void track.play().catch(() => undefined);
+      later(() => track?.pause(), 10000);
+      return;
+    }
     const ms = 60000 / (song.bpm * game.tempo);
     for (const n of song.notes) {
       later(() => {
@@ -460,6 +496,8 @@ export function mountSpel(app: HTMLElement): () => void {
 
   return () => {
     alive = false;
+    track?.pause();
+    if (trackUrl) URL.revokeObjectURL(trackUrl);
     cancelAnimationFrame(raf);
     for (const t of timers) window.clearTimeout(t);
     tracker?.stop();

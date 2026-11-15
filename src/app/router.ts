@@ -17,7 +17,8 @@ export type ScreenId =
   | 'profielen'
   | 'profiel'
   | 'les'
-  | 'spel';
+  | 'spel'
+  | 'studio';
 
 export interface ScreenInfo {
   id: ScreenId;
@@ -43,6 +44,7 @@ export const SCREENS: Record<ScreenId, ScreenInfo> = {
   profiel: { id: 'profiel', title: 'Jouw profiel', icon: 'star', parent: 'profielen' },
   les: { id: 'les', title: 'Les', icon: 'star', parent: 'lessen' },
   spel: { id: 'spel', title: 'Speel mee', icon: 'music', parent: 'liedjes' },
+  studio: { id: 'studio', title: 'Naspeelstudio', icon: 'music', parent: 'liedjes' },
 };
 
 /** Grote knoppen op het startscherm, in deze volgorde. Instellingen zit als tandwiel rechtsboven. */

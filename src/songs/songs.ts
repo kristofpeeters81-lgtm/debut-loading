@@ -24,6 +24,8 @@ export interface Song {
   chords?: ChordName[];
   /** Herkomst, voor de duidelijkheid. */
   source: string;
+  /** Naspeelstudio: id van de mp3 die als begeleiding meespeelt (1 tel = 1 seconde in de mp3). */
+  audio?: string;
 }
 
 /** Maakt noten van [midi, lengte]-paren die na elkaar komen. Rust = midi 0. */

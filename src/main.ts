@@ -23,6 +23,7 @@ import { mountLes } from './screens/les';
 import { mountLiedjes } from './screens/liedjes';
 import { mountSpel } from './screens/spel';
 import { mountDownloadhoek } from './screens/downloadhoek';
+import { mountStudio } from './screens/studio';
 import { loadLibrary } from './songs/library';
 import { avatarSvg } from './ui/avatar';
 import { el } from './ui/dom';
@@ -93,6 +94,9 @@ function show(id: ScreenId): void {
       mountHome(content);
       break;
     }
+    case 'studio':
+      cleanup = mountStudio(content);
+      break;
     case 'downloadhoek':
       cleanup = mountDownloadhoek(content);
       break;

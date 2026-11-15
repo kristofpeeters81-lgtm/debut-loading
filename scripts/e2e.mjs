@@ -511,6 +511,60 @@ async function appTest() {
       await waitFor(async () => (await screenOf(page)) === 'start', 3000, 'start');
     }
 
+    // Naspeelstudio (blok 11): een geluidsbestand (zelf gemaakt) laden, meetikken, bewaren en spelen met het nummer erbij
+    {
+      const parts = [];
+      for (const m of [60, 62, 64, 65, 67, 65, 64, 62]) parts.push(pluck([midiToHz(m)], 0.7), new Float32Array(Math.round(SR * 0.1)));
+      writeWav(path.join(OUT, 'Mijn_nummer.wav'), parts);
+    }
+    await tapScreen(page, 'liedjes');
+    check(await tapScreen(page, 'studio'), 'studio: opent vanuit Liedjes');
+    {
+      const [fc] = await Promise.all([page.waitForFileChooser(), page.click('.studio-pick')]);
+      await fc.accept([path.join(OUT, 'Mijn_nummer.wav')]);
+    }
+    check(await waitFor(() => visible(page, '.studio-work'), 3000, 'studio werk'), 'studio: nummer geladen');
+    check((await page.$eval('#studio-title', (e) => e.value)) === 'Mijn nummer', 'studio: naam uit de bestandsnaam');
+    await page.click('.studio-speeds .chip[data-speed="1"]');
+    await page.click('.studio-rec');
+    for (const m of [60, 62, 64, 65]) {
+      await sleep(450);
+      await page.click(`.studio-work .lesson-kb .key[data-midi="${m}"]`);
+    }
+    await page.click('.studio-rec');
+    check((await page.$eval('.studio-notes', (e) => e.dataset.count)) === '4', 'studio: 4 noten meegetikt');
+    await page.screenshot({ path: path.join(OUT, 'studio.png'), fullPage: true });
+    {
+      const undoBtn = await page.evaluateHandle(() => [...document.querySelectorAll('.studio-work button')].find((b) => b.textContent === 'Laatste noot weg'));
+      await undoBtn.click();
+    }
+    check((await page.$eval('.studio-notes', (e) => e.dataset.count)) === '3', 'studio: laatste noot weg');
+    await page.click('.studio-save');
+    check(await waitFor(() => visible(page, '.studio-open'), 3000, 'bewaard'), 'studio: bewaard als liedje');
+    check((await page.$$('[data-studio]')).length === 1, 'studio: staat bij "Mijn naspeelnummers"');
+    await page.click('.studio-open');
+    await waitFor(async () => (await screenOf(page)) === 'spel', 3000, 'spel');
+    await page.click('.lesson-intro button.big');
+    await sleep(500);
+    {
+      const end = Date.now() + 40000;
+      while (Date.now() < end) {
+        if (await page.$eval('.lesson-end', (e) => !e.hidden).catch(() => false)) break;
+        const want = await page.$eval('.game', (g) => g.dataset.expected ?? '');
+        if (want) await page.click(`.lesson-kb .key[data-midi="${want}"]`).catch(() => undefined);
+        await sleep(80);
+      }
+    }
+    check((await page.$eval('.lesson-end', (e) => (e.hidden ? '' : e.dataset.stars)).catch(() => '')) === '3', 'spel: naspeelnummer uitgespeeld met het nummer erbij');
+    await page.click('.lesson-end .lesson-back').catch(() => undefined);
+    await waitFor(async () => (await screenOf(page)) === 'studio', 3000, 'studio');
+    {
+      const del = await page.evaluateHandle(() => [...document.querySelectorAll('[data-studio] button')].find((b) => b.textContent === 'Verwijderen'));
+      await del.click();
+      await del.click();
+    }
+    check(await waitFor(async () => (await page.$$('[data-studio]')).length === 0, 3000, 'weg'), 'studio: verwijderen (twee keer tikken)');
+    await page.goto(url, { waitUntil: 'networkidle0' });
     // Downloadhoek (blok 10): eigen MIDI-bestand toevoegen (zelf gemaakt: Ode an die Freude + begeleiding) en een kapot bestand
     {
       const m = new Midi();

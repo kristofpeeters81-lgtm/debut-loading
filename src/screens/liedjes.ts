@@ -2,7 +2,7 @@
 
 import { SONGS } from '../songs/songs';
 import { songStarKey } from '../songs/arrange';
-import { importedSongs } from '../songs/library';
+import { importedSongs, studioSongs } from '../songs/library';
 import { activeProfile, settings } from '../app/state';
 import { INSTRUMENT_CHOICES, type InstrumentId } from '../app/settings';
 import { hashFor } from '../app/router';
@@ -30,6 +30,7 @@ export function mountLiedjes(app: HTMLElement): void {
   const mineTitle = el('h2', 'songs-mine-title', 'Mijn liedjes');
   const mine = el('ol', 'lesson-path');
   const own = importedSongs();
+  const studio = studioSongs();
   const toCorner = el('a', 'tool-link');
   toCorner.href = hashFor('downloadhoek');
   toCorner.dataset.screen = 'downloadhoek';
@@ -54,8 +55,11 @@ export function mountLiedjes(app: HTMLElement): void {
     for (const t of tabs.querySelectorAll<HTMLButtonElement>('.chip')) t.classList.toggle('on', t.dataset.instrument === inst);
     intro.textContent = HOW[inst];
     list.replaceChildren(...SONGS.map((s, i) => card(s.id, s.title, s.source, i + 1, inst)));
-    mine.replaceChildren(...own.map((r, i) => card(r.id, r.title, `Eigen liedje · ${r.song.notes.length} noten`, i + 1, inst)));
-    mineTitle.hidden = own.length === 0;
+    mine.replaceChildren(
+      ...own.map((r, i) => card(r.id, r.title, `Eigen liedje · ${r.song.notes.length} noten`, i + 1, inst)),
+      ...studio.map((r, i) => card(r.id, r.title, `Naspeelstudio · met het echte nummer`, own.length + i + 1, inst)),
+    );
+    mineTitle.hidden = own.length + studio.length === 0;
   };
 
   for (const c of INSTRUMENT_CHOICES) {
@@ -65,5 +69,9 @@ export function mountLiedjes(app: HTMLElement): void {
     tabs.append(t);
   }
   render(shown ?? settings().instrument);
-  app.append(tabs, intro, list, mineTitle, mine, toCorner);
+  const toStudio = el('a', 'tool-link');
+  toStudio.href = hashFor('studio');
+  toStudio.dataset.screen = 'studio';
+  toStudio.append(icon('music', 'var(--pink)', 26), el('span', '', 'Naspeelstudio: speel een mp3 na (ook K-pop!)'));
+  app.append(tabs, intro, list, mineTitle, mine, toCorner, toStudio);
 }

@@ -1,7 +1,8 @@
 // Mijn liedjes (blok 10): eigen MIDI-bestanden, bewaard op de tablet (IndexedDB), voor alle profielen.
 // Het originele bestand wordt mee bewaard, zodat je later nog een ander spoor als melodie kan kiezen.
 
-import { songDelete, songPut, songsAll } from '../storage/db';
+import { songDelete, songPut, songsAll, studioAll, studioDelete, studioPut } from '../storage/db';
+import { Take, type TakeNote } from './studio';
 import { parseMidi, songFromMidi, type TrackInfo } from './midiImport';
 import { SONGS, type Song } from './songs';
 
@@ -18,13 +19,54 @@ export interface ImportedSong {
 
 let imported: ImportedSong[] = [];
 
+/** Naspeelstudio (blok 11): mp3 + nagespeelde melodie. */
+export interface StudioRecord {
+  id: string;
+  title: string;
+  fileName: string;
+  audio: Blob;
+  notes: TakeNote[];
+  createdAt: number;
+}
+
+let studio: StudioRecord[] = [];
+
+export function studioSongs(): StudioRecord[] {
+  return studio;
+}
+
+export function studioSong(id: string): StudioRecord | undefined {
+  return studio.find((s) => s.id === id);
+}
+
+export function studioToSong(r: StudioRecord): Song {
+  return new Take(r.notes).toSong(r.id, r.title, r.id);
+}
+
+export async function saveStudio(rec: StudioRecord): Promise<void> {
+  await studioPut(rec);
+  studio = [...studio.filter((s) => s.id !== rec.id), rec].sort((a, b) => a.createdAt - b.createdAt);
+}
+
+export async function removeStudio(id: string): Promise<void> {
+  await studioDelete(id);
+  studio = studio.filter((s) => s.id !== id);
+}
+
+function isStudio(x: unknown): x is StudioRecord {
+  if (typeof x !== 'object' || x === null) return false;
+  const r = x as Record<string, unknown>;
+  return typeof r.id === 'string' && typeof r.title === 'string' && r.audio instanceof Blob && Array.isArray(r.notes);
+}
+
 export function importedSongs(): ImportedSong[] {
   return imported;
 }
 
 /** Ingebouwd liedje of eigen liedje. */
 export function findSong(id: string): Song | undefined {
-  return SONGS.find((s) => s.id === id) ?? imported.find((s) => s.id === id)?.song;
+  const st = studio.find((s) => s.id === id);
+  return SONGS.find((s) => s.id === id) ?? imported.find((s) => s.id === id)?.song ?? (st ? studioToSong(st) : undefined);
 }
 
 function isImported(x: unknown): x is ImportedSong {
@@ -38,6 +80,11 @@ export async function loadLibrary(): Promise<void> {
     imported = (await songsAll()).filter(isImported).sort((a, b) => a.createdAt - b.createdAt);
   } catch {
     imported = [];
+  }
+  try {
+    studio = (await studioAll()).filter(isStudio).sort((a, b) => a.createdAt - b.createdAt);
+  } catch {
+    studio = [];
   }
 }
 

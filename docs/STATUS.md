@@ -14,7 +14,7 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 | 8 | [Lessen (alle instrumenten)](STAPPEN-DETAIL.md#blok-8--eerste-lessen-keyboard) | 🧪 | 2026-11-14 | 6 keyboardlessen getest door gebruiker (in orde); uitgebreid tot 201 lessen in 5 niveaus (5 = In de maat: timing, tabs, oefenmixen): keyboard 62, gitaar 43, bas 35, drum 33, zang 28 (2026-11-15) |
 | 9 | [Spel met vallende noten (tempo, herhalen, sterren)](STAPPEN-DETAIL.md#blok-9--spel-met-vallende-noten) | 🧪 | 2026-11-14 | Live voor alle instrumenten (keyboard, gitaar, bas, drum, zang) |
 | 10 | [MIDI laden via de downloadhoek](STAPPEN-DETAIL.md#blok-10--midi-laden-via-de-downloadhoek) (ook zelf te gebruiken door het kind) | 🟡 | 2026-11-14 | Importeren gebouwd (eigen MIDI → vallende noten); vaste downloadsite nog te kiezen en voor te leggen |
-| 11 | [Naspeelstudio: mp3 laden, trager afspelen, melodie meespelen → liedje](STAPPEN-DETAIL.md#blok-11--naspeelstudio) | ⬜ | | Nieuw 2026-11-14: voor nummers zonder MIDI, met het echte nummer als begeleiding |
+| 11 | [Naspeelstudio: mp3 laden, trager afspelen, melodie meespelen → liedje](STAPPEN-DETAIL.md#blok-11--naspeelstudio) | 🧪 | 2026-11-15 | Gebouwd: mp3 + meespelen/tikken → liedje met het echte nummer als begeleiding in het spel |
 | 12 | Eerste eigen nummer + bandmodus (zonder punten, avatars samen op het podium) | ⬜ | | |
 | 13 | Wereldtournee-kaart (zonder streaks) | ⬜ | | |
 | 14 | Zangspel (lijn voor de toonhoogte, songtekst uit karaoke-MIDI) | ⬜ | | |
@@ -24,4 +24,4 @@ Legende: ✅ klaar en getest op de tablet · 🧪 gebouwd, wacht op tablettest �
 
 **Naam gekozen (2026-11-14): DEBUT LOADING…** (laadbalk in het logo vult zich met de voortgang per profiel; "Debut" verwijst naar het KATSEYE-nummer).
 
-**Volgende actie:** (1) niveau 5 staat live; (2) testen op de tablet (timing met de echte instrumenten!); (3) downloadsite voor de vaste link uitzoeken en voorleggen; (4) blok 11 naspeelstudio.
+**Volgende actie:** (1) akkoord om de naspeelstudio te pushen; (2) keuze downloadsite voor de vaste link (zie gesprek 2026-11-15); (3) testen op de tablet; (4) blok 12 eerste eigen nummer + bandmodus.

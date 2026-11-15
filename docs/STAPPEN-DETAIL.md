@@ -401,5 +401,20 @@ Geen AI: een mens hoort de melodie, de app noteert ze (human-in-the-loop).
 
 **Aandachtspunten:** vertraging tussen spelen en horen (latency) meten en corrigeren; zelfde liedjesformaat als de MIDI-liedjes
 (blok 10); grootte van mp3's in de opslag; auteursrecht: mp3's blijven privé op de tablet, net zoals MIDI-bestanden.
+**Gebouwd (2026-11-15):** scherm "Naspeelstudio" (`src/screens/studio.ts`), te openen via Liedjes ("Naspeelstudio: speel een mp3 na").
+1. **Kies een mp3** (ook m4a/wav/ogg) van de tablet; naam = bestandsnaam (aanpasbaar). Bewaard in IndexedDB versie 4, tabel `studio`.
+2. **Luister en oefen:** afspelen/pauze, schuifbalk, snelheid 50/75/100 % zonder dat de toonhoogte verandert (`preservesPitch`),
+   **stukje herhalen** (Begin stukje / Einde stukje / Hele nummer).
+3. **Speel de melodie na:** "Opnemen" speelt het nummer en luistert naar het keyboard (met hoofdtelefoon, 100 ms microfoonvertraging
+   gecorrigeerd), of **tik mee** op het keyboard op het scherm (C3–C6). Noten komen op de tijdlijn van de mp3 (`src/songs/studio.ts`):
+   dubbel gehoorde noot telt één keer, "Laatste noot weg", "Stukje wissen" (of alles, twee keer tikken).
+4. **Bewaar als liedje** → staat bij Liedjes → Mijn liedjes en bij "Mijn naspeelnummers" (Speel / Verder naspelen / Verwijderen).
+- **In het spel speelt het echte nummer mee** en is het de klok (1 tel = 1 seconde): pauzeert terwijl "Wacht op mij" wacht, volgt
+  het tempo (afspeelsnelheid) en het herhaalde stukje. Geen drum/bas-begeleiding (het nummer is de begeleiding).
+  Werkt voor elk instrument (gitaar/bas/zang/drum via dezelfde omzetting als andere liedjes).
+- **Getest:** unit (noteren, dubbel, wissen, liedje met 1 tel = 1 s, speelbaar) + e2e met een zelfgemaakt geluidsbestand
+  (laden, 4 noten meetikken, laatste weg, bewaren, uitspelen met het nummer erbij, verwijderen).
+- **Nog te testen op de tablet:** een echte mp3 (bv. KATSEYE) naspelen met hoofdtelefoon; klopt de timing in het spel?
+
 Alternatief buiten de app: melodie met de hand invoeren in **MuseScore Studio** (gratis desktopprogramma, geen account;
 niet te verwarren met de betalende website) en als MIDI exporteren.

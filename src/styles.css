@@ -1235,6 +1235,54 @@ button.danger {
   }
 }
 
+/* ---------- Naspeelstudio (blok 11) ---------- */
+.studio-pick,
+.studio-rec,
+.studio-save {
+  max-width: 420px;
+}
+
+.studio-rec.on {
+  background: var(--pink);
+  border-color: var(--pink);
+  box-shadow: 0 0 18px rgba(255, 79, 216, 0.8);
+}
+
+.studio-title-box {
+  margin-top: 16px;
+}
+
+.studio-time {
+  align-self: center;
+  font: 600 1.2rem var(--display);
+  font-variant-numeric: tabular-nums;
+}
+
+.studio-seek {
+  margin: 12px 0 14px;
+}
+
+.studio-speeds {
+  justify-content: flex-start;
+  margin: 6px 0 12px;
+}
+
+.studio-loop {
+  display: block;
+  margin-top: 8px;
+}
+
+.studio-live {
+  min-height: 1.6em;
+  margin: 10px 0;
+  font: 600 1.3rem var(--display);
+  color: var(--cyan);
+}
+
+.studio-notes {
+  margin-top: 12px;
+}
+
 /* ---------- Downloadhoek en mijn liedjes (blok 10) ---------- */
 .how-steps {
   list-style: none;

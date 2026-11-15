@@ -1,10 +1,11 @@
 // Opslag op de tablet zelf (IndexedDB). Niets gaat naar het internet.
 // Vertrokken van de opslag in SingApp (gekopieerd, niet gedeeld).
-// Tabellen: `kv` (kleine waarden zoals instellingen, blok 2), `profiles` (blok 5), `songs` (eigen MIDI-liedjes, blok 10).
+// Tabellen: `kv` (kleine waarden zoals instellingen, blok 2), `profiles` (blok 5), `songs` (eigen MIDI-liedjes, blok 10),
+// `studio` (naspeelstudio: mp3 + nagespeelde melodie, blok 11).
 // Latere blokken voegen tabellen toe (opnames) door DB_VERSION te verhogen. Nooit een tabel wissen.
 
 const DB_NAME = 'debut-loading';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -17,6 +18,7 @@ function openDb(): Promise<IDBDatabase> {
         if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
         if (!db.objectStoreNames.contains('profiles')) db.createObjectStore('profiles', { keyPath: 'id' });
         if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('studio')) db.createObjectStore('studio', { keyPath: 'id' });
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => {
@@ -90,6 +92,25 @@ export async function songDelete(id: string): Promise<void> {
   const db = await openDb();
   const tx = db.transaction('songs', 'readwrite');
   tx.objectStore('songs').delete(id);
+  await done(tx);
+}
+
+export async function studioAll(): Promise<unknown[]> {
+  const db = await openDb();
+  return result(db.transaction('studio').objectStore('studio').getAll() as IDBRequest<unknown[]>);
+}
+
+export async function studioPut(rec: { id: string }): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('studio', 'readwrite');
+  tx.objectStore('studio').put(rec);
+  await done(tx);
+}
+
+export async function studioDelete(id: string): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction('studio', 'readwrite');
+  tx.objectStore('studio').delete(id);
   await done(tx);
 }
 
